@@ -4,6 +4,11 @@ on:
   push:
     branches:
       - main 
+    paths:
+      - 'front/**'
+  pull_request:
+    paths:
+      - 'front/**'
 
 jobs: 
   build:
@@ -32,4 +37,4 @@ jobs:
           vercel-token: ${{ secrets.VERCEL_TOKEN }}
           vercel-org-id: ${{ secrets.VERCEL_ORG_ID }}
           vercel-project-id: ${{ secrets.VERCEL_PROJECT_ID }}
-          vercel-args: '--prod'
+          vercel-args: ${{ github.event_name == 'push' && '--prod' || '' }}
