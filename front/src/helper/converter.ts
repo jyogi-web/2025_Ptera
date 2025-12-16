@@ -28,6 +28,6 @@ export const convertCard = (docId: string, data: FirestoreCard): Card => {
     hobby: data.hobby,
     description: data.description,
     imageUrl: data.imageUrl,
-    createdAt: data.createdAt.toDate(),
+    createdAt: data.createdAt ? data.createdAt.toDate() : new Date(),
   };
 };
