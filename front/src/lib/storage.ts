@@ -7,8 +7,11 @@ import { storage } from "./firebase";
  * @param path The path in storage (e.g. "images/filename.jpg")
  * @returns Promise resolving to the download URL
  */
-export const uploadImage = async (file: File, path: string): Promise<string> => {
-    const storageRef = ref(storage, path);
-    const snapshot = await uploadBytes(storageRef, file);
-    return getDownloadURL(snapshot.ref);
+export const uploadImage = async (
+  file: File,
+  path: string,
+): Promise<string> => {
+  const storageRef = ref(storage, path);
+  const snapshot = await uploadBytes(storageRef, file);
+  return getDownloadURL(snapshot.ref);
 };
