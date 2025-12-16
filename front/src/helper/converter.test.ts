@@ -11,14 +11,14 @@ const mockTimestamp = (date: Date) =>
     toDate: () => date,
     seconds: Math.floor(date.getTime() / 1000),
     nanoseconds: (date.getTime() % 1000) * 1000000,
-  } as Timestamp);
+  }) as Timestamp;
 
 // DocumentReferenceのモック
 const mockDocRef = (id: string) =>
   ({
     id,
     path: `groups/${id}`,
-  } as DocumentReference<any>);
+  }) as DocumentReference<any>;
 
 describe("converter", () => {
   describe("convertUser", () => {
