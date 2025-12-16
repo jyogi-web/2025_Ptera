@@ -7,6 +7,7 @@ WORKDIR ${ROOT}
 RUN apk update && apk add --no-cache git make
 COPY go.mod go.sum ./
 RUN go mod download
+COPY . .
 EXPOSE 50051
 
 CMD ["go", "run", "cmd/server/main.go"]
