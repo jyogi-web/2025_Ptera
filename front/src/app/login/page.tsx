@@ -1,8 +1,8 @@
 "use client";
 
-import { useAuth } from "@/context/AuthContext";
-import { useState } from "react";
 import { useRouter } from "next/navigation";
+import { useState } from "react";
+import { useAuth } from "@/context/AuthContext";
 
 export default function LoginPage() {
   const { user, loginWithGoogle, loginWithEmail, signupWithEmail, logout } =
@@ -42,6 +42,7 @@ export default function LoginPage() {
       <div className="flex min-h-screen flex-col items-center justify-center gap-4">
         <p>Logged in as: {user.email}</p>
         <button
+          type="button"
           onClick={() => logout()}
           className="rounded bg-red-500 px-4 py-2 text-white hover:bg-red-600"
         >
@@ -60,10 +61,14 @@ export default function LoginPage() {
 
         <form onSubmit={handleEmailAuth} className="flex flex-col gap-4">
           <div>
-            <label className="mb-1 block text-sm font-medium text-gray-700">
+            <label
+              htmlFor="email"
+              className="mb-1 block text-sm font-medium text-gray-700"
+            >
               Email
             </label>
             <input
+              id="email"
               type="email"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
@@ -72,10 +77,14 @@ export default function LoginPage() {
             />
           </div>
           <div>
-            <label className="mb-1 block text-sm font-medium text-gray-700">
+            <label
+              htmlFor="password"
+              className="mb-1 block text-sm font-medium text-gray-700"
+            >
               Password
             </label>
             <input
+              id="password"
               type="password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
@@ -98,6 +107,7 @@ export default function LoginPage() {
         </div>
 
         <button
+          type="button"
           onClick={handleGoogleLogin}
           className="flex w-full items-center justify-center gap-2 rounded border border-gray-300 bg-white py-2 text-gray-700 hover:bg-gray-50"
         >
@@ -109,6 +119,7 @@ export default function LoginPage() {
             ? "Don't have an account? "
             : "Already have an account? "}
           <button
+            type="button"
             onClick={() => setIsLoginView(!isLoginView)}
             className="text-blue-500 hover:underline"
           >
