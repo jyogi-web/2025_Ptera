@@ -16,4 +16,4 @@ lint-proto:
 	buf lint proto
 
 format-proto:
-	buf format -d proto
+	buf format -w proto

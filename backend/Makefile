@@ -15,7 +15,7 @@ help:
 
 # 開発環境 (デフォルト): Dockerfile.devを使用、ホットリロード
 up-dev:
-	docker-compose -f ../docker-compose.dev.yaml up -d
+	docker-compose -f ../docker-compose.dev.yaml up
 
 # デフォルトは開発環境
 up: up-dev

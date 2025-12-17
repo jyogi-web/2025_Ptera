@@ -1,1 +1,5 @@
 .env.local
+
+# Air (ホットリロードツール)
+tmp/
+build-errors.log
