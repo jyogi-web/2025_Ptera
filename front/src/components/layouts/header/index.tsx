@@ -5,6 +5,7 @@ import { Loader2, LogIn } from "lucide-react";
 import { usePathname } from "next/navigation";
 import { useEffect, useMemo, useState } from "react";
 import { useAuth } from "@/context/AuthContext";
+import type { UserStats } from "@/types/app";
 import { HeaderInfoPanel } from "./HeaderInfoPanel";
 import { HeaderStatusPanel } from "./HeaderStatusPanel";
 
@@ -19,13 +20,19 @@ export const Header = (): React.JSX.Element | null => {
 
   // 現在のパスが非表示リストに含まれているかチェック
   const isHeaderVisible =
-    !pathname || !HIDDEN_PATHS.some((path) => pathname.includes(path));
+    !pathname ||
+    !HIDDEN_PATHS.some(
+      (path) => pathname === path || pathname.startsWith(`${path}/`),
+    );
 
-  // 学年のモックデータ
-  // 学年のモックデータ (In a real app, these would come from props or a store)
-  const mockGrade = "大学3年目";
-  const mockRank = 42;
-  const mockCP = 15000;
+  // TODO: ユーザーデータから実際の値を取得するように実装する
+  // 現在はモックデータを使用しています
+  // 今後、以下のデータをAuthContextまたはAPIから取得する必要があります
+  const mockUserStats: UserStats = {
+    grade: "大学3年目",
+    rank: 42,
+    cp: 15000,
+  };
 
   // Compute 'today' only once or on mount
   const today = useMemo(() => {
@@ -69,13 +76,13 @@ export const Header = (): React.JSX.Element | null => {
                 <div className="flex items-center justify-center w-full space-x-0 text-sm md:text-base">
                   <HeaderStatusPanel
                     active={activate}
-                    rank={mockRank}
-                    cp={mockCP}
+                    rank={mockUserStats.rank}
+                    cp={mockUserStats.cp}
                   />
                   <HeaderInfoPanel
                     active={activate}
                     today={today}
-                    grade={mockGrade}
+                    grade={mockUserStats.grade}
                   />
                 </div>
               )}

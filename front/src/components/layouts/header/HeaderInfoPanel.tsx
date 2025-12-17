@@ -54,3 +54,5 @@ export const HeaderInfoPanel = memo(
     );
   },
 );
+
+HeaderInfoPanel.displayName = "HeaderInfoPanel";
