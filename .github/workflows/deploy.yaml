@@ -3,29 +3,29 @@ name: Deploy
 on:
   push:
     branches:
-      - main 
+      - main
     paths:
-      - 'front/**'
+      - "front/**"
   pull_request:
     paths:
-      - 'front/**'
+      - "front/**"
 
-jobs: 
+jobs:
   build:
     runs-on: ubuntu-latest
 
     steps:
       - name: Check out the code
-        uses: actions/checkout@v3    
+        uses: actions/checkout@v4
 
       - name: Set up Node.js
-        uses: actions/setup-node@v3
+        uses: actions/setup-node@v4
         with:
-          node-version: '20'
+          node-version: "20"
 
       - name: Install dependencies
         working-directory: front
-        run: npm install
+        run: npm install --legacy-peer-deps
 
       - name: Build Next.js project
         working-directory: front
@@ -33,7 +33,7 @@ jobs:
 
       - name: Deploy to Vercel
         uses: amondnet/vercel-action@v25
-        with:                            
+        with:
           vercel-token: ${{ secrets.VERCEL_TOKEN }}
           vercel-org-id: ${{ secrets.VERCEL_ORG_ID }}
           vercel-project-id: ${{ secrets.VERCEL_PROJECT_ID }}
