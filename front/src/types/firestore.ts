@@ -15,3 +15,22 @@ export interface FirestoreCard {
   affiliatedGroupRef?: DocumentReference<DocumentData>; // サークル名(参照)
   createdAt: Timestamp; // 作成日時
 }
+
+export interface FirestoreUser {
+  id: string; // Auth UID
+  displayName: string;
+  email: string;
+  photoURL?: string;
+  bio?: string;
+  createdAt: Timestamp;
+  updatedAt: Timestamp;
+}
+
+export interface FirestoreGroup {
+  name: string;
+  description: string;
+  memberIds: string[]; // User UIDs
+  imageUrl?: string;
+  createdAt: Timestamp;
+  updatedAt: Timestamp;
+}

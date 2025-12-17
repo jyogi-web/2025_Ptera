@@ -10,30 +10,46 @@ export default function LoginPage() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [isLoginView, setIsLoginView] = useState(true);
+  const [loading, setLoading] = useState(false);
+  const [googleLoading, setGoogleLoading] = useState(false);
   const router = useRouter();
 
   const handleEmailAuth = async (e: React.FormEvent) => {
     e.preventDefault();
-    try {
-      if (isLoginView) {
-        await loginWithEmail(email, password);
-      } else {
-        await signupWithEmail(email, password);
-      }
-      router.push("/");
-    } catch (error) {
+    if (loading) return;
+
+    setLoading(true);
+    let error: Error | null = null;
+
+    if (isLoginView) {
+      error = await loginWithEmail(email, password);
+    } else {
+      error = await signupWithEmail(email, password);
+    }
+
+    setLoading(false);
+
+    if (error) {
       console.error("Auth error:", error);
       alert("Authentication failed. Check console for details.");
+    } else {
+      router.push("/");
     }
   };
 
   const handleGoogleLogin = async () => {
-    try {
-      await loginWithGoogle();
-      router.push("/");
-    } catch (error) {
+    if (googleLoading) return;
+    setGoogleLoading(true);
+
+    const error = await loginWithGoogle();
+
+    setGoogleLoading(false);
+
+    if (error) {
       console.error("Google login error:", error);
       alert("Google login failed.");
+    } else {
+      router.push("/");
     }
   };
 
@@ -94,9 +110,10 @@ export default function LoginPage() {
           </div>
           <button
             type="submit"
-            className="rounded bg-blue-500 py-2 text-white hover:bg-blue-600"
+            disabled={loading}
+            className="rounded bg-blue-500 py-2 text-white hover:bg-blue-600 disabled:bg-gray-400"
           >
-            {isLoginView ? "Login" : "Sign Up"}
+            {loading ? "Processing..." : isLoginView ? "Login" : "Sign Up"}
           </button>
         </form>
 
@@ -109,9 +126,10 @@ export default function LoginPage() {
         <button
           type="button"
           onClick={handleGoogleLogin}
-          className="flex w-full items-center justify-center gap-2 rounded border border-gray-300 bg-white py-2 text-gray-700 hover:bg-gray-50"
+          disabled={googleLoading}
+          className="flex w-full items-center justify-center gap-2 rounded border border-gray-300 bg-white py-2 text-gray-700 hover:bg-gray-50 disabled:bg-gray-100 disabled:text-gray-400"
         >
-          Sign in with Google
+          {googleLoading ? "Processing..." : "Sign in with Google"}
         </button>
 
         <p className="mt-4 text-center text-sm">

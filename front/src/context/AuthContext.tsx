@@ -22,10 +22,12 @@ import type { User } from "@/types/app";
 interface AuthContextType {
   user: User | null;
   loading: boolean;
-  loginWithGoogle: () => Promise<void>;
-  loginWithEmail: (email: string, pass: string) => Promise<void>;
-  signupWithEmail: (email: string, pass: string) => Promise<void>;
-  logout: () => Promise<void>;
+  error: Error | null;
+  clearError: () => void;
+  loginWithGoogle: () => Promise<Error | null>;
+  loginWithEmail: (email: string, pass: string) => Promise<Error | null>;
+  signupWithEmail: (email: string, pass: string) => Promise<Error | null>;
+  logout: () => Promise<Error | null>;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -33,6 +35,7 @@ const AuthContext = createContext<AuthContextType | undefined>(undefined);
 export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<Error | null>(null);
 
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, (firebaseUser) => {
@@ -47,21 +50,61 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     return () => unsubscribe();
   }, []);
 
-  const loginWithGoogle = async () => {
-    const provider = new GoogleAuthProvider();
-    await signInWithPopup(auth, provider);
+  const clearError = () => setError(null);
+
+  const loginWithGoogle = async (): Promise<Error | null> => {
+    setError(null);
+    try {
+      const provider = new GoogleAuthProvider();
+      await signInWithPopup(auth, provider);
+      return null;
+    } catch (e) {
+      const err = e as Error;
+      setError(err);
+      return err;
+    }
   };
 
-  const loginWithEmail = async (email: string, pass: string) => {
-    await signInWithEmailAndPassword(auth, email, pass);
+  const loginWithEmail = async (
+    email: string,
+    pass: string,
+  ): Promise<Error | null> => {
+    setError(null);
+    try {
+      await signInWithEmailAndPassword(auth, email, pass);
+      return null;
+    } catch (e) {
+      const err = e as Error;
+      setError(err);
+      return err;
+    }
   };
 
-  const signupWithEmail = async (email: string, pass: string) => {
-    await createUserWithEmailAndPassword(auth, email, pass);
+  const signupWithEmail = async (
+    email: string,
+    pass: string,
+  ): Promise<Error | null> => {
+    setError(null);
+    try {
+      await createUserWithEmailAndPassword(auth, email, pass);
+      return null;
+    } catch (e) {
+      const err = e as Error;
+      setError(err);
+      return err;
+    }
   };
 
-  const logout = async () => {
-    await signOut(auth);
+  const logout = async (): Promise<Error | null> => {
+    setError(null);
+    try {
+      await signOut(auth);
+      return null;
+    } catch (e) {
+      const err = e as Error;
+      setError(err);
+      return err;
+    }
   };
 
   return (
@@ -69,6 +112,8 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       value={{
         user,
         loading,
+        error,
+        clearError,
         loginWithGoogle,
         loginWithEmail,
         signupWithEmail,

@@ -49,7 +49,6 @@ export default function FirestoreTestPage() {
     try {
       await addCard({
         ...formData,
-        grade: Number(formData.grade),
         creatorId: user.id,
       });
       alert("Added!");
