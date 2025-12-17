@@ -1,8 +1,8 @@
 import type { Metadata } from "next";
-import { Orbitron, Geist_Mono } from "next/font/google";
+import { Geist_Mono, Orbitron } from "next/font/google";
 import "./globals.css";
-import { AuthProvider } from "@/context/AuthContext";
 import { Header } from "@/components/layouts/header";
+import { AuthProvider } from "@/context/AuthContext";
 
 const orbitron = Orbitron({
   variable: "--font-orbitron",
