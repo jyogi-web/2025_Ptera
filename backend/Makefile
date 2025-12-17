@@ -1,4 +1,4 @@
-.PHONY: up down logs help
+.PHONY: default up down logs help
 
 default: help
 
@@ -9,10 +9,10 @@ help:
 	@echo "  logs         Show docker-compose logs"
 
 up:
-	docker-compose up -d
+	docker-compose -f ../docker-compose.yaml up -d
 
 down:
-	docker-compose down
+	docker-compose -f ../docker-compose.yaml down
 
 logs:
-	docker-compose logs -f
+	docker-compose -f ../docker-compose.yaml logs -f

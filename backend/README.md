@@ -22,9 +22,10 @@ go run cmd/server/main.go
 │   │       └── main.go     # エントリーポイント
 │   ├── internal/           # ビジネスロジックなど
 │   │   └── handler/        # gRPCハンドラーの実装
-│   └── gen/                # 【自動生成】Go用コード (Git管理しても無視してもOK)
-│       └── proto/
-│           └── v1/
-│               ├── user.pb.go
-│               └── user_connect.pb.go
+│   └── pkg/                # パッケージディレクトリ
+│       └── grpc/           # 【自動生成】Go用コード (Git管理しても無視してもOK)
+│           └── ptera/
+│               └── v1/
+│                   ├── ptera.pb.go
+│                   └── ptera_grpc.pb.go
 ```

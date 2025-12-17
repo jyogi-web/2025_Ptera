@@ -5,5 +5,3 @@ breaking:
 lint:
   use:
     - STANDARD
-  ignore:
-    - front
