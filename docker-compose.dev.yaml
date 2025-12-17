@@ -1,0 +1,12 @@
+version: "3.8"
+
+services:
+  app:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile.dev
+    ports:
+      - "50051:50051"
+    volumes:
+      - "./backend:/go/src/app"
+    command: ["go", "run", "cmd/server/main.go"]

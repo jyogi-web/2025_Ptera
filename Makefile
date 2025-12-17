@@ -1,4 +1,4 @@
-.PHONY:default gen-proto lint-proto format-proto help
+.PHONY: default gen-proto lint-proto format-proto help
 
 default: help
 
