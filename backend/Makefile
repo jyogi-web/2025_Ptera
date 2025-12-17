@@ -1,4 +1,4 @@
-.PHONY: default up down logs help up-dev up-prod build
+.PHONY: default up down help up-dev up-prod build logs-dev logs-prod logs
 
 default: help
 
