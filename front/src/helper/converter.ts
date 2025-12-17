@@ -1,6 +1,6 @@
 import type { UserInfo } from "firebase/auth";
+import type { Card, User } from "@/types/app";
 import type { FirestoreCard } from "@/types/firestore";
-import type { User, Card } from "@/types/app";
 
 /**
  * Firebase AuthのUserInfoをアプリ内のUser型に変換する
@@ -28,6 +28,6 @@ export const convertCard = (docId: string, data: FirestoreCard): Card => {
     hobby: data.hobby,
     description: data.description,
     imageUrl: data.imageUrl,
-    createdAt: data.createdAt.toDate(),
+    createdAt: data.createdAt ? data.createdAt.toDate() : new Date(),
   };
 };

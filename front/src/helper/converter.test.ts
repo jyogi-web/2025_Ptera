@@ -1,9 +1,12 @@
-import { describe, it, expect } from "vitest";
-import { convertUser, convertCard } from "./converter";
-import { Timestamp } from "firebase/firestore";
 import type { UserInfo } from "firebase/auth";
+import type {
+  DocumentData,
+  DocumentReference,
+  Timestamp,
+} from "firebase/firestore";
+import { describe, expect, it } from "vitest";
 import type { FirestoreCard } from "@/types/firestore";
-import type { DocumentReference } from "firebase/firestore";
+import { convertCard, convertUser } from "./converter";
 
 // FirestoreのTimestampのモック
 const mockTimestamp = (date: Date) =>
@@ -11,14 +14,14 @@ const mockTimestamp = (date: Date) =>
     toDate: () => date,
     seconds: Math.floor(date.getTime() / 1000),
     nanoseconds: (date.getTime() % 1000) * 1000000,
-  } as Timestamp);
+  }) as Timestamp;
 
 // DocumentReferenceのモック
 const mockDocRef = (id: string) =>
   ({
     id,
     path: `groups/${id}`,
-  } as DocumentReference<any>);
+  }) as DocumentReference<DocumentData>;
 
 describe("converter", () => {
   describe("convertUser", () => {
