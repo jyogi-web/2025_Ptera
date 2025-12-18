@@ -30,7 +30,7 @@ export const HeaderStatusPanel = memo(
     const rankTitle = getRankTitle(rank);
     const progressPercent = Math.min(
       100,
-      Math.max(0, maxRank > 0 ? (rank / maxRank) * 100 : 0)
+      Math.max(0, maxRank > 0 ? (rank / maxRank) * 100 : 0),
     );
     return (
       <Animator active={active}>
