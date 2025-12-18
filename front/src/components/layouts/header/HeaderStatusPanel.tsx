@@ -28,8 +28,10 @@ const getRankTitle = (rank: number): string => {
 export const HeaderStatusPanel = memo(
   ({ active, rank = 0, cp = 0, maxRank = 50 }: HeaderStatusPanelProps) => {
     const rankTitle = getRankTitle(rank);
-    const progressPercent = Math.min(100, Math.max(0, (rank / maxRank) * 100));
-
+    const progressPercent = Math.min(
+      100,
+      Math.max(0, maxRank > 0 ? (rank / maxRank) * 100 : 0)
+    );
     return (
       <Animator active={active}>
         <section
