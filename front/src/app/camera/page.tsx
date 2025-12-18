@@ -1,6 +1,7 @@
 "use client";
 
-import { useState } from "react";
+import { useRef, useState } from "react";
+import CameraPreview, { CameraPreviewHandle } from "./CameraPreview";
 import { Card } from "@/types/app";
 
 type Faculty = "information-engineering" | "engineering" | "social-environment" | "";
@@ -42,6 +43,10 @@ const DEPARTMENTS: Record<Exclude<Faculty, "">, Department[]> = {
 };
 
 export default function CameraPage() {
+  const cameraRef = useRef<CameraPreviewHandle>(null);
+  const [capturedImage, setCapturedImage] = useState<string | null>(null);
+  const [cameraReady, setCameraReady] = useState(false);
+  
   const [form, setForm] = useState<CameraForm>({
     name: "",
     grade: null,
@@ -56,43 +61,79 @@ export default function CameraPage() {
     setForm((prev) => ({ ...prev, faculty: newFaculty, department: "" }));
   };
 
+  const handleCapture = () => {
+    if (!cameraRef.current) return;
+    const imageSrc = cameraRef.current.capture();
+    if (imageSrc) {
+      setCapturedImage(imageSrc);
+    }
+  };
+
   return (
     <div className="min-h-screen bg-gray-900 text-white">
       <div className="container mx-auto px-4 py-8">
         <h1 className="text-3xl font-bold mb-6">部員をカード化</h1>
         
-        <div className="max-w-2xl mx-auto">
-          {/* カメラプレビューエリア */}
-          <div className="bg-gray-800 rounded-lg overflow-hidden mb-6">
-            <div className="aspect-[3/4] flex items-center justify-center bg-gray-700">
-              <div className="text-center">
-                <svg
-                  className="mx-auto h-24 w-24 text-gray-500 mb-4"
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z"
+        <div className="max-w-4xl mx-auto">
+          {/* カメラプレビューとボタンの横並びレイアウト */}
+          <div className="flex gap-6 mb-6">
+            {/* カメラプレビューエリア */}
+            <div className="bg-gray-800 rounded-lg overflow-hidden flex-1">
+              {!capturedImage ? (
+                <CameraPreview ref={cameraRef} onReadyChange={setCameraReady} />
+              ) : (
+                <div className="relative aspect-[3/4]">
+                  {/* プレビュー画像表示 */}
+                  <img
+                    src={capturedImage}
+                    alt="撮影プレビュー"
+                    className="w-full h-full object-cover"
                   />
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M15 13a3 3 0 11-6 0 3 3 0 016 0z"
-                  />
-                </svg>
-                <p className="text-gray-400">カメラプレビュー</p>
-              </div>
+                  {/* 再撮影・確定ボタン */}
+                  <div className="absolute inset-0 flex items-end justify-center gap-4 pb-4 bg-black/30">
+                    <button
+                      onClick={() => setCapturedImage(null)}
+                      className="px-6 py-3 bg-gray-600 hover:bg-gray-700 rounded-lg font-semibold transition-colors"
+                    >
+                      再撮影
+                    </button>
+                    <button
+                      className="px-6 py-3 bg-cyan-500 hover:bg-cyan-600 rounded-lg font-semibold transition-colors"
+                    >
+                      確定
+                    </button>
+                  </div>
+                </div>
+              )}
+            </div>
+
+            {/* 右側：撮影ボタンと情報 */}
+            <div className="flex-1 flex flex-col justify-start">
+              {!capturedImage && (
+                <div className="flex flex-col items-center gap-4">
+                  <button
+                    onClick={handleCapture}
+                    disabled={!cameraReady}
+                    className="w-24 h-24 rounded-full bg-cyan-500 hover:bg-cyan-600 disabled:bg-gray-500 disabled:cursor-not-allowed transition-colors shadow-lg flex items-center justify-center"
+                    title="撮影"
+                  >
+                    <svg
+                      className="w-10 h-10 text-white"
+                      fill="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <circle cx="12" cy="12" r="8" />
+                    </svg>
+                  </button>
+                  <p className="text-sm text-gray-400">撮影ボタン</p>
+                </div>
+              )}
             </div>
           </div>
 
           {/* 部員情報入力フォーム */}
           <div className="bg-gray-800 rounded-lg p-6 mb-6">
-            <h2 className="text-xl font-semibold mb-4">部員情報</h2>
+            <h2 className="text-xl font-semibold mb-4">部員情報a</h2>
             
             <div className="space-y-4">
               <div>
@@ -204,29 +245,27 @@ export default function CameraPage() {
             </div>
           </div>
 
-          {/* アクションボタン */}
-          <div className="flex gap-4">
-            <button
-              type="button"
-              className="flex-1 py-3 px-6 bg-blue-600 hover:bg-blue-700 rounded-lg font-semibold transition-colors"
-            >
-              撮影する
-            </button>
-            <button
-              type="button"
-              className="flex-1 py-3 px-6 bg-gray-700 hover:bg-gray-600 rounded-lg font-semibold transition-colors"
-            >
-              ギャラリーから選択
-            </button>
-          </div>
+          {/* アクションボタン（撮影後に表示） */}
+          {capturedImage && (
+            <>
+              <div className="flex gap-4 mb-6">
+                <button
+                  type="button"
+                  className="flex-1 py-3 px-6 bg-blue-600 hover:bg-blue-700 rounded-lg font-semibold transition-colors"
+                >
+                  ギャラリーから選択
+                </button>
+              </div>
 
-          {/* カード化ボタン */}
-          <button
-            type="button"
-            className="w-full mt-4 py-4 px-6 bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 rounded-lg font-bold text-lg transition-colors"
-          >
-            カード化する
-          </button>
+              {/* カード化ボタン */}
+              <button
+                type="button"
+                className="w-full py-4 px-6 bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 rounded-lg font-bold text-lg transition-colors"
+              >
+                カード化する
+              </button>
+            </>
+          )}
         </div>
       </div>
     </div>
