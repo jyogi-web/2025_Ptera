@@ -18,19 +18,6 @@ jobs:
       - name: Check out the code
         uses: actions/checkout@v4
 
-      - name: Set up Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: "20"
-
-      - name: Install dependencies
-        working-directory: front
-        run: npm install --legacy-peer-deps
-
-      - name: Build Next.js project
-        working-directory: front
-        run: npm run build
-
       - name: Deploy to Vercel
         uses: amondnet/vercel-action@v25
         with:
