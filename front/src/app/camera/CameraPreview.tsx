@@ -31,6 +31,13 @@ const CameraPreview = forwardRef<CameraPreviewHandle, CameraPreviewProps>(
     useEffect(() => {
       const getDevices = async () => {
         try {
+          // ラベル付きデバイス情報を取得するため、先に権限をリクエスト
+          const stream = await navigator.mediaDevices.getUserMedia({
+            video: true,
+          });
+          // ここで取得したストリームはデバイス列挙用なので、すぐに解放する
+          stream.getTracks().forEach((track) => track.stop());
+
           const deviceInfos = await navigator.mediaDevices.enumerateDevices();
           const videoDevices = deviceInfos.filter(
             (device) => device.kind === "videoinput",
@@ -50,10 +57,13 @@ const CameraPreview = forwardRef<CameraPreviewHandle, CameraPreviewProps>(
           }
         } catch (err) {
           console.error("デバイス取得エラー:", err);
+          setError(
+            "カメラデバイスの取得に失敗しました。ブラウザの権限設定を確認してください。",
+          );
         }
       };
 
-      getDevices();
+      void getDevices();
     }, []);
 
     const videoConstraints: MediaTrackConstraints = {

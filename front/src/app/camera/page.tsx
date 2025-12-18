@@ -51,6 +51,7 @@ export default function CameraPage() {
   const cameraRef = useRef<CameraPreviewHandle>(null);
   const [capturedImage, setCapturedImage] = useState<string | null>(null);
   const [cameraReady, setCameraReady] = useState(false);
+  const [captureError, setCaptureError] = useState<string | null>(null);
 
   const [form, setForm] = useState<CameraForm>({
     name: "",
@@ -67,10 +68,28 @@ export default function CameraPage() {
   };
 
   const handleCapture = () => {
-    if (!cameraRef.current) return;
-    const imageSrc = cameraRef.current.capture();
-    if (imageSrc) {
+    if (!cameraRef.current) {
+      console.error("Camera is not ready or reference is missing.");
+      setCaptureError("カメラの準備ができていません。もう一度お試しください。");
+      return;
+    }
+
+    try {
+      const imageSrc = cameraRef.current.capture();
+
+      if (!imageSrc) {
+        console.error("Failed to capture image. getScreenshot returned null or undefined.");
+        setCapturedImage(null);
+        setCaptureError("撮影に失敗しました。もう一度お試しください。");
+        return;
+      }
+
       setCapturedImage(imageSrc);
+      setCaptureError(null);
+    } catch (error) {
+      console.error("Unexpected error during capture.", error);
+      setCapturedImage(null);
+      setCaptureError("撮影中にエラーが発生しました。時間をおいてからもう一度お試しください。");
     }
   };
 
@@ -139,6 +158,11 @@ export default function CameraPage() {
                     </svg>
                   </button>
                   <p className="text-sm text-gray-400">撮影ボタン</p>
+                  {captureError && (
+                    <p className="mt-1 text-sm text-red-400 text-center">
+                      {captureError}
+                    </p>
+                  )}
                 </div>
               )}
             </div>
