@@ -36,7 +36,9 @@ const CameraPreview = forwardRef<CameraPreviewHandle, CameraPreviewProps>(
             video: true,
           });
           // ここで取得したストリームはデバイス列挙用なので、すぐに解放する
-          stream.getTracks().forEach((track) => track.stop());
+          for (const track of stream.getTracks()) {
+            track.stop();
+          }
 
           const deviceInfos = await navigator.mediaDevices.enumerateDevices();
           const videoDevices = deviceInfos.filter(

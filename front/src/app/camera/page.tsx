@@ -78,7 +78,9 @@ export default function CameraPage() {
       const imageSrc = cameraRef.current.capture();
 
       if (!imageSrc) {
-        console.error("Failed to capture image. getScreenshot returned null or undefined.");
+        console.error(
+          "Failed to capture image. getScreenshot returned null or undefined.",
+        );
         setCapturedImage(null);
         setCaptureError("撮影に失敗しました。もう一度お試しください。");
         return;
@@ -89,7 +91,9 @@ export default function CameraPage() {
     } catch (error) {
       console.error("Unexpected error during capture.", error);
       setCapturedImage(null);
-      setCaptureError("撮影中にエラーが発生しました。時間をおいてからもう一度お試しください。");
+      setCaptureError(
+        "撮影中にエラーが発生しました。時間をおいてからもう一度お試しください。",
+      );
     }
   };
 
