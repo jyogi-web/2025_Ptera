@@ -2,6 +2,7 @@
 
 import Image from "next/image";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { useAuth } from "../context/AuthContext";
 
@@ -21,7 +22,8 @@ const floatingCards = [
 ];
 
 export default function Home() {
-  const { user, loginWithGoogle } = useAuth();
+  const { user } = useAuth();
+  const router = useRouter();
   const [daysRemaining, setDaysRemaining] = useState(1459);
   const [showContent, setShowContent] = useState(false);
 
@@ -29,12 +31,8 @@ export default function Home() {
     setShowContent(true);
   }, []);
 
-  const handleLogin = async () => {
-    try {
-      await loginWithGoogle();
-    } catch (error) {
-      console.error("Login failed", error);
-    }
+  const handleLogin = () => {
+    router.push("/login");
   };
 
   return (
