@@ -4,24 +4,42 @@ import { getFirestore } from "firebase/firestore";
 import { getStorage } from "firebase/storage";
 
 const getFirebaseConfig = () => {
-  // Actionsが通るようにダミー値をとりあえず入れるようにする
+  // CI/テスト環境ではダミー値を使用してビルドを通す
+  const isDummyMode = process.env.CI === "true";
+
   const config = {
-    apiKey: process.env.NEXT_PUBLIC_FIREBASE_API_KEY?.trim() || "dummy-api-key",
+    apiKey:
+      process.env.NEXT_PUBLIC_FIREBASE_API_KEY?.trim() ||
+      (isDummyMode ? "dummy-api-key" : ""),
     authDomain:
       process.env.NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN?.trim() ||
-      "dummy-project.firebaseapp.com",
+      (isDummyMode ? "dummy-project.firebaseapp.com" : ""),
     projectId:
-      process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID?.trim() || "dummy-project",
+      process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID?.trim() ||
+      (isDummyMode ? "dummy-project" : ""),
     storageBucket:
       process.env.NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET?.trim() ||
-      "dummy-project.appspot.com",
+      (isDummyMode ? "dummy-project.appspot.com" : ""),
     messagingSenderId:
       process.env.NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID?.trim() ||
-      "123456789012",
+      (isDummyMode ? "123456789012" : ""),
     appId:
       process.env.NEXT_PUBLIC_FIREBASE_APP_ID?.trim() ||
-      "1:123456789012:web:abcdef123456",
+      (isDummyMode ? "1:123456789012:web:abcdef123456" : ""),
   };
+
+  // 開発/本番環境で環境変数が不足している場合は警告
+  if (!isDummyMode) {
+    const missingVars = Object.entries(config)
+      .filter(([_, value]) => !value)
+      .map(([key]) => key);
+
+    if (missingVars.length > 0) {
+      console.warn(
+        `⚠️  Missing Firebase environment variables: ${missingVars.join(", ")}`,
+      );
+    }
+  }
 
   return config;
 };
