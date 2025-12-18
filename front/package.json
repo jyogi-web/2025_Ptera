@@ -19,7 +19,8 @@
     "motion": "^10.18.0",
     "next": "16.0.10",
     "react": "19.2.1",
-    "react-dom": "19.2.1"
+    "react-dom": "19.2.1",
+    "react-webcam": "^7.2.0"
   },
   "overrides": {
     "react": "$react",
