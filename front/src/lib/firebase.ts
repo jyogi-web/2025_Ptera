@@ -37,7 +37,7 @@ const getFirebaseConfig = () => {
 
     if (missingVars.length > 0) {
       throw new Error(
-        `Missing required Firebase environment variables: ${missingVars.join(", ")}`
+        `Missing required Firebase environment variables: ${missingVars.join(", ")}`,
       );
     }
   }
