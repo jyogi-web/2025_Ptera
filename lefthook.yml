@@ -1,0 +1,24 @@
+# Lefthook configuration for 2025_Ptera
+# https://lefthook.dev/configuration/
+
+pre-commit:
+  parallel: true
+  commands:
+    lint:
+      glob: "front/**/*.{js,ts,jsx,tsx}"
+      run: cd front && npm run lint:fix
+      stage_fixed: true
+
+    format:
+      glob: "front/**/*.{js,ts,jsx,tsx,json,md,yml,yaml}"
+      run: cd front && npm run format:fix
+      stage_fixed: true
+
+    typescript:
+      glob: "front/**/*.{ts,tsx}"
+      run: cd front && npx tsc --noEmit --skipLibCheck
+
+pre-push:
+  commands:
+    test:
+      run: cd front && npm test

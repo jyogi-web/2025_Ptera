@@ -1,5 +1,9 @@
 import type { UserInfo } from "firebase/auth";
-import type { DocumentReference, Timestamp } from "firebase/firestore";
+import type {
+  DocumentData,
+  DocumentReference,
+  Timestamp,
+} from "firebase/firestore";
 import { describe, expect, it } from "vitest";
 import type { FirestoreCard } from "@/types/firestore";
 import { convertCard, convertUser } from "./converter";
@@ -17,7 +21,7 @@ const mockDocRef = (id: string) =>
   ({
     id,
     path: `groups/${id}`,
-  }) as DocumentReference<unknown>;
+  }) as DocumentReference<DocumentData>;
 
 describe("converter", () => {
   describe("convertUser", () => {
