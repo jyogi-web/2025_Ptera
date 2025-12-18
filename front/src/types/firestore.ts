@@ -1,4 +1,4 @@
-import { Timestamp, DocumentReference } from "firebase/firestore";
+import type { DocumentReference, Timestamp } from "firebase/firestore";
 
 export interface FirestoreCard {
   name: string; // 名前
@@ -8,6 +8,6 @@ export interface FirestoreCard {
   description: string; // 説明文
   imageUrl: string; // 画像URL
   creatorId: string; // 作成者
-  affiliatedGroupRef?: DocumentReference<any>; // サークル名(参照)
+  affiliatedGroupRef?: DocumentReference<unknown>; // サークル名(参照)
   createdAt: Timestamp; // 作成日時
 }
