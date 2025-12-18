@@ -10,6 +10,7 @@
   --color-foreground: var(--foreground);
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
+  --drop-shadow-emerald-glow: 0 0 1px #34d399;
 }
 
 @media (prefers-color-scheme: dark) {

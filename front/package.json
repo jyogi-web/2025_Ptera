@@ -6,15 +6,22 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "biome check",
-    "format": "biome format --write",
+    "lint": "biome check --fix",
+    "format": "biome format --write --fix",
     "test": "vitest run"
   },
   "dependencies": {
+    "@arwes/react": "^1.0.0-next.25020502",
     "firebase": "^12.6.0",
+    "lucide-react": "^0.561.0",
+    "motion": "^10.18.0",
     "next": "16.0.10",
     "react": "19.2.1",
     "react-dom": "19.2.1"
+  },
+  "overrides": {
+    "react": "$react",
+    "react-dom": "$react-dom"
   },
   "devDependencies": {
     "@biomejs/biome": "2.2.0",

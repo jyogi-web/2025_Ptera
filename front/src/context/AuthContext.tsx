@@ -19,7 +19,7 @@ import { convertUser } from "@/helper/converter";
 import { auth } from "@/lib/firebase";
 import type { User } from "@/types/app";
 
-interface AuthContextType {
+export interface AuthContextType {
   user: User | null;
   loading: boolean;
   error: Error | null;

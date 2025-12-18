@@ -6,6 +6,13 @@ export interface User {
   email?: string; // Eメール
 }
 
+// ユーザーのステータス情報（ランク、CP、学年など）
+export interface UserStats {
+  grade: string; // 学年（例: "大学3年目"）
+  rank: number; // ユーザーのランク
+  cp: number; // 部費（CP）
+}
+
 // カード表示用データ
 export interface Card {
   id: string; // カード自体のID
