@@ -148,16 +148,14 @@ export default function CameraPage() {
                     onClick={handleCapture}
                     disabled={!cameraReady}
                     className="w-24 h-24 rounded-full bg-cyan-500 hover:bg-cyan-600 disabled:bg-gray-500 disabled:cursor-not-allowed transition-colors shadow-lg flex items-center justify-center"
-                    title="撮影"
+                    aria-label="撮影"
                   >
                     <svg
-                      role="img"
-                      aria-label="撮影ボタン"
+                      aria-hidden="true"
                       className="w-10 h-10 text-white"
                       fill="currentColor"
                       viewBox="0 0 24 24"
                     >
-                      <title>撮影</title>
                       <circle cx="12" cy="12" r="8" />
                     </svg>
                   </button>

@@ -36,9 +36,9 @@ const CameraPreview = forwardRef<CameraPreviewHandle, CameraPreviewProps>(
             video: true,
           });
           // ここで取得したストリームはデバイス列挙用なので、すぐに解放する
-          for (const track of stream.getTracks()) {
+          stream.getTracks().forEach((track) => {
             track.stop();
-          }
+          });
 
           const deviceInfos = await navigator.mediaDevices.enumerateDevices();
           const videoDevices = deviceInfos.filter(
@@ -74,12 +74,16 @@ const CameraPreview = forwardRef<CameraPreviewHandle, CameraPreviewProps>(
       height: { ideal: 1440 },
     };
 
-    useImperativeHandle(ref, () => ({
-      capture: () => {
-        if (!webcamRef.current) return null;
-        return webcamRef.current.getScreenshot();
-      },
-    }));
+    useImperativeHandle(
+      ref,
+      () => ({
+        capture: () => {
+          if (!webcamRef.current) return null;
+          return webcamRef.current.getScreenshot();
+        },
+      }),
+      [],
+    );
 
     return (
       <div className="relative aspect-[3/4] bg-gray-700">
@@ -101,6 +105,7 @@ const CameraPreview = forwardRef<CameraPreviewHandle, CameraPreviewProps>(
                 setReady(false);
                 onReadyChange?.(false);
               }}
+              aria-label="カメラを選択"
               className="w-full px-3 py-2 bg-gray-800/90 text-white text-sm rounded-lg focus:outline-none focus:ring-2 focus:ring-cyan-500 backdrop-blur-sm"
             >
               {devices.map((device, index) => (
