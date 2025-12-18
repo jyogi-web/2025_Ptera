@@ -10,7 +10,7 @@ import { HeaderInfoPanel } from "./HeaderInfoPanel";
 import { HeaderStatusPanel } from "./HeaderStatusPanel";
 
 // ヘッダーを非表示にするパスのリスト (Module Scope)
-const HIDDEN_PATHS = ["/login"] as const;
+const HIDDEN_PATHS = ["/login", "/"] as const;
 
 export const Header = (): React.JSX.Element | null => {
   const { user, loading, loginWithGoogle } = useAuth();
