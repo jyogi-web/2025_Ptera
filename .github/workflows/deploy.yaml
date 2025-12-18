@@ -11,7 +11,7 @@ on:
       - 'front/**'
 
 jobs:
-  check-and-deploy:
+  checks:
     runs-on: ubuntu-latest
     defaults:
       run:
@@ -46,10 +46,22 @@ jobs:
       - name: Build check
         run: npm run build
 
+  deploy:
+    needs: checks
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: front
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+
+    steps:
+      - name: Check out the code
+        uses: actions/checkout@v4
+
       - name: Deploy to Vercel
         uses: amondnet/vercel-action@v25
         with:
           vercel-token: ${{ secrets.VERCEL_TOKEN }}
           vercel-org-id: ${{ secrets.VERCEL_ORG_ID }}
           vercel-project-id: ${{ secrets.VERCEL_PROJECT_ID }}
-          vercel-args: ${{ github.event_name == 'push' && '--prod' || '' }}
+          vercel-args: '--prod'
