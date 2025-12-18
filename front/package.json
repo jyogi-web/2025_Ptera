@@ -6,8 +6,10 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "biome check --fix",
-    "format": "biome format --write --fix",
+    "lint": "biome check",
+    "lint:fix": "biome check --fix",
+    "format": "biome format",
+    "format:fix": "biome format --fix",
     "test": "vitest run"
   },
   "dependencies": {
