@@ -1,3 +1,3 @@
-export const Binder = () => {
+export default function Binder() {
   return <div>BinderPage</div>;
-};
+}
