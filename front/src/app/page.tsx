@@ -36,11 +36,30 @@ export default function Home() {
 
   return (
     <div className="relative flex min-h-screen w-full flex-col items-center justify-center overflow-hidden bg-[#050510] text-white">
-      {/* Background Grid/Effect */}
-      <div className="absolute inset-0 bg-[linear-gradient(rgba(0,0,0,0.8),rgba(0,0,0,0.8)),url('/grid-pattern.png')] bg-cover bg-center opacity-40 z-0 pointer-events-none"></div>
+      {/* Background Layers */}
+      <div className="absolute inset-0 z-0 bg-black">
+        {/* Base Nebula Texture */}
+        <div className="absolute inset-0 opacity-60">
+          <Image
+            src="/assets/cyber_bg.png"
+            alt="Background"
+            fill
+            className="object-cover opacity-50"
+            priority
+          />
+        </div>
 
-      {/* Radial Gradient for depth */}
-      <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,_var(--tw-gradient-stops))] from-indigo-900/20 via-[#050510]/80 to-[#050510] z-0"></div>
+        {/* Moving Grid Overlay */}
+        <div className="absolute inset-0  opacity-30 mix-blend-screen animate-pan"
+          style={{
+            backgroundImage: "url('/assets/hex_grid.png')",
+            backgroundSize: "100px 100px"
+          }}>
+        </div>
+
+        {/* Vignette */}
+        <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,transparent_0%,#000000_90%)]"></div>
+      </div>
 
       {/* Floating Cards Layer */}
       <div className="absolute inset-0 z-10 w-full h-full pointer-events-none">
