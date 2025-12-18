@@ -1,39 +1,54 @@
-name: Deploy
+name: CI/CD
 
 on:
   push:
     branches:
-      - main 
+      - main
     paths:
       - 'front/**'
   pull_request:
     paths:
       - 'front/**'
 
-jobs: 
-  build:
+jobs:
+  check-and-deploy:
     runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: front
 
     steps:
       - name: Check out the code
-        uses: actions/checkout@v3    
+        uses: actions/checkout@v4
 
-      - name: Set up Node.js
-        uses: actions/setup-node@v3
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
         with:
           node-version: '20'
+          cache: 'npm'
+          cache-dependency-path: front/package-lock.json
 
       - name: Install dependencies
-        working-directory: front
-        run: npm install
+        run: npm ci
 
-      - name: Build Next.js project
-        working-directory: front
+      - name: Type check
+        run: npx tsc --noEmit
+
+      - name: Lint check
+        run: npm run lint
+
+      - name: Format check
+        run: npm run format
+
+      - name: Run tests
+        run: npm run test
+
+      - name: Build check
         run: npm run build
 
       - name: Deploy to Vercel
         uses: amondnet/vercel-action@v25
-        with:                            
+        with:
           vercel-token: ${{ secrets.VERCEL_TOKEN }}
           vercel-org-id: ${{ secrets.VERCEL_ORG_ID }}
           vercel-project-id: ${{ secrets.VERCEL_PROJECT_ID }}
