@@ -7,6 +7,7 @@ import { memo } from "react";
 /**
  * Props for the HeaderInfoPanel component.
  */
+
 type HeaderInfoPanelProps = {
   /** Whether the panel is currently active/visible. */
   active: boolean;
