@@ -10,7 +10,7 @@ service cloud.firestore {
 
     // Helper function to check if user is accessing their own data
     function isOwner(userId) {
-      return request.auth.uid == userId;
+      return request.auth != null && request.auth.uid == userId;
     }
 
     // Example: User Profiles

@@ -50,6 +50,14 @@ body {
   .box-glow-blue {
     box-shadow: 0 0 15px rgba(0, 255, 255, 0.5), inset 0 0 15px rgba(0, 255, 255, 0.2);
   }
+
+  .animate-pan {
+    animation: pan-slow 60s linear infinite;
+  }
+
+  .animate-pulse-slow {
+    animation: pulse-opacity 4s ease-in-out infinite;
+  }
 }
 
 @keyframes float {
@@ -88,12 +96,4 @@ body {
   100% {
     opacity: 0.3;
   }
-}
-
-.animate-pan {
-  animation: pan-slow 60s linear infinite;
-}
-
-.animate-pulse-slow {
-  animation: pulse-opacity 4s ease-in-out infinite;
 }
