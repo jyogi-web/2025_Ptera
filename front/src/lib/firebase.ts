@@ -30,13 +30,14 @@ const getFirebaseConfig = () => {
 
   // 開発/本番環境で環境変数が不足している場合は警告
   if (!isDummyMode) {
+    // 本番/開発環境では厳格なバリデーション
     const missingVars = Object.entries(config)
       .filter(([_, value]) => !value)
       .map(([key]) => key);
 
     if (missingVars.length > 0) {
-      console.warn(
-        `⚠️  Missing Firebase environment variables: ${missingVars.join(", ")}`,
+      throw new Error(
+        `Missing required Firebase environment variables: ${missingVars.join(", ")}`
       );
     }
   }
