@@ -5,8 +5,29 @@ import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { useAuth } from "../context/AuthContext";
 
+interface FloatingCard {
+  id: number;
+  src: string;
+  top: string;
+  left?: string;
+  right?: string;
+  animation: string;
+  rotate: string;
+  scale: string;
+  delay: string;
+  hiddenOnMobile: boolean;
+  mobileStyle?: {
+    top: string;
+    left?: string;
+    right?: string;
+    scale: string;
+  };
+  onlyMobile?: boolean;
+  opacity?: number;
+}
+
 // Randomize initial positions for cards to make it feel organic
-const floatingCards = [
+const floatingCards: FloatingCard[] = [
   // Desktop specific / Shared positions
   {
     id: 1,
@@ -112,7 +133,7 @@ export default function Home() {
   useAuth();
   const router = useRouter();
   const [isMobile, setIsMobile] = useState(false);
-  const [daysRemaining] = useState(1459);
+  const daysRemaining = 1459;
   const [showContent, setShowContent] = useState(false);
 
   useEffect(() => {
@@ -144,14 +165,15 @@ export default function Home() {
             src="/assets/cyber_bg.png"
             alt="Background"
             fill
-            className="object-cover opacity-40 blur-[2px]"
+            quality={60}
+            className="object-cover opacity-60 md:opacity-40 md:blur-[2px]"
             priority
           />
         </div>
 
         {/* Moving Grid Overlay */}
         <div
-          className="absolute inset-0 opacity-30 mix-blend-screen animate-pan"
+          className="absolute inset-0 opacity-30 mix-blend-screen animate-pan will-change-transform"
           style={{
             backgroundImage: "url('/assets/hex_grid.png')",
             backgroundSize: "80px 80px",
@@ -160,7 +182,7 @@ export default function Home() {
 
         {/* Particle Overlay (Simple CSS implementation) */}
         <div
-          className="absolute inset-0 opacity-20"
+          className="absolute inset-0 opacity-20 hidden md:block"
           style={{
             backgroundImage:
               "radial-gradient(circle, #fff 1px, transparent 1px)",
@@ -199,7 +221,7 @@ export default function Home() {
             <div className="relative w-[120px] h-[160px] md:w-[180px] md:h-[260px] rounded-xl overflow-hidden border-[1px] border-cyan-400/30 shadow-[0_0_15px_rgba(0,255,255,0.2)] md:shadow-[0_0_30px_rgba(0,255,255,0.3)] backdrop-blur-sm">
               <Image
                 src={card.src}
-                alt="Student Card"
+                alt=""
                 fill
                 className="object-cover opacity-90 hover:opacity-100 transition-opacity"
               />
