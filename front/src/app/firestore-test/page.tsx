@@ -71,8 +71,6 @@ export default function FirestoreTestPage() {
           <span className="font-mono font-bold text-black">{projectId}</span>
         </p>
 
-
-
         <form
           onSubmit={handleSubmit}
           className="flex w-full max-w-md flex-col gap-3 rounded bg-white p-6 shadow"
