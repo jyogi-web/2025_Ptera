@@ -24,8 +24,9 @@ const QRScanner: React.FC<QRScannerProps> = ({
   const animationFrameRef = useRef<number | null>(null);
   const lostFrameCountRef = useRef<number>(0);
   const timeoutTimerRef = useRef<NodeJS.Timeout | null>(null);
-  const LOST_THRESHOLD = 10; // 10フレーム連続で検出されなければ消失と判定
-  const INITIAL_TIMEOUT_MS = 10000; // 10秒以内に検出されなければタイムアウト
+  const zoomLevelRef = useRef<number>(1.0); // ズームレベル追加
+  const LOST_THRESHOLD = 10;
+  const INITIAL_TIMEOUT_MS = 10000;
 
   useEffect(() => {
     const video = videoRef.current;
@@ -38,13 +39,12 @@ const QRScanner: React.FC<QRScannerProps> = ({
 
     let ignore = false;
 
-    // カメラの起動
     navigator.mediaDevices
       .getUserMedia({
         video: {
           facingMode: "environment",
-          width: { ideal: 1280 },
-          height: { ideal: 720 },
+          width: { ideal: 1920 },
+          height: { ideal: 1080 },
         },
       })
       .then((stream) => {
@@ -54,15 +54,29 @@ const QRScanner: React.FC<QRScannerProps> = ({
           });
           return;
         }
+
+        const videoTrack = stream.getVideoTracks()[0];
+        const capabilities = videoTrack.getCapabilities() as MediaTrackCapabilities & {
+          zoom?: {
+            max: number;
+            min: number;
+            step: number;
+          };
+        };
+
+        // ズーム機能をサポートしているか確認
+        if (capabilities.zoom) {
+          console.log('ズーム範囲:', capabilities.zoom);
+        }
+
         video.srcObject = stream;
-        video.setAttribute("playsinline", "true"); // string required for React
+        video.setAttribute("playsinline", "true");
         video.play().catch((e) => {
           if (e.name !== "AbortError") {
             console.error("Error playing video:", e);
           }
         });
 
-        // 初回検出タイムアウトのタイマー開始
         if (onTimeout) {
           timeoutTimerRef.current = setTimeout(() => {
             if (!qrDetectedRef.current) {
@@ -87,7 +101,19 @@ const QRScanner: React.FC<QRScannerProps> = ({
       if (video.readyState === video.HAVE_ENOUGH_DATA) {
         canvas.height = video.videoHeight;
         canvas.width = video.videoWidth;
-        canvasContext.drawImage(video, 0, 0, canvas.width, canvas.height);
+
+        // デジタルズームを適用（中央部分を拡大）
+        const zoom = zoomLevelRef.current;
+        const sx = (video.videoWidth * (1 - 1 / zoom)) / 2;
+        const sy = (video.videoHeight * (1 - 1 / zoom)) / 2;
+        const sWidth = video.videoWidth / zoom;
+        const sHeight = video.videoHeight / zoom;
+
+        canvasContext.drawImage(
+          video,
+          sx, sy, sWidth, sHeight,  // ソース領域（切り取り）
+          0, 0, canvas.width, canvas.height  // 描画先
+        );
 
         const imageData = canvasContext.getImageData(
           0,
@@ -100,21 +126,17 @@ const QRScanner: React.FC<QRScannerProps> = ({
         });
 
         if (code && code.data === targetQRData) {
-          // QRコード検出
           lostFrameCountRef.current = 0;
 
           if (!qrDetectedRef.current) {
             console.log("QRコードを検出しました:", code.data);
             qrDetectedRef.current = true;
-            // 検出できたのでタイムアウトタイマーをクリア
             if (timeoutTimerRef.current) {
               clearTimeout(timeoutTimerRef.current);
               timeoutTimerRef.current = null;
             }
           }
 
-          // QRコードの位置に枠を描画（視覚的フィードバック）
-          // Check if location exists and has corner properties
           if (code.location) {
             drawLine(
               canvasContext,
@@ -142,12 +164,10 @@ const QRScanner: React.FC<QRScannerProps> = ({
             );
           }
         } else {
-          // QRコード未検出
           if (qrDetectedRef.current && isRunning) {
             lostFrameCountRef.current++;
 
             if (lostFrameCountRef.current >= LOST_THRESHOLD) {
-              // 消失判定
               const endTime = performance.now();
               const duration = endTime - startTimeRef.current;
               onQRLost(duration);
@@ -191,13 +211,17 @@ const QRScanner: React.FC<QRScannerProps> = ({
     };
   }, [onQRLost, isRunning, targetQRData, onTimeout]);
 
-  // スタートボタンが押された瞬間の時間を記録
   useEffect(() => {
     if (isRunning && qrDetectedRef.current) {
       startTimeRef.current = performance.now();
       console.log("計測開始:", startTimeRef.current);
     }
   }, [isRunning]);
+
+  // ズームコントロール用の関数
+  const handleZoom = (newZoom: number) => {
+    zoomLevelRef.current = Math.max(1.0, Math.min(3.0, newZoom));
+  };
 
   return (
     <div
@@ -208,11 +232,34 @@ const QRScanner: React.FC<QRScannerProps> = ({
         overflow: "hidden",
       }}
     >
-      {/* biome-ignore lint/a11y/useMediaCaption: Video is used for QR scanning only and is hidden */}
+      {/* ズームコントロール */}
+      <div style={{
+        position: "absolute",
+        bottom: 20,
+        left: "50%",
+        transform: "translateX(-50%)",
+        zIndex: 20,
+        display: "flex",
+        gap: "10px",
+        background: "rgba(0,0,0,0.5)",
+        padding: "10px",
+        borderRadius: "10px"
+      }}>
+        <button onClick={() => handleZoom(1.0)} style={{ padding: "10px 20px", background: "white" }}>
+          1x
+        </button>
+        <button onClick={() => handleZoom(1.5)} style={{ padding: "10px 20px", background: "white" }}>
+          1.5x
+        </button>
+        <button onClick={() => handleZoom(2.0)} style={{ padding: "10px 20px", background: "white" }}>
+          2x
+        </button>
+      </div>
+
       <video
         ref={videoRef}
         style={{ display: "none" }}
-        playsInline // React attribute
+        playsInline
       />
       <canvas
         ref={canvasRef}
