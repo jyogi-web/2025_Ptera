@@ -16,8 +16,12 @@ export default function AuthGuard({ children }: { children: ReactNode }) {
 
   if (loading) {
     return (
-      <div className="flex min-h-screen items-center justify-center bg-gray-900 text-white">
-        <div className="text-xl animate-pulse">Loading...</div>
+      <div
+        role="status"
+        aria-live="polite"
+        className="flex min-h-screen items-center justify-center bg-gray-900 text-white"
+      >
+        <div className="text-xl animate-pulse">読み込み中...</div>
       </div>
     );
   }

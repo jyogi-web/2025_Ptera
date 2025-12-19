@@ -71,7 +71,7 @@ export default function FirestoreTestPage() {
           <span className="font-mono font-bold text-black">{projectId}</span>
         </p>
 
-        {!user && <p className="text-red-500">Please login to add cards.</p>}
+
 
         <form
           onSubmit={handleSubmit}
@@ -88,10 +88,15 @@ export default function FirestoreTestPage() {
           <input
             type="number"
             placeholder="Grade"
+            min="1"
+            max="6"
+            step="1"
             value={formData.grade}
-            onChange={(e) =>
-              setFormData({ ...formData, grade: Number(e.target.value) })
-            }
+            onChange={(e) => {
+              const val = Math.floor(Number(e.target.value));
+              const clamped = Math.max(1, Math.min(6, val));
+              setFormData({ ...formData, grade: clamped });
+            }}
             className="rounded border p-2"
             required
           />
@@ -121,12 +126,16 @@ export default function FirestoreTestPage() {
             className="rounded border p-2"
           />
           <input
+            type="url"
             placeholder="Image URL"
+            pattern="https?://.+"
+            title="Must be a valid URL starting with http:// or https://"
             value={formData.imageUrl}
             onChange={(e) =>
               setFormData({ ...formData, imageUrl: e.target.value })
             }
             className="rounded border p-2"
+            required
           />
           <button
             type="submit"
