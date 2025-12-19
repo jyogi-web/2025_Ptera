@@ -5,7 +5,13 @@ import { useEffect, useState } from "react";
 import { useAuth } from "@/context/AuthContext";
 
 export default function LoginPage() {
-  const { user, loginWithGoogle, loginWithEmail, signupWithEmail } = useAuth();
+  const {
+    user,
+    loading: authLoading,
+    loginWithGoogle,
+    loginWithEmail,
+    signupWithEmail,
+  } = useAuth();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [isLoginView, setIsLoginView] = useState(true);
@@ -96,12 +102,12 @@ export default function LoginPage() {
   };
 
   useEffect(() => {
-    if (!loading && user) {
+    if (!authLoading && user) {
       router.push("/home");
     }
-  }, [user, loading, router]);
+  }, [user, authLoading, router]);
 
-  if (loading || user) {
+  if (authLoading || user) {
     return (
       <div className="flex min-h-screen items-center justify-center bg-gray-100">
         <div className="animate-pulse text-xl text-gray-600">Loading...</div>
