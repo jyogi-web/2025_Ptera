@@ -79,6 +79,7 @@ describe("converter", () => {
         creatorId: "user-123",
         affiliatedGroupRef: mockDocRef("group-abc"),
         createdAt: mockTimestamp(date),
+        expiryDate: mockTimestamp(date),
       };
 
       const result = convertCard("card-123", mockData);
@@ -94,6 +95,7 @@ describe("converter", () => {
         description: "Hello!",
         imageUrl: "https://example.com/card.jpg",
         createdAt: date,
+        expiryDate: date,
       });
     });
 
@@ -109,6 +111,7 @@ describe("converter", () => {
         creatorId: "user-456",
         affiliatedGroupRef: undefined,
         createdAt: mockTimestamp(date),
+        expiryDate: mockTimestamp(date),
       };
 
       const result = convertCard("card-456", mockData);

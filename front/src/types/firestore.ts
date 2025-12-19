@@ -14,6 +14,7 @@ export interface FirestoreCard {
   creatorId: string; // 作成者
   affiliatedGroupRef?: DocumentReference<DocumentData>; // サークル名(参照)
   createdAt: Timestamp; // 作成日時
+  expiryDate: Timestamp; // 有効期限
 }
 
 export interface FirestoreUser {
