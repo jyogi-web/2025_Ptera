@@ -1,3 +1,5 @@
+"use client";
+
 export default function BinderPage() {
   const cards = Array.from({ length: 12 }).map((_, i) => ({
     id: `card-${i + 1}`,
@@ -5,6 +7,14 @@ export default function BinderPage() {
     grade: (i % 4) + 1,
     label: i < 3 ? "1st" : undefined,
   }));
+
+  const handleSettingsClick = () => {
+    console.log("settings clicked");
+  };
+
+  const handleNavClick = (label: string) => {
+    console.log(`nav clicked: ${label}`);
+  };
 
   return (
     <div className="min-h-screen bg-gray-950 text-white">
@@ -18,6 +28,7 @@ export default function BinderPage() {
           <button
             type="button"
             aria-label="設定"
+            onClick={handleSettingsClick}
             className="h-9 w-9 rounded-md bg-gray-800/80 flex items-center justify-center hover:bg-gray-700"
           >
             <svg
@@ -68,16 +79,36 @@ export default function BinderPage() {
         {/* Bottom nav placeholder */}
         <div className="fixed inset-x-0 bottom-0 mx-auto max-w-md border-t border-white/10 bg-gray-950/90 backdrop-blur px-4 py-2">
           <div className="flex items-center justify-between text-xs">
-            <button type="button" className="flex flex-col items-center gap-1 text-cyan-400">
+            <button
+              type="button"
+              aria-label="ホーム"
+              onClick={() => handleNavClick("home")}
+              className="flex flex-col items-center gap-1 text-cyan-400"
+            >
               <span>ホーム</span>
             </button>
-            <button type="button" className="flex flex-col items-center gap-1 text-gray-400">
+            <button
+              type="button"
+              aria-label="サークル"
+              onClick={() => handleNavClick("circle")}
+              className="flex flex-col items-center gap-1 text-gray-400"
+            >
               <span>サークル</span>
             </button>
-            <button type="button" className="flex flex-col items-center gap-1 text-gray-400">
+            <button
+              type="button"
+              aria-label="ガチャ"
+              onClick={() => handleNavClick("gacha")}
+              className="flex flex-col items-center gap-1 text-gray-400"
+            >
               <span>ガチャ</span>
             </button>
-            <button type="button" className="flex flex-col items-center gap-1 text-gray-400">
+            <button
+              type="button"
+              aria-label="メニュー"
+              onClick={() => handleNavClick("menu")}
+              className="flex flex-col items-center gap-1 text-gray-400"
+            >
               <span>メニュー</span>
             </button>
           </div>
