@@ -10,24 +10,6 @@ function getAdminApp() {
     return apps[0];
   }
 
-  // CI/テスト環境ではダミー値を使用してビルドを通す
-  const isDummyMode = process.env.CI === "true";
-
-  if (isDummyMode) {
-    return initializeApp(
-      {
-        projectId: "dummy-project",
-        credential: cert({
-          projectId: "dummy-project",
-          clientEmail: "dummy@example.com",
-          privateKey:
-            "-----BEGIN PRIVATE KEY-----\nMIIEvgIBADANBgkqhkiG9w0BAQEFAASCBKgwggSkAgEAAoIBAQD\n-----END PRIVATE KEY-----\n",
-        }),
-      },
-      "dummy-app",
-    );
-  }
-
   return initializeApp({
     credential: cert(
       // 環境変数から認証情報を取得
