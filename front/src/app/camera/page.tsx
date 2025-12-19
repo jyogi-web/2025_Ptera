@@ -52,15 +52,24 @@ const DEPARTMENTS: Record<Exclude<Faculty, "">, Department[]> = {
 };
 
 const dataURLtoFile = (dataurl: string, filename: string): File => {
-  const arr = dataurl.split(",");
-  const mime = arr[0].match(/:(.*?);/)?.[1];
-  const bstr = atob(arr[1]);
-  let n = bstr.length;
-  const u8arr = new Uint8Array(n);
-  while (n--) {
-    u8arr[n] = bstr.charCodeAt(n);
+  try {
+    const arr = dataurl.split(",");
+    const mimeMatch = arr[0].match(/:(.*?);/);
+    if (!mimeMatch) {
+      throw new Error("Invalid data URL format");
+    }
+    const mime = mimeMatch[1];
+    const bstr = atob(arr[1]);
+    let n = bstr.length;
+    const u8arr = new Uint8Array(n);
+    while (n--) {
+      u8arr[n] = bstr.charCodeAt(n);
+    }
+    return new File([u8arr], filename, { type: mime });
+  } catch (e) {
+    console.error("Error converting data URL to file:", e);
+    throw new Error("画像の変換に失敗しました。");
   }
-  return new File([u8arr], filename, { type: mime });
 };
 
 export default function CameraPage() {
@@ -130,14 +139,22 @@ export default function CameraPage() {
     setCaptureError(null);
 
     try {
+      if (!user) {
+        throw new Error("ログインしていません。");
+      }
       const file = dataURLtoFile(capturedImage, `card-${Date.now()}.png`);
-      const url = await uploadImage(file, `images/cards/${Date.now()}.png`);
+      // Upload to user-specific path: users/{userId}/cards/{filename}
+      const uploadPath = `users/${user.id}/cards/${Date.now()}.png`;
+      const url = await uploadImage(file, uploadPath);
+
       setUploadedImageUrl(url);
       console.log("Image uploaded:", url);
     } catch (e) {
       console.error("Failed to upload image:", e);
       setCaptureError(
-        "画像のアップロードに失敗しました。もう一度お試しください。",
+        e instanceof Error
+          ? e.message
+          : "画像のアップロードに失敗しました。もう一度お試しください。",
       );
     } finally {
       setIsUploading(false);
@@ -237,8 +254,9 @@ export default function CameraPage() {
                     </button>
                     <button
                       type="button"
-                      className="px-6 py-3 bg-cyan-500 hover:bg-cyan-600 rounded-lg font-semibold transition-colors"
+                      className="px-6 py-3 bg-cyan-500 hover:bg-cyan-600 rounded-lg font-semibold transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                       onClick={handleConfirm}
+                      disabled={isUploading || !!uploadedImageUrl}
                     >
                       {isUploading
                         ? "保存中..."

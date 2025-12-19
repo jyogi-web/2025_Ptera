@@ -40,8 +40,8 @@ const validateCardData = (data: Partial<FirestoreCard>) => {
     errors.push("Creator ID is missing");
   }
 
-  if (!data.expiryDate) {
-    errors.push("Expiry Date is required");
+  if (!data.expiryDate || typeof data.expiryDate.toDate !== "function") {
+    errors.push("Expiry Date is required and must be a Timestamp");
   }
 
   // Optional string fields sanitization check (if present, must be string)
