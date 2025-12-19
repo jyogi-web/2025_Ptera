@@ -18,6 +18,10 @@ export const convertUser = (firebaseUser: UserInfo): User => {
  * Firestoreから取得したCardデータをアプリ内のCard型に変換する
  */
 export const convertCard = (docId: string, data: FirestoreCard): Card => {
+  const createdAt = data.createdAt ? data.createdAt.toDate() : new Date();
+  const defaultExpiryDate = new Date(createdAt);
+  defaultExpiryDate.setFullYear(defaultExpiryDate.getFullYear() + 4);
+
   return {
     id: docId,
     creatorId: data.creatorId,
@@ -28,7 +32,9 @@ export const convertCard = (docId: string, data: FirestoreCard): Card => {
     hobby: data.hobby,
     description: data.description,
     imageUrl: data.imageUrl,
+
     createdAt: data.createdAt ? data.createdAt.toDate() : new Date(),
     expiryDate: data.expiryDate ? data.expiryDate.toDate() : new Date(),
+
   };
 };

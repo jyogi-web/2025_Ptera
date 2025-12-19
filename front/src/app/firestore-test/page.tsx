@@ -1,5 +1,6 @@
 "use client";
 
+import { Timestamp } from "firebase/firestore";
 import { useCallback, useEffect, useState } from "react";
 import { useAuth } from "@/context/AuthContext";
 import { addCard, getCards } from "@/lib/firestore";
@@ -47,6 +48,8 @@ export default function FirestoreTestPage() {
     }
     setLoading(true);
     try {
+      const expiryDate = new Date();
+      expiryDate.setFullYear(expiryDate.getFullYear() + 4);
       await addCard({
         name: formData.name,
         grade: formData.grade,
@@ -55,7 +58,8 @@ export default function FirestoreTestPage() {
         description: formData.description,
         imageUrl: formData.imageUrl,
         creatorId: user.id,
-        expiryDate: new Date(Date.now() + 4 * 365 * 24 * 60 * 60 * 1000), // 4年後
+
+        expiryDate: Timestamp.fromDate(expiryDate),
       });
       alert("Added!");
       fetchCards();
