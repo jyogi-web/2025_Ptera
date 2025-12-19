@@ -1,7 +1,11 @@
 "use client";
 
+import { Timestamp } from "firebase/firestore";
 import Image from "next/image";
 import { useRef, useState } from "react";
+import { useAuth } from "@/context/AuthContext";
+import { addCard } from "@/lib/firestore";
+import { uploadImage } from "@/lib/storage";
 import type { Card } from "@/types/app";
 import CameraPreview, { type CameraPreviewHandle } from "./CameraPreview";
 
@@ -47,11 +51,27 @@ const DEPARTMENTS: Record<Exclude<Faculty, "">, Department[]> = {
   "social-environment": ["社会環境学科"],
 };
 
+const dataURLtoFile = (dataurl: string, filename: string): File => {
+  const arr = dataurl.split(",");
+  const mime = arr[0].match(/:(.*?);/)?.[1];
+  const bstr = atob(arr[1]);
+  let n = bstr.length;
+  const u8arr = new Uint8Array(n);
+  while (n--) {
+    u8arr[n] = bstr.charCodeAt(n);
+  }
+  return new File([u8arr], filename, { type: mime });
+};
+
 export default function CameraPage() {
   const cameraRef = useRef<CameraPreviewHandle>(null);
   const [capturedImage, setCapturedImage] = useState<string | null>(null);
   const [cameraReady, setCameraReady] = useState(false);
   const [captureError, setCaptureError] = useState<string | null>(null);
+  const [uploadedImageUrl, setUploadedImageUrl] = useState<string | null>(null);
+  const [isUploading, setIsUploading] = useState(false);
+  const [isSaving, setIsSaving] = useState(false);
+  const { user } = useAuth();
 
   const [form, setForm] = useState<CameraForm>({
     name: "",
@@ -97,6 +117,89 @@ export default function CameraPage() {
     }
   };
 
+  const handleConfirm = async () => {
+    if (!capturedImage) {
+      console.error("Image is not captured.");
+      setCaptureError(
+        "撮影が完了していません。撮影を完了してからもう一度お試しください。",
+      );
+      return;
+    }
+
+    setIsUploading(true);
+    setCaptureError(null);
+
+    try {
+      const file = dataURLtoFile(capturedImage, `card-${Date.now()}.png`);
+      const url = await uploadImage(file, `images/cards/${Date.now()}.png`);
+      setUploadedImageUrl(url);
+      console.log("Image uploaded:", url);
+    } catch (e) {
+      console.error("Failed to upload image:", e);
+      setCaptureError(
+        "画像のアップロードに失敗しました。もう一度お試しください。",
+      );
+    } finally {
+      setIsUploading(false);
+    }
+  };
+
+  const handleMakeCard = async () => {
+    if (!uploadedImageUrl || !user) {
+      setCaptureError(
+        "画像のアップロードが完了していないか、ログインしていません。",
+      );
+      return;
+    }
+
+    if (
+      !form.name ||
+      !form.grade ||
+      !form.position ||
+      !form.faculty ||
+      !form.department
+    ) {
+      setCaptureError("必須項目をすべて入力してください。");
+      return;
+    }
+
+    setIsSaving(true);
+    try {
+      const expiryDate = new Date();
+      expiryDate.setFullYear(expiryDate.getFullYear() + 4);
+
+      await addCard({
+        name: form.name,
+        grade: form.grade,
+        position: form.position,
+        hobby: "", // Form doesn't have hobby? defaulting to empty
+        description: form.description,
+        imageUrl: uploadedImageUrl,
+        creatorId: user.id,
+        expiryDate: Timestamp.fromDate(expiryDate),
+      });
+
+      console.log("Card created successfully");
+      // Reset form or navigate
+      setCapturedImage(null);
+      setUploadedImageUrl(null);
+      setForm({
+        name: "",
+        grade: null,
+        position: "",
+        description: "",
+        faculty: "",
+        department: "",
+      });
+      alert("カードを作成しました！");
+    } catch (e) {
+      console.error("Failed to create card:", e);
+      setCaptureError("カードの作成に失敗しました。");
+    } finally {
+      setIsSaving(false);
+    }
+  };
+
   return (
     <div className="min-h-screen bg-gray-900 text-white">
       <div className="container mx-auto px-4 py-8">
@@ -123,7 +226,11 @@ export default function CameraPage() {
                   <div className="absolute inset-0 flex items-end justify-center gap-4 pb-4 bg-black/30">
                     <button
                       type="button"
-                      onClick={() => setCapturedImage(null)}
+                      onClick={() => {
+                        setCapturedImage(null);
+                        setUploadedImageUrl(null);
+                        setCaptureError(null);
+                      }}
                       className="px-6 py-3 bg-gray-600 hover:bg-gray-700 rounded-lg font-semibold transition-colors"
                     >
                       再撮影
@@ -131,8 +238,13 @@ export default function CameraPage() {
                     <button
                       type="button"
                       className="px-6 py-3 bg-cyan-500 hover:bg-cyan-600 rounded-lg font-semibold transition-colors"
+                      onClick={handleConfirm}
                     >
-                      確定
+                      {isUploading
+                        ? "保存中..."
+                        : uploadedImageUrl
+                          ? "保存済み"
+                          : "確定"}
                     </button>
                   </div>
                 </div>
@@ -331,9 +443,11 @@ export default function CameraPage() {
               {/* カード化ボタン */}
               <button
                 type="button"
-                className="w-full py-4 px-6 bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 rounded-lg font-bold text-lg transition-colors"
+                className="w-full py-4 px-6 bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 rounded-lg font-bold text-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                onClick={handleMakeCard}
+                disabled={!uploadedImageUrl || isSaving}
               >
-                カード化する
+                {isSaving ? "作成中..." : "カード化する"}
               </button>
             </>
           )}
