@@ -71,6 +71,15 @@ service cloud.firestore {
       allow delete: if isOwner(userId);
     }
 
+    // Cards Collection
+    match /cards/{cardId} {
+      allow read: if isAuthenticated();
+      // Allow create if authenticated (validation is handled in client/function mostly, but basic auth check is needed)
+      allow create: if isAuthenticated(); 
+      // Allow update/delete if creator
+      allow update, delete: if isAuthenticated() && resource.data.creatorId == request.auth.uid;
+    }
+
     // Default rule: Deny everything else by default for safety
     match /{document=**} {
       allow read, write: if false;

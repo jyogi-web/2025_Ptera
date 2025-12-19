@@ -26,7 +26,8 @@ service firebase.storage {
       allow read: if isAuthenticated();
       
       // Write: Owner only, with validation
-      allow write: if isOwner(userId) && isValidFileUpload();
+      allow create, update: if isOwner(userId) && isValidFileUpload();
+      allow delete: if isOwner(userId);
     }
     // Default: Deny all
     match /{allPaths=**} {
