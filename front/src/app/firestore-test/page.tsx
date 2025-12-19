@@ -1,5 +1,6 @@
 "use client";
 
+import { Timestamp } from "firebase/firestore";
 import { useCallback, useEffect, useState } from "react";
 import { useAuth } from "@/context/AuthContext";
 import { addCard, getCards } from "@/lib/firestore";
@@ -50,6 +51,7 @@ export default function FirestoreTestPage() {
       await addCard({
         ...formData,
         creatorId: user.id,
+        expiryDate: Timestamp.fromDate(new Date()),
       });
       alert("Added!");
       fetchCards();

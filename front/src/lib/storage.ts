@@ -2,10 +2,10 @@ import { getDownloadURL, ref, uploadBytes } from "firebase/storage";
 import { storage } from "./firebase";
 
 /**
- * Uploads a file to Firebase Storage and returns the download URL.
- * @param file The file to upload
- * @param path The path in storage (e.g. "images/filename.jpg")
- * @returns Promise resolving to the download URL
+ * ファイルをFirebase Storageにアップロードし、ダウンロードURLを返します。
+ * @param file アップロードするファイル
+ * @param path ストレージ内のパス (例: "images/filename.jpg")
+ * @returns ダウンロードURLを解決するPromise
  */
 export const uploadImage = async (
   file: File,

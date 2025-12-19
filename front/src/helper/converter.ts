@@ -29,5 +29,6 @@ export const convertCard = (docId: string, data: FirestoreCard): Card => {
     description: data.description,
     imageUrl: data.imageUrl,
     createdAt: data.createdAt ? data.createdAt.toDate() : new Date(),
+    expiryDate: data.expiryDate ? data.expiryDate.toDate() : new Date(),
   };
 };

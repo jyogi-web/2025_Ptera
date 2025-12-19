@@ -40,6 +40,10 @@ const validateCardData = (data: Partial<FirestoreCard>) => {
     errors.push("Creator ID is missing");
   }
 
+  if (!data.expiryDate) {
+    errors.push("Expiry Date is required");
+  }
+
   // Optional string fields sanitization check (if present, must be string)
   if (data.hobby !== undefined && typeof data.hobby !== "string") {
     errors.push("Hobby must be a string");
@@ -64,6 +68,7 @@ const validateCardData = (data: Partial<FirestoreCard>) => {
     description: data.description?.trim() || "",
     imageUrl: data.imageUrl?.trim() || "",
     creatorId: data.creatorId?.trim() || "",
+    expiryDate: data.expiryDate,
   };
 };
 
