@@ -83,9 +83,7 @@ export const addCard = async (
   // Convert expiryDate to Timestamp if provided, otherwise set to 4 years from now
   const expiryTimestamp = expiryDate
     ? Timestamp.fromDate(expiryDate)
-    : Timestamp.fromDate(
-        new Date(Date.now() + 4 * 365 * 24 * 60 * 60 * 1000),
-      );
+    : Timestamp.fromDate(new Date(Date.now() + 4 * 365 * 24 * 60 * 60 * 1000));
 
   const docRef = await addDoc(collection(db, CARDS_COLLECTION), {
     ...sanitizedData,
