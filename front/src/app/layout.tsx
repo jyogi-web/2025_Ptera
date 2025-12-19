@@ -1,8 +1,6 @@
 import type { Metadata } from "next";
 import { Geist_Mono, Orbitron } from "next/font/google";
 import "./globals.css";
-import { Footer } from "@/components/layouts/footer";
-import { Header } from "@/components/layouts/header";
 import { AuthProvider } from "@/context/AuthContext";
 
 const orbitron = Orbitron({
@@ -31,9 +29,7 @@ export default function RootLayout({
         className={`${orbitron.variable} ${geistMono.variable} antialiased`}
       >
         <AuthProvider>
-          <Header />
           {children}
-          <Footer />
         </AuthProvider>
       </body>
     </html>
