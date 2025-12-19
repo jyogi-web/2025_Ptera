@@ -50,14 +50,16 @@ service cloud.firestore {
         
         // 2. Type validation
         let validTypes = isString(user, 'name') && 
-                         isString(user, 'email') &&
-                         (user.get('age', 0) is int || user.get('age', 0) is float); // allow number
+                         (user.get('createdAt', null) is timestamp) &&
+                         (user.get('updatedAt', null) is timestamp);
 
         // 3. Logic validation
+        let validEmail = user.email.matches('^[^@]+@[^@]+\\.[^@]+$');
+        let validAge = !('age' in user) || (user.age is number && user.age >= 0 && user.age <= 150);
         let validLogic = user.name.size() > 0 && 
                          user.name.size() < 100;
 
-        return hasFields && validTypes && validLogic;
+        return hasFields && validTypes && validEmail && validAge && validLogic;
       }
 
       allow read: if isAuthenticated();
