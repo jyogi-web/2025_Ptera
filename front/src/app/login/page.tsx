@@ -65,7 +65,7 @@ export default function LoginPage() {
     } else {
       try {
         await setServerSession();
-        router.push("/");
+        router.push("/home");
       } catch {
         alert("Login successful but server session failed. Please try again.");
         setLoading(false);
@@ -86,7 +86,7 @@ export default function LoginPage() {
     } else {
       try {
         await setServerSession();
-        router.push("/");
+        router.push("/home");
       } catch {
         alert(
           "Google login successful but server session failed. Please try again.",
