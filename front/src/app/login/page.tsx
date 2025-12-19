@@ -14,6 +14,37 @@ export default function LoginPage() {
   const [googleLoading, setGoogleLoading] = useState(false);
   const router = useRouter();
 
+  // Helper to set server session
+  const setServerSession = async () => {
+    try {
+      // We need the direct firebase user to get the ID token
+      // Since useAuth user is a custom object without getIdToken()
+      // We can rely on the fact that if login succeeded, auth.currentUser is set
+      const { auth } = await import("@/lib/firebase");
+      const idToken = await auth.currentUser?.getIdToken();
+
+      if (!idToken) {
+        throw new Error("Failed to retrieve ID token.");
+      }
+
+      const response = await fetch("/api/auth/login", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ idToken }),
+      });
+
+      if (!response.ok) {
+        const data = await response.json();
+        throw new Error(data.error || "Failed to create server session.");
+      }
+    } catch (error) {
+      console.error("Server session error:", error);
+      throw error; // Re-throw to be caught by caller
+    }
+  };
+
   const handleEmailAuth = async (e: React.FormEvent) => {
     e.preventDefault();
     if (loading) return;
@@ -27,13 +58,18 @@ export default function LoginPage() {
       error = await signupWithEmail(email, password);
     }
 
-    setLoading(false);
-
     if (error) {
       console.error("Auth error:", error);
       alert("Authentication failed. Check console for details.");
+      setLoading(false);
     } else {
-      router.push("/");
+      try {
+        await setServerSession();
+        router.push("/");
+      } catch {
+        alert("Login successful but server session failed. Please try again.");
+        setLoading(false);
+      }
     }
   };
 
@@ -43,13 +79,33 @@ export default function LoginPage() {
 
     const error = await loginWithGoogle();
 
-    setGoogleLoading(false);
-
     if (error) {
       console.error("Google login error:", error);
       alert("Google login failed.");
+      setGoogleLoading(false);
     } else {
-      router.push("/");
+      try {
+        await setServerSession();
+        router.push("/");
+      } catch {
+        alert(
+          "Google login successful but server session failed. Please try again.",
+        );
+        setGoogleLoading(false);
+      }
+    }
+  };
+
+  const handleLogout = async () => {
+    try {
+      const response = await fetch("/api/auth/logout", { method: "POST" });
+      if (!response.ok) {
+        throw new Error("Failed to logout from server.");
+      }
+      await logout();
+    } catch (error) {
+      console.error("Logout error:", error);
+      alert("Logout failed. Please try again.");
     }
   };
 
@@ -59,7 +115,7 @@ export default function LoginPage() {
         <p>Logged in as: {user.email}</p>
         <button
           type="button"
-          onClick={() => logout()}
+          onClick={handleLogout}
           className="rounded bg-red-500 px-4 py-2 text-white hover:bg-red-600"
         >
           Logout

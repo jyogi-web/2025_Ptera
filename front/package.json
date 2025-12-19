@@ -15,12 +15,14 @@
   "dependencies": {
     "@arwes/react": "^1.0.0-next.25020502",
     "firebase": "^12.6.0",
+    "firebase-admin": "^13.6.0",
     "lucide-react": "^0.561.0",
     "motion": "^10.18.0",
     "next": "16.0.10",
     "react": "19.2.1",
     "react-dom": "19.2.1",
-    "react-webcam": "^7.2.0"
+    "react-webcam": "^7.2.0",
+    "server-only": "^0.0.1"
   },
   "overrides": {
     "react": "$react",
