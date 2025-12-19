@@ -5,7 +5,7 @@ import Image from "next/image";
 import { useRef, useState } from "react";
 import { useAuth } from "@/context/AuthContext";
 import { addCard } from "@/lib/firestore";
-import { uploadImage } from "@/lib/storage";
+import { deleteImage, uploadImage } from "@/lib/storage";
 import type { Card } from "@/types/app";
 import CameraPreview, { type CameraPreviewHandle } from "./CameraPreview";
 
@@ -78,6 +78,9 @@ export default function CameraPage() {
   const [cameraReady, setCameraReady] = useState(false);
   const [captureError, setCaptureError] = useState<string | null>(null);
   const [uploadedImageUrl, setUploadedImageUrl] = useState<string | null>(null);
+  const [uploadedImagePath, setUploadedImagePath] = useState<string | null>(
+    null,
+  );
   const [isUploading, setIsUploading] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
   const { user } = useAuth();
@@ -142,12 +145,14 @@ export default function CameraPage() {
       if (!user) {
         throw new Error("ログインしていません。");
       }
-      const file = dataURLtoFile(capturedImage, `card-${Date.now()}.png`);
+      const timestamp = Date.now();
+      const file = dataURLtoFile(capturedImage, `card-${timestamp}.png`);
       // Upload to user-specific path: users/{userId}/cards/{filename}
-      const uploadPath = `users/${user.id}/cards/${Date.now()}.png`;
+      const uploadPath = `users/${user.id}/cards/${timestamp}.png`;
       const url = await uploadImage(file, uploadPath);
 
       setUploadedImageUrl(url);
+      setUploadedImagePath(uploadPath);
       console.log("Image uploaded:", url);
     } catch (e) {
       console.error("Failed to upload image:", e);
@@ -200,6 +205,7 @@ export default function CameraPage() {
       // Reset form or navigate
       setCapturedImage(null);
       setUploadedImageUrl(null);
+      setUploadedImagePath(null);
       setForm({
         name: "",
         grade: null,
@@ -212,10 +218,28 @@ export default function CameraPage() {
     } catch (e) {
       console.error("Failed to create card:", e);
       setCaptureError("カードの作成に失敗しました。");
+
+      // クリーンアップ: アップロードした画像を削除
+      if (uploadedImagePath) {
+        try {
+          await deleteImage(uploadedImagePath);
+          console.log("Uploaded image deleted due to card creation failure");
+        } catch (deleteError) {
+          console.error("Failed to delete uploaded image:", deleteError);
+        }
+      }
     } finally {
       setIsSaving(false);
     }
   };
+
+  // フォームバリデーション
+  const isFormValid =
+    form.name.trim() !== "" &&
+    form.grade !== null &&
+    form.position.trim() !== "" &&
+    form.faculty !== "" &&
+    form.department !== "";
 
   return (
     <div className="min-h-screen bg-gray-900 text-white">
@@ -246,6 +270,7 @@ export default function CameraPage() {
                       onClick={() => {
                         setCapturedImage(null);
                         setUploadedImageUrl(null);
+                        setUploadedImagePath(null);
                         setCaptureError(null);
                       }}
                       className="px-6 py-3 bg-gray-600 hover:bg-gray-700 rounded-lg font-semibold transition-colors"
@@ -463,7 +488,7 @@ export default function CameraPage() {
                 type="button"
                 className="w-full py-4 px-6 bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 rounded-lg font-bold text-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                 onClick={handleMakeCard}
-                disabled={!uploadedImageUrl || isSaving}
+                disabled={!uploadedImageUrl || isSaving || !isFormValid}
               >
                 {isSaving ? "作成中..." : "カード化する"}
               </button>

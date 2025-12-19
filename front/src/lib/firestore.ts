@@ -107,6 +107,8 @@ const isValidFirestoreCard = (id: string, data: any): data is FirestoreCard => {
   if (typeof data.grade !== "number") missingFields.push("grade");
   if (typeof data.position !== "string") missingFields.push("position");
   if (typeof data.creatorId !== "string") missingFields.push("creatorId");
+  if (!data.expiryDate || typeof data.expiryDate.toDate !== "function")
+    missingFields.push("expiryDate");
   // Optional but expected types if present
   if (data.hobby !== undefined && typeof data.hobby !== "string")
     missingFields.push("hobby (type)");
