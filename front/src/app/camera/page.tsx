@@ -1,7 +1,11 @@
 "use client";
 
+import { Timestamp } from "firebase/firestore";
 import Image from "next/image";
 import { useRef, useState } from "react";
+import { useAuth } from "@/context/AuthContext";
+import { addCard } from "@/lib/firestore";
+import { deleteImage, uploadImage } from "@/lib/storage";
 import type { Card } from "@/types/app";
 import CameraPreview, { type CameraPreviewHandle } from "./CameraPreview";
 
@@ -26,6 +30,7 @@ type CameraForm = {
   name: Card["name"];
   grade: Card["grade"] | null;
   position: Card["position"];
+  hobby: Card["hobby"]; // 趣味
   description: Card["description"]; // UI 上のコメント
   faculty: Faculty;
   department: Department;
@@ -47,16 +52,45 @@ const DEPARTMENTS: Record<Exclude<Faculty, "">, Department[]> = {
   "social-environment": ["社会環境学科"],
 };
 
+const dataURLtoFile = (dataurl: string, filename: string): File => {
+  try {
+    const arr = dataurl.split(",");
+    const mimeMatch = arr[0].match(/:(.*?);/);
+    if (!mimeMatch) {
+      throw new Error("Invalid data URL format");
+    }
+    const mime = mimeMatch[1];
+    const bstr = atob(arr[1]);
+    let n = bstr.length;
+    const u8arr = new Uint8Array(n);
+    while (n--) {
+      u8arr[n] = bstr.charCodeAt(n);
+    }
+    return new File([u8arr], filename, { type: mime });
+  } catch (e) {
+    console.error("Error converting data URL to file:", e);
+    throw new Error("画像の変換に失敗しました。");
+  }
+};
+
 export default function CameraPage() {
   const cameraRef = useRef<CameraPreviewHandle>(null);
   const [capturedImage, setCapturedImage] = useState<string | null>(null);
   const [cameraReady, setCameraReady] = useState(false);
   const [captureError, setCaptureError] = useState<string | null>(null);
+  const [uploadedImageUrl, setUploadedImageUrl] = useState<string | null>(null);
+  const [uploadedImagePath, setUploadedImagePath] = useState<string | null>(
+    null,
+  );
+  const [isUploading, setIsUploading] = useState(false);
+  const [isSaving, setIsSaving] = useState(false);
+  const { user } = useAuth();
 
   const [form, setForm] = useState<CameraForm>({
     name: "",
     grade: null,
     position: "",
+    hobby: "",
     description: "",
     faculty: "",
     department: "",
@@ -97,6 +131,119 @@ export default function CameraPage() {
     }
   };
 
+  const handleConfirm = async () => {
+    if (!capturedImage) {
+      console.error("Image is not captured.");
+      setCaptureError(
+        "撮影が完了していません。撮影を完了してからもう一度お試しください。",
+      );
+      return;
+    }
+
+    setIsUploading(true);
+    setCaptureError(null);
+
+    try {
+      if (!user) {
+        throw new Error("ログインしていません。");
+      }
+      const timestamp = Date.now();
+      const file = dataURLtoFile(capturedImage, `card-${timestamp}.png`);
+      // Upload to user-specific path: users/{userId}/cards/{filename}
+      const uploadPath = `users/${user.id}/cards/${timestamp}.png`;
+      const url = await uploadImage(file, uploadPath);
+
+      setUploadedImageUrl(url);
+      setUploadedImagePath(uploadPath);
+      console.log("Image uploaded:", url);
+    } catch (e) {
+      console.error("Failed to upload image:", e);
+      setCaptureError(
+        e instanceof Error
+          ? e.message
+          : "画像のアップロードに失敗しました。もう一度お試しください。",
+      );
+    } finally {
+      setIsUploading(false);
+    }
+  };
+
+  const handleMakeCard = async () => {
+    if (!uploadedImageUrl || !user) {
+      setCaptureError(
+        "画像のアップロードが完了していないか、ログインしていません。",
+      );
+      return;
+    }
+
+    if (
+      !form.name ||
+      !form.grade ||
+      !form.position ||
+      !form.faculty ||
+      !form.department
+    ) {
+      setCaptureError("必須項目をすべて入力してください。");
+      return;
+    }
+
+    setIsSaving(true);
+    try {
+      const expiryDate = new Date();
+      expiryDate.setFullYear(expiryDate.getFullYear() + 4);
+
+      await addCard({
+        name: form.name,
+        grade: form.grade,
+        position: form.position,
+        hobby: form.hobby,
+        description: form.description,
+        imageUrl: uploadedImageUrl,
+        creatorId: user.id,
+        expiryDate: Timestamp.fromDate(expiryDate),
+      });
+
+      console.log("Card created successfully");
+      // Reset form or navigate
+      setCapturedImage(null);
+      setUploadedImageUrl(null);
+      setUploadedImagePath(null);
+      setForm({
+        name: "",
+        grade: null,
+        position: "",
+        hobby: "",
+        description: "",
+        faculty: "",
+        department: "",
+      });
+      alert("カードを作成しました！");
+    } catch (e) {
+      console.error("Failed to create card:", e);
+      setCaptureError("カードの作成に失敗しました。");
+
+      // クリーンアップ: アップロードした画像を削除
+      if (uploadedImagePath) {
+        try {
+          await deleteImage(uploadedImagePath);
+          console.log("Uploaded image deleted due to card creation failure");
+        } catch (deleteError) {
+          console.error("Failed to delete uploaded image:", deleteError);
+        }
+      }
+    } finally {
+      setIsSaving(false);
+    }
+  };
+
+  // フォームバリデーション
+  const isFormValid =
+    form.name.trim() !== "" &&
+    form.grade !== null &&
+    form.position.trim() !== "" &&
+    form.faculty !== "" &&
+    form.department !== "";
+
   return (
     <div className="min-h-screen bg-gray-900 text-white">
       <div className="container mx-auto px-4 py-8">
@@ -123,16 +270,27 @@ export default function CameraPage() {
                   <div className="absolute inset-0 flex items-end justify-center gap-4 pb-4 bg-black/30">
                     <button
                       type="button"
-                      onClick={() => setCapturedImage(null)}
+                      onClick={() => {
+                        setCapturedImage(null);
+                        setUploadedImageUrl(null);
+                        setUploadedImagePath(null);
+                        setCaptureError(null);
+                      }}
                       className="px-6 py-3 bg-gray-600 hover:bg-gray-700 rounded-lg font-semibold transition-colors"
                     >
                       再撮影
                     </button>
                     <button
                       type="button"
-                      className="px-6 py-3 bg-cyan-500 hover:bg-cyan-600 rounded-lg font-semibold transition-colors"
+                      className="px-6 py-3 bg-cyan-500 hover:bg-cyan-600 rounded-lg font-semibold transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                      onClick={handleConfirm}
+                      disabled={isUploading || !!uploadedImageUrl}
                     >
-                      確定
+                      {isUploading
+                        ? "保存中..."
+                        : uploadedImageUrl
+                          ? "保存済み"
+                          : "確定"}
                     </button>
                   </div>
                 </div>
@@ -294,6 +452,25 @@ export default function CameraPage() {
 
               <div>
                 <label
+                  htmlFor="member-hobby"
+                  className="block text-sm font-medium mb-2"
+                >
+                  趣味
+                </label>
+                <input
+                  type="text"
+                  id="member-hobby"
+                  className="w-full px-4 py-2 bg-gray-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  value={form.hobby}
+                  onChange={(e) =>
+                    setForm((prev) => ({ ...prev, hobby: e.target.value }))
+                  }
+                  placeholder="例: カラオケ、麻雀、プログラミング"
+                />
+              </div>
+
+              <div>
+                <label
                   htmlFor="member-comment"
                   className="block text-sm font-medium mb-2"
                 >
@@ -331,9 +508,11 @@ export default function CameraPage() {
               {/* カード化ボタン */}
               <button
                 type="button"
-                className="w-full py-4 px-6 bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 rounded-lg font-bold text-lg transition-colors"
+                className="w-full py-4 px-6 bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 rounded-lg font-bold text-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                onClick={handleMakeCard}
+                disabled={!uploadedImageUrl || isSaving || !isFormValid}
               >
-                カード化する
+                {isSaving ? "作成中..." : "カード化する"}
               </button>
             </>
           )}

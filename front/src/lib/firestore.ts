@@ -41,6 +41,10 @@ const validateCardData = (data: Partial<FirestoreCard>) => {
     errors.push("Creator ID is missing");
   }
 
+  if (!data.expiryDate || typeof data.expiryDate.toDate !== "function") {
+    errors.push("Expiry Date is required and must be a Timestamp");
+  }
+
   // Optional string fields sanitization check (if present, must be string)
   if (data.hobby !== undefined && typeof data.hobby !== "string") {
     errors.push("Hobby must be a string");
@@ -65,6 +69,7 @@ const validateCardData = (data: Partial<FirestoreCard>) => {
     description: data.description?.trim() || "",
     imageUrl: data.imageUrl?.trim() || "",
     creatorId: data.creatorId?.trim() || "",
+    expiryDate: data.expiryDate,
   };
 };
 
@@ -117,6 +122,8 @@ const isValidFirestoreCard = (id: string, data: any): data is FirestoreCard => {
   if (typeof data.grade !== "number") missingFields.push("grade");
   if (typeof data.position !== "string") missingFields.push("position");
   if (typeof data.creatorId !== "string") missingFields.push("creatorId");
+  if (!data.expiryDate || typeof data.expiryDate.toDate !== "function")
+    missingFields.push("expiryDate");
   // Optional but expected types if present
   if (data.hobby !== undefined && typeof data.hobby !== "string")
     missingFields.push("hobby (type)");
