@@ -82,7 +82,6 @@ describe("converter", () => {
         createdAt: mockTimestamp(date),
 
         expiryDate: mockTimestamp(expiryDate),
-
       };
 
       const result = convertCard("card-123", mockData);
@@ -104,7 +103,9 @@ describe("converter", () => {
 
     it("should handle optional affiliatedGroupRef", () => {
       const date = new Date();
-      const expiryDate = new Date(date.getTime() + 4 * 365 * 24 * 60 * 60 * 1000);
+      const expiryDate = new Date(
+        date.getTime() + 4 * 365 * 24 * 60 * 60 * 1000,
+      );
       const mockData: FirestoreCard = {
         name: "Hanako",
         grade: 1,
@@ -117,7 +118,6 @@ describe("converter", () => {
         createdAt: mockTimestamp(date),
 
         expiryDate: mockTimestamp(expiryDate),
-
       };
 
       const result = convertCard("card-456", mockData);
