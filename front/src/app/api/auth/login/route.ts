@@ -24,7 +24,7 @@ export async function POST(request: Request) {
 
     // Set cookie with secure options
     cookieStore.set("session", sessionCookie, {
-      maxAge: expiresIn,
+      maxAge: Math.floor(expiresIn / 1000),
       httpOnly: true,
       secure: process.env.NODE_ENV === "production",
       path: "/",

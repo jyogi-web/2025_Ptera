@@ -1,8 +1,7 @@
 import "server-only";
 import { getApps, initializeApp, cert } from "firebase-admin/app";
 import { getAuth } from "firebase-admin/auth";
-import { readFileSync } from "fs";
-import { join } from "path";
+import { cookies } from "next/headers";
 
 function getAdminApp() {
     const apps = getApps();
@@ -10,19 +9,27 @@ function getAdminApp() {
         return apps[0];
     }
 
-    // Load service account from local file
-    // In production, this should preferably come from an environment variable
-    const serviceAccountPath = join(process.cwd(), "serviceAccountKey.json");
-    const serviceAccount = JSON.parse(readFileSync(serviceAccountPath, "utf8"));
+    // Load service account from environment variable
+    const serviceAccountKey = process.env.FIREBASE_SERVICE_ACCOUNT_KEY;
 
-    return initializeApp({
-        credential: cert(serviceAccount),
-    });
+    if (!serviceAccountKey) {
+        throw new Error(
+            "FIREBASE_SERVICE_ACCOUNT_KEY is not defined in environment variables.",
+        );
+    }
+
+    try {
+        const serviceAccount = JSON.parse(serviceAccountKey);
+        return initializeApp({
+            credential: cert(serviceAccount),
+        });
+    } catch (error) {
+        console.error("Failed to parse FIREBASE_SERVICE_ACCOUNT_KEY", error);
+        throw new Error("Invalid JSON in FIREBASE_SERVICE_ACCOUNT_KEY.");
+    }
 }
 
 export const adminAuth = getAuth(getAdminApp());
-
-import { cookies } from "next/headers";
 
 export async function getSession() {
     const cookieStore = await cookies();
