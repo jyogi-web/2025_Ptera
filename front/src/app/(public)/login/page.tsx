@@ -1,7 +1,7 @@
 "use client";
 
 import { useRouter } from "next/navigation";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useAuth } from "@/context/AuthContext";
 
 export default function LoginPage() {
@@ -109,17 +109,16 @@ export default function LoginPage() {
     }
   };
 
-  if (user) {
+  useEffect(() => {
+    if (!loading && user) {
+      router.push("/home");
+    }
+  }, [user, loading, router]);
+
+  if (loading || user) {
     return (
-      <div className="flex min-h-screen flex-col items-center justify-center gap-4">
-        <p>Logged in as: {user.email}</p>
-        <button
-          type="button"
-          onClick={handleLogout}
-          className="rounded bg-red-500 px-4 py-2 text-white hover:bg-red-600"
-        >
-          Logout
-        </button>
+      <div className="flex min-h-screen items-center justify-center bg-gray-100">
+        <div className="animate-pulse text-xl text-gray-600">Loading...</div>
       </div>
     );
   }
