@@ -1,6 +1,6 @@
 import { cookies } from "next/headers";
 import { NextResponse } from "next/server";
-import { adminAuth } from "@/lib/auth-server";
+import { adminAuth } from "@/lib/server";
 
 export async function POST(request: Request) {
   try {

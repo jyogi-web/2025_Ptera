@@ -1,6 +1,6 @@
 import { redirect } from "next/navigation";
 import type { ReactNode } from "react";
-import { getSession } from "@/lib/auth-server";
+import { getSession } from "@/lib/server";
 
 export default async function FirestoreTestLayout({
   children,
