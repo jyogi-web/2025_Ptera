@@ -1,12 +1,17 @@
 "use client";
 
 import { useRouter } from "next/navigation";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useAuth } from "@/context/AuthContext";
 
 export default function LoginPage() {
-  const { user, loginWithGoogle, loginWithEmail, signupWithEmail, logout } =
-    useAuth();
+  const {
+    user,
+    loading: authLoading,
+    loginWithGoogle,
+    loginWithEmail,
+    signupWithEmail,
+  } = useAuth();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [isLoginView, setIsLoginView] = useState(true);
@@ -96,30 +101,16 @@ export default function LoginPage() {
     }
   };
 
-  const handleLogout = async () => {
-    try {
-      const response = await fetch("/api/auth/logout", { method: "POST" });
-      if (!response.ok) {
-        throw new Error("Failed to logout from server.");
-      }
-      await logout();
-    } catch (error) {
-      console.error("Logout error:", error);
-      alert("Logout failed. Please try again.");
+  useEffect(() => {
+    if (!authLoading && user) {
+      router.push("/home");
     }
-  };
+  }, [user, authLoading, router]);
 
-  if (user) {
+  if (authLoading || user) {
     return (
-      <div className="flex min-h-screen flex-col items-center justify-center gap-4">
-        <p>Logged in as: {user.email}</p>
-        <button
-          type="button"
-          onClick={handleLogout}
-          className="rounded bg-red-500 px-4 py-2 text-white hover:bg-red-600"
-        >
-          Logout
-        </button>
+      <div className="flex min-h-screen items-center justify-center bg-gray-100">
+        <div className="animate-pulse text-xl text-gray-600">Loading...</div>
       </div>
     );
   }
