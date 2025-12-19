@@ -7,18 +7,21 @@ import type { Card as CardType } from "@/types/app";
 // import { getCards } from "@/lib/firestore"; // 一旦コメントアウト
 
 const createMockCards = (): CardType[] => {
-  return Array.from({ length: 12 }).map((_, i) => ({
-    id: `card-${i + 1}`,
-    creatorId: `user-${(i % 3) + 1}`,
-    name: `メンバー ${i + 1}`,
-    grade: (i % 4) + 1,
-    position: ["部長", "副部長", "会計", "部員"][i % 4],
-    hobby: ["プログラミング", "ゲーム", "音楽", "読書"][i % 4],
-    description: `これはテストデータです。メンバー${i + 1}の説明文。`,
-    imageUrl: i % 2 === 0 ? "https://placehold.co/300x400/1e293b/22d3ee" : "",
-    affiliatedGroup: i < 6 ? "開発チーム" : "企画チーム",
-    createdAt: new Date(Date.now() - i * 24 * 60 * 60 * 1000), // i日前
-  }));
+  return Array.from({ length: 12 }).map((_, i) => {
+    const card: CardType = {
+      id: `card-${i + 1}`,
+      creatorId: `user-${(i % 3) + 1}`,
+      name: `メンバー ${i + 1}`,
+      grade: (i % 4) + 1,
+      position: ["部長", "副部長", "会計", "部員"][i % 4],
+      hobby: ["プログラミング", "ゲーム", "音楽", "読書"][i % 4],
+      description: `これはテストデータです。メンバー${i + 1}の説明文。`,
+      imageUrl: i % 2 === 0 ? "https://placehold.co/300x400/1e293b/22d3ee" : "",
+      affiliatedGroup: i < 6 ? "開発チーム" : "企画チーム",
+      createdAt: new Date(Date.now() - i * 24 * 60 * 60 * 1000),
+    };
+    return card;
+  });
 };
 
 export default function BinderPage() {
@@ -51,7 +54,6 @@ export default function BinderPage() {
 
   const handleCardClick = (card: CardType) => {
     setSelectedCard(card);
-    console.log("Selected card:", card);
   };
 
   return (
