@@ -13,11 +13,62 @@ service cloud.firestore {
       return request.auth != null && request.auth.uid == userId;
     }
 
-    // Example: User Profiles
-    // Only the user themselves can write their profile, anyone authenticated can read (or maybe restricted too)
+    // --- Validation Helpers ---
+    
+    // Check if the data has all required fields
+    // requiredFields: list of string field names
+    function hasAllRequiredFields(data, requiredFields) {
+      return data.keys().hasAll(requiredFields);
+    }
+    
+    // Check if the field is a string
+    function isString(data, field) {
+      return data.get(field, '') is string;
+    }
+    
+    // Check if the field is an integer
+    function isInteger(data, field) {
+      return data.get(field, 0) is int;
+    }
+
+    // Check if a field has not changed (immutability)
+    function isUnchanged(field) {
+      return request.resource.data.get(field, null) == resource.data.get(field, null);
+    }
+
+    // --- Collection Rules ---
+
+    // Users Collection
     match /users/{userId} {
+      
+      // Validation logic for user document
+      function isValidUser() {
+        let user = request.resource.data;
+        
+        // 1. Required fields check
+        let hasFields = hasAllRequiredFields(user, ['name', 'email', 'createdAt', 'updatedAt']);
+        
+        // 2. Type validation
+        let validTypes = isString(user, 'name') && 
+                         isString(user, 'email') &&
+                         (user.get('age', 0) is int || user.get('age', 0) is float); // allow number
+
+        // 3. Logic validation
+        let validLogic = user.name.size() > 0 && 
+                         user.name.size() < 100;
+
+        return hasFields && validTypes && validLogic;
+      }
+
       allow read: if isAuthenticated();
-      allow write: if isOwner(userId);
+      
+      allow create: if isOwner(userId) && isValidUser();
+      
+      allow update: if isOwner(userId) 
+                    && isValidUser()
+                    && isUnchanged('createdAt'); // Prevent changing creation time
+                    
+      allow delete: if isOwner(userId);
     }
 
     // Default rule: Deny everything else by default for safety

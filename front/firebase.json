@@ -1,0 +1,13 @@
+{
+    "firestore": {
+        "rules": "firestore.rules",
+        "ignore": [
+            "firebase.json",
+            "**/.*",
+            "**/node_modules/**"
+        ]
+    },
+    "storage": {
+        "rules": "storage.rules"
+    }
+}
