@@ -1,12 +1,11 @@
 "use client";
 
 import { useRouter } from "next/navigation";
-import { useState, useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useAuth } from "@/context/AuthContext";
 
 export default function LoginPage() {
-  const { user, loginWithGoogle, loginWithEmail, signupWithEmail, logout } =
-    useAuth();
+  const { user, loginWithGoogle, loginWithEmail, signupWithEmail } = useAuth();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [isLoginView, setIsLoginView] = useState(true);
@@ -93,19 +92,6 @@ export default function LoginPage() {
         );
         setGoogleLoading(false);
       }
-    }
-  };
-
-  const handleLogout = async () => {
-    try {
-      const response = await fetch("/api/auth/logout", { method: "POST" });
-      if (!response.ok) {
-        throw new Error("Failed to logout from server.");
-      }
-      await logout();
-    } catch (error) {
-      console.error("Logout error:", error);
-      alert("Logout failed. Please try again.");
     }
   };
 
