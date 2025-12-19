@@ -29,6 +29,15 @@ service firebase.storage {
       allow write: if isOwner(userId) && isValidFileUpload();
     }
 
+    // Card Images Path (New)
+    match /images/cards/{filename} {
+      // Read: Authenticated users can read card images
+      allow read: if isAuthenticated();
+      
+      // Write: Authenticated users can upload (with validation)
+      allow write: if isAuthenticated() && isValidFileUpload();
+    }
+
     // Default: Deny all
     match /{allPaths=**} {
       allow read, write: if false;
