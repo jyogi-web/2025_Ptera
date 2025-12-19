@@ -13,9 +13,7 @@ export default function BinderPage() {
       <div className="mx-auto max-w-md px-4 py-6">
         {/* Header */}
         <div className="mb-4">
-          <h1 className="text-2xl font-bold tracking-wide">
-            マイ・バインダー
-          </h1>
+          <h1 className="text-2xl font-bold tracking-wide">マイ・バインダー</h1>
           <p className="text-sm text-gray-400">Total Cards: {cards.length}</p>
         </div>
 
