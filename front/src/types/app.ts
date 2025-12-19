@@ -25,4 +25,5 @@ export interface Card {
   description: string; // 説明文
   imageUrl: string; // 画像URL
   createdAt: Date; // 作成日時
+  expiryDate: Date; // 有効期限
 }

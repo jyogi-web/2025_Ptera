@@ -50,6 +50,7 @@ export default function FirestoreTestPage() {
       await addCard({
         ...formData,
         creatorId: user.id,
+        expiryDate: new Date(Date.now() + 4 * 365 * 24 * 60 * 60 * 1000), // 4年後
       });
       alert("Added!");
       fetchCards();

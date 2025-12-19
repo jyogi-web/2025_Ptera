@@ -8,6 +8,7 @@ import type { Card as CardType } from "@/types/app";
 
 const createMockCards = (): CardType[] => {
   return Array.from({ length: 12 }).map((_, i) => {
+    const now = Date.now();
     const card: CardType = {
       id: `card-${i + 1}`,
       creatorId: `user-${(i % 3) + 1}`,
@@ -18,7 +19,8 @@ const createMockCards = (): CardType[] => {
       description: `これはテストデータです。メンバー${i + 1}の説明文。`,
       imageUrl: i % 2 === 0 ? "https://placehold.co/300x400/1e293b/22d3ee" : "",
       affiliatedGroup: i < 6 ? "開発チーム" : "企画チーム",
-      createdAt: new Date(Date.now() - i * 24 * 60 * 60 * 1000),
+      createdAt: new Date(now - i * 24 * 60 * 60 * 1000),
+      expiryDate: new Date(now + (1460 - i) * 24 * 60 * 60 * 1000), // 4年後から逆算
     };
     return card;
   });

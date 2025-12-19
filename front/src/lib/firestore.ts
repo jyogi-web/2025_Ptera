@@ -6,6 +6,7 @@ import {
   orderBy,
   query,
   serverTimestamp,
+  Timestamp,
 } from "firebase/firestore";
 import { convertCard } from "@/helper/converter";
 import type { Card } from "@/types/app";
@@ -68,14 +69,28 @@ const validateCardData = (data: Partial<FirestoreCard>) => {
 };
 
 export const addCard = async (
-  inputData: Omit<FirestoreCard, "createdAt" | "affiliatedGroupRef">,
+  inputData: Omit<
+    FirestoreCard,
+    "createdAt" | "affiliatedGroupRef" | "expiryDate"
+  > & { expiryDate?: Date },
 ): Promise<string> => {
-  // Run validation
-  const sanitizedData = validateCardData(inputData);
+  // Separate expiryDate from other data
+  const { expiryDate, ...cardData } = inputData;
+
+  // Run validation on card data (without expiryDate)
+  const sanitizedData = validateCardData(cardData);
+
+  // Convert expiryDate to Timestamp if provided, otherwise set to 4 years from now
+  const expiryTimestamp = expiryDate
+    ? Timestamp.fromDate(expiryDate)
+    : Timestamp.fromDate(
+        new Date(Date.now() + 4 * 365 * 24 * 60 * 60 * 1000),
+      );
 
   const docRef = await addDoc(collection(db, CARDS_COLLECTION), {
     ...sanitizedData,
     createdAt: serverTimestamp(),
+    expiryDate: expiryTimestamp,
   });
   return docRef.id;
 };
