@@ -48,7 +48,12 @@ export default function FirestoreTestPage() {
     setLoading(true);
     try {
       await addCard({
-        ...formData,
+        name: formData.name,
+        grade: formData.grade,
+        position: formData.position,
+        hobby: formData.hobby,
+        description: formData.description,
+        imageUrl: formData.imageUrl,
         creatorId: user.id,
         expiryDate: new Date(Date.now() + 4 * 365 * 24 * 60 * 60 * 1000), // 4年後
       });
