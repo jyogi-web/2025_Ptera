@@ -6,12 +6,14 @@ import { useEffect, useRef } from "react";
 
 interface QRScannerProps {
   onQRLost: (duration: number) => void;
+  onTimeout?: () => void;
   isRunning: boolean;
   targetQRData?: string;
 }
 
 const QRScanner: React.FC<QRScannerProps> = ({
   onQRLost,
+  onTimeout,
   isRunning,
   targetQRData = "AR-GAME-MARKER-001",
 }) => {
@@ -21,7 +23,9 @@ const QRScanner: React.FC<QRScannerProps> = ({
   const qrDetectedRef = useRef<boolean>(false);
   const animationFrameRef = useRef<number | null>(null);
   const lostFrameCountRef = useRef<number>(0);
+  const timeoutTimerRef = useRef<NodeJS.Timeout | null>(null);
   const LOST_THRESHOLD = 10; // 10フレーム連続で検出されなければ消失と判定
+  const INITIAL_TIMEOUT_MS = 10000; // 10秒以内に検出されなければタイムアウト
 
   useEffect(() => {
     const video = videoRef.current;
@@ -57,6 +61,17 @@ const QRScanner: React.FC<QRScannerProps> = ({
             console.error("Error playing video:", e);
           }
         });
+
+        // 初回検出タイムアウトのタイマー開始
+        if (onTimeout) {
+          timeoutTimerRef.current = setTimeout(() => {
+            if (!qrDetectedRef.current) {
+              console.warn("QR code detection timed out");
+              onTimeout();
+            }
+          }, INITIAL_TIMEOUT_MS);
+        }
+
         animationFrameRef.current = requestAnimationFrame(tick);
       })
       .catch((err) => {
@@ -91,6 +106,11 @@ const QRScanner: React.FC<QRScannerProps> = ({
           if (!qrDetectedRef.current) {
             console.log("QRコードを検出しました:", code.data);
             qrDetectedRef.current = true;
+            // 検出できたのでタイムアウトタイマーをクリア
+            if (timeoutTimerRef.current) {
+              clearTimeout(timeoutTimerRef.current);
+              timeoutTimerRef.current = null;
+            }
           }
 
           // QRコードの位置に枠を描画（視覚的フィードバック）
@@ -159,6 +179,9 @@ const QRScanner: React.FC<QRScannerProps> = ({
       if (animationFrameRef.current) {
         cancelAnimationFrame(animationFrameRef.current);
       }
+      if (timeoutTimerRef.current) {
+        clearTimeout(timeoutTimerRef.current);
+      }
       if (video?.srcObject) {
         const stream = video.srcObject as MediaStream;
         stream.getTracks().forEach((track) => {
@@ -166,7 +189,7 @@ const QRScanner: React.FC<QRScannerProps> = ({
         });
       }
     };
-  }, [onQRLost, isRunning, targetQRData]);
+  }, [onQRLost, isRunning, targetQRData, onTimeout]);
 
   // スタートボタンが押された瞬間の時間を記録
   useEffect(() => {

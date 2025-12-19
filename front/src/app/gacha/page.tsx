@@ -58,6 +58,11 @@ export default function Gacha() {
     }
   };
 
+  const handleTimeout = useCallback(() => {
+    setIsRunning(false);
+    alert("QRコードが見つかりませんでした。スタート画面に戻ります。");
+  }, []);
+
   return (
     <div style={{ position: "relative" }}>
       <div
@@ -179,7 +184,11 @@ export default function Gacha() {
         }}
       >
         {isRunning && (
-          <QRScanner isRunning={isRunning} onQRLost={handleQRLost} />
+          <QRScanner
+            isRunning={isRunning}
+            onQRLost={handleQRLost}
+            onTimeout={handleTimeout}
+          />
         )}
       </div>
     </div>
