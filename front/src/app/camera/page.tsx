@@ -30,6 +30,7 @@ type CameraForm = {
   name: Card["name"];
   grade: Card["grade"] | null;
   position: Card["position"];
+  hobby: Card["hobby"]; // 趣味
   description: Card["description"]; // UI 上のコメント
   faculty: Faculty;
   department: Department;
@@ -89,6 +90,7 @@ export default function CameraPage() {
     name: "",
     grade: null,
     position: "",
+    hobby: "",
     description: "",
     faculty: "",
     department: "",
@@ -194,7 +196,7 @@ export default function CameraPage() {
         name: form.name,
         grade: form.grade,
         position: form.position,
-        hobby: "", // Form doesn't have hobby? defaulting to empty
+        hobby: form.hobby,
         description: form.description,
         imageUrl: uploadedImageUrl,
         creatorId: user.id,
@@ -210,6 +212,7 @@ export default function CameraPage() {
         name: "",
         grade: null,
         position: "",
+        hobby: "",
         description: "",
         faculty: "",
         department: "",
@@ -444,6 +447,25 @@ export default function CameraPage() {
                     setForm((prev) => ({ ...prev, position: e.target.value }))
                   }
                   placeholder="例: 部長、副部長、会計"
+                />
+              </div>
+
+              <div>
+                <label
+                  htmlFor="member-hobby"
+                  className="block text-sm font-medium mb-2"
+                >
+                  趣味
+                </label>
+                <input
+                  type="text"
+                  id="member-hobby"
+                  className="w-full px-4 py-2 bg-gray-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  value={form.hobby}
+                  onChange={(e) =>
+                    setForm((prev) => ({ ...prev, hobby: e.target.value }))
+                  }
+                  placeholder="例: カラオケ、麻雀、プログラミング"
                 />
               </div>
 
