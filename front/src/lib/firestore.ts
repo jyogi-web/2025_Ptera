@@ -41,10 +41,6 @@ const validateCardData = (data: Partial<FirestoreCard>) => {
     errors.push("Creator ID is missing");
   }
 
-  if (!data.expiryDate || typeof data.expiryDate.toDate !== "function") {
-    errors.push("Expiry Date is required and must be a Timestamp");
-  }
-
   // Optional string fields sanitization check (if present, must be string)
   if (data.hobby !== undefined && typeof data.hobby !== "string") {
     errors.push("Hobby must be a string");
@@ -69,7 +65,6 @@ const validateCardData = (data: Partial<FirestoreCard>) => {
     description: data.description?.trim() || "",
     imageUrl: data.imageUrl?.trim() || "",
     creatorId: data.creatorId?.trim() || "",
-    expiryDate: data.expiryDate,
   };
 };
 
@@ -88,7 +83,9 @@ export const addCard = async (
   // Convert expiryDate to Timestamp if provided, otherwise set to 4 years from now
   const expiryTimestamp = expiryDate
     ? Timestamp.fromDate(expiryDate)
-    : Timestamp.fromDate(new Date(Date.now() + 4 * 365 * 24 * 60 * 60 * 1000));
+    : Timestamp.fromDate(
+        new Date(Date.now() + 4 * 365 * 24 * 60 * 60 * 1000),
+      );
 
   const docRef = await addDoc(collection(db, CARDS_COLLECTION), {
     ...sanitizedData,
@@ -120,8 +117,6 @@ const isValidFirestoreCard = (id: string, data: any): data is FirestoreCard => {
   if (typeof data.grade !== "number") missingFields.push("grade");
   if (typeof data.position !== "string") missingFields.push("position");
   if (typeof data.creatorId !== "string") missingFields.push("creatorId");
-  if (!data.expiryDate || typeof data.expiryDate.toDate !== "function")
-    missingFields.push("expiryDate");
   // Optional but expected types if present
   if (data.hobby !== undefined && typeof data.hobby !== "string")
     missingFields.push("hobby (type)");

@@ -59,7 +59,7 @@ export default function FirestoreTestPage() {
         imageUrl: formData.imageUrl,
         creatorId: user.id,
 
-        expiryDate: Timestamp.fromDate(expiryDate),
+        expiryDate: expiryDate,
       });
       alert("Added!");
       fetchCards();
