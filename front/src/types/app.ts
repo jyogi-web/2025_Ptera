@@ -26,8 +26,8 @@ export interface Card {
   hobby: string; // 趣味
   description: string; // 説明文
   imageUrl: string; // 画像URL
-  createdAt: Date; // 作成日時
-  expiryDate: Date; // 有効期限
+  createdAt: Date | string; // 作成日時 (serialization safe)
+  expiryDate: Date | string; // 有効期限 (serialization safe)
 }
 
 export interface Circle {
@@ -35,4 +35,6 @@ export interface Circle {
   name: string;
   description?: string;
   memberIds: string[];
+  createdAt: Date | string;
+  updatedAt: Date | string;
 }
