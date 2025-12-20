@@ -14,7 +14,7 @@ export const CharacterDisplay = ({
   imageUrl,
 }: CharacterDisplayProps) => {
   return (
-    <div className="relative w-full max-w-sm aspect-[3/4] mx-auto my-4">
+    <div className="relative w-full max-w-xs aspect-[3/4] mx-auto my-4">
       {/* ホログラフィックな背景エフェクト */}
       <div className="absolute inset-0 bg-gradient-to-b from-cyan-500/10 via-purple-500/5 to-transparent rounded-xl border border-cyan-500/30 shadow-[0_0_15px_rgba(6,182,212,0.15)] backdrop-blur-sm z-0" />
 

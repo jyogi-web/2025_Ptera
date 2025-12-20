@@ -6,6 +6,8 @@ import { useAuth } from "@/context/AuthContext";
 import { getFavoriteCards } from "@/lib/firestore";
 import type { Card } from "@/types/app";
 
+import { styles } from "./_styles/page.styles";
+
 export default function Home() {
   const { user } = useAuth();
   const [favoriteCard, setFavoriteCard] = useState<Card | null>(null);
@@ -35,9 +37,9 @@ export default function Home() {
   }, [user]);
 
   return (
-    <div className="flex flex-col items-center min-h-screen pt-20 pb-24 overflow-y-auto overflow-x-hidden bg-black/90">
+    <div style={styles.container}>
       {/* Background Ambience */}
-      <div className="fixed inset-0 pointer-events-none z-0">
+      <div style={styles.backgroundAmbience}>
         <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-purple-900/20 rounded-full blur-[100px] animate-pulse-slow" />
         <div
           className="absolute bottom-1/4 right-1/4 w-96 h-96 bg-cyan-900/20 rounded-full blur-[100px] animate-pulse-slow"
@@ -45,7 +47,7 @@ export default function Home() {
         />
       </div>
 
-      <div className="relative z-10 w-full max-w-md px-4 flex flex-col items-center">
+      <div style={styles.contentWrapper}>
         {/* Character Display Area */}
         {loading ? (
           <div className="text-gray-400 text-center py-20">読み込み中...</div>
