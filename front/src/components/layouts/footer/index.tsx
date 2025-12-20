@@ -5,6 +5,7 @@ import { Book, Home, Rocket, Users } from "lucide-react";
 import { usePathname, useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { useAuth } from "@/context/AuthContext";
+import { CameraFAB } from "./CameraFAB";
 
 const FOOTER_ITEMS = [
   {
@@ -49,6 +50,8 @@ export const Footer = () => {
   return (
     <AnimatorGeneralProvider duration={{ enter: 200, exit: 200 }}>
       <div className="h-24 md:h-28" /> {/* Spacer */}
+      {/* Camera FAB */}
+      <CameraFAB activate={activate} />
       <footer className="fixed bottom-0 left-0 w-full h-20 z-50 pointer-events-none">
         <div className="absolute inset-0 bg-black/90 backdrop-blur-md border-t border-cyan-500/50 shadow-[0_0_15px_rgba(6,182,212,0.3)] pointer-events-auto">
           <div className="w-full max-w-md mx-auto h-20 flex items-center justify-between px-6 md:px-8">
