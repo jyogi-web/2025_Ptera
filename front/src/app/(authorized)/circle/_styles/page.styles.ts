@@ -10,7 +10,7 @@ export const styles: { [key: string]: CSSProperties } = {
     zIndex: 0,
     width: "100vw",
     height: "100dvh",
-    overflowY: "auto",
+    overflowY: "hidden",
     overflowX: "hidden",
     touchAction: "manipulation",
     fontFamily: '"Segoe UI", Roboto, Helvetica, Arial, sans-serif',
@@ -19,9 +19,9 @@ export const styles: { [key: string]: CSSProperties } = {
   },
   // For the dashboard view centering
   dashboardContent: {
-    minHeight: "100%",
+    height: "100%",
     width: "100%",
-    padding: "60px 16px 40px 16px",
+    padding: "60px 16px 20px 16px", // Reduced bottom padding
     display: "flex",
     flexDirection: "column",
     alignItems: "center",

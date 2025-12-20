@@ -4,7 +4,9 @@ import { Animator, FrameCorners } from "@arwes/react";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import toast from "react-hot-toast";
+
 import { useAuth } from "@/context/AuthContext";
+
 import { createCircle, getCircles, joinCircle } from "@/lib/firestore";
 import type { Circle } from "@/types/app";
 import Loading from "../loading";
@@ -74,6 +76,7 @@ export default function CirclePage() {
   // User already has a circle -> Dashboard View
   if (user?.circleId) {
     const myCircle = circles.find((c) => c.id === user.circleId);
+
     return (
       <div style={styles.container}>
         <div style={styles.dashboardContent}>
@@ -205,6 +208,82 @@ export default function CirclePage() {
                   </button>
                 </div>
               </div>
+            </div>
+
+            {/* Matching Navigation Button */}
+            <div className="mt-6">
+              <button
+                type="button"
+                className="group relative overflow-hidden w-full"
+                onClick={() => router.push("/circle/matching")}
+                style={{
+                  ...styles.cyberButton,
+                  borderColor: "rgba(249, 115, 22, 0.3)", // Orange tint
+                  background: "rgba(249, 115, 22, 0.05)",
+                }}
+              >
+                <div className="absolute inset-0 bg-orange-500/10 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+                <FrameCorners
+                  cornerLength={10}
+                  strokeWidth={1}
+                  style={{ color: "#f97316", zIndex: 0 }}
+                />
+                <div className="relative z-10 flex flex-row items-center justify-between w-full">
+                  <div className="flex items-center gap-4">
+                    <div className="p-3 bg-orange-900/20 rounded border border-orange-500/30 text-orange-400">
+                      <span className="text-2xl">⚔️</span>
+                    </div>
+                    <div>
+                      <div className="flex items-center gap-2 mb-1">
+                        <span
+                          style={{ ...styles.panelTitle, color: "#fdba74" }}
+                        >
+                          TACTICAL
+                        </span>
+                      </div>
+                      <h3
+                        className="text-xl font-bold"
+                        style={{
+                          ...styles.neonText,
+                          color: "#f97316",
+                          textShadow: "0 0 10px rgba(249, 115, 22, 0.5)",
+                        }}
+                      >
+                        BATTLE BULLETIN
+                      </h3>
+                      <p className="text-sm text-gray-400">
+                        View requests and find opponents.
+                      </p>
+                    </div>
+                  </div>
+                  <div className="text-orange-500 opacity-50 group-hover:opacity-100 group-hover:translate-x-2 transition-all">
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      width="24"
+                      height="24"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      stroke="currentColor"
+                      strokeWidth="2"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                    >
+                      <title>Arrow Right</title>
+                      <path d="M5 12h14"></path>
+                      <path d="m12 5 7 7-7 7"></path>
+                    </svg>
+                  </div>
+                </div>
+              </button>
+            </div>
+
+            <div className="mt-8 pt-8 border-t border-gray-700/50">
+              <p className="text-sm text-gray-500 text-center">
+                サークルID:{" "}
+                <span className="font-mono bg-gray-900 px-2 py-1 rounded select-all">
+                  {user.circleId}
+                </span>
+              </p>
             </div>
           </Animator>
         </div>

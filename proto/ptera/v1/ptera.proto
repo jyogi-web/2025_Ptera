@@ -12,6 +12,17 @@ service PteraService {
   rpc CompleteCard(CompleteCardRequest) returns (CompleteCardResponse);
 }
 
+service BattleService {
+  rpc StartBattle(StartBattleRequest) returns (StartBattleResponse);
+  rpc Attack(AttackRequest) returns (AttackResponse);
+  rpc Retreat(RetreatRequest) returns (RetreatResponse);
+
+  // Battle Request (Matching) RPCs
+  rpc SendBattleRequest(SendBattleRequestRequest) returns (BattleRequest);
+  rpc AcceptBattleRequest(AcceptBattleRequestRequest) returns (BattleState);
+  rpc RejectBattleRequest(RejectBattleRequestRequest) returns (BattleRequest);
+}
+
 message User {
   string id = 1;
   string name = 2;
@@ -32,6 +43,11 @@ message Card {
   string image_url = 9;
   google.protobuf.Timestamp created_at = 10;
   optional string circle_id = 11;
+  // Battle Stats
+  int32 max_hp = 12;
+  int32 attack = 13;
+  string flavor = 14;
+  int32 current_hp = 15; // バトル中の現在HP
 }
 
 message Circle {
@@ -60,4 +76,78 @@ message CompleteCardResponse {
   string description = 7; // 補完された説明文
   bool success = 8; // 補完が成功したかどうかを示すフラグ
   optional string error_message = 9; // エラーメッセージ（存在する場合）
+}
+
+// --- Battle Messages ---
+
+message BattleState {
+  string battle_id = 1;
+  Player player_me = 2; // リクエストしたプレイヤー（自分）
+  Player player_opponent = 3; // 対戦相手
+  int32 current_turn = 4;
+  string current_player_id = 5; // ターンプレイヤーのID
+  string winner_id = 6; // 勝者のID ("" なら対戦中)
+  repeated string logs = 7;
+}
+
+message Player {
+  string player_id = 1;
+  string circle_id = 2;
+  string circle_name = 3;
+  int32 hp = 4; // プレイヤーHP
+  repeated Card deck = 5; // [0] is active, [1..] are bench
+}
+
+message StartBattleRequest {
+  string my_circle_id = 1;
+  string opponent_circle_id = 2;
+}
+
+message StartBattleResponse {
+  BattleState battle_state = 1;
+}
+
+message AttackRequest {
+  string battle_id = 1;
+  string player_id = 2; // 認証情報から取るべきだが、一旦IDを送る
+}
+
+message AttackResponse {
+  BattleState battle_state = 1;
+}
+
+message RetreatRequest {
+  string battle_id = 1;
+  string player_id = 2;
+  int32 bench_index = 3;
+}
+
+message RetreatResponse {
+  BattleState battle_state = 1;
+}
+
+// --- Battle Request (Matching) Messages ---
+
+message BattleRequest {
+  string request_id = 1;
+  string from_circle_id = 2;
+  string to_circle_id = 3;
+  string from_circle_name = 4;
+  string to_circle_name = 5;
+  string status = 6; // "pending", "accepted", "rejected"
+  google.protobuf.Timestamp created_at = 7;
+  optional string battle_id = 8; // Set after acceptance
+}
+
+message SendBattleRequestRequest {
+  string from_circle_id = 1;
+  string to_circle_id = 2;
+}
+
+message AcceptBattleRequestRequest {
+  string request_id = 1;
+}
+
+message RejectBattleRequestRequest {
+  string request_id = 1;
 }

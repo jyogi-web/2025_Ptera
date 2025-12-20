@@ -2,7 +2,7 @@ rules_version = '2';
 
 service cloud.firestore {
   match /databases/{database}/documents {
-    
+
     // Helper function to check if user is signed in
     function isAuthenticated() {
       return request.auth != null;
@@ -13,19 +13,32 @@ service cloud.firestore {
       return request.auth != null && request.auth.uid == userId;
     }
 
+    // Helper to safely get nested field value
+    function getField(data, field, defaultValue) {
+      return field in data ? data[field] : defaultValue;
+    }
+
+    // Check if user is participant in battle
+    function isBattleParticipant(battleData) {
+      let playerMeId = getField(getField(battleData, 'playerMe', {}), 'playerId', '');
+      let playerOpponentId = getField(getField(battleData, 'playerOpponent', {}), 'playerId', '');
+
+      return request.auth.uid == playerMeId || request.auth.uid == playerOpponentId;
+    }
+
     // --- Validation Helpers ---
-    
+
     // Check if the data has all required fields
     // requiredFields: list of string field names
     function hasAllRequiredFields(data, requiredFields) {
       return data.keys().hasAll(requiredFields);
     }
-    
+
     // Check if the field is a string
     function isString(data, field) {
       return data.get(field, '') is string;
     }
-    
+
     // Check if the field is an integer
     function isInteger(data, field) {
       return data.get(field, 0) is int;
@@ -40,35 +53,30 @@ service cloud.firestore {
 
     // Users Collection
     match /users/{userId} {
-      
+
       // Validation logic for user document
       function isValidUser() {
         let user = request.resource.data;
-        
+
         // 1. Required fields check
         let hasFields = hasAllRequiredFields(user, ['displayName', 'email', 'createdAt', 'updatedAt']);
-        
+
         // 2. Type validation
-        let validTypes = isString(user, 'displayName') && 
+        let validTypes = isString(user, 'displayName') &&
                          (user.get('createdAt', null) is timestamp) &&
                          (user.get('updatedAt', null) is timestamp);
 
         // 3. Logic validation
         let validEmail = user.email.matches('^[^@]+@[^@]+\\.[^@]+$');
-        // allow optional age/bio if present
-        let validLogic = user.displayName.size() > 0 && 
+        let validLogic = user.displayName.size() > 0 &&
                          user.displayName.size() < 100;
 
         return hasFields && validTypes && validEmail && validLogic;
       }
 
       allow read: if isAuthenticated();
-      
       allow create: if isOwner(userId) && isValidUser();
-      
       allow update: if isOwner(userId);
-                    // && isValidUser() // Simplify update for now to avoid strict validation blocking simple updates like circleId
-                    
       allow delete: if isOwner(userId);
     }
 
@@ -76,47 +84,27 @@ service cloud.firestore {
     match /circles/{circleId} {
       allow read: if isAuthenticated();
       allow create: if isAuthenticated();
-      allow update: if isAuthenticated(); // For joining (updating memberIds)
+      allow update: if isAuthenticated();
     }
 
     // Cards Collection
     match /cards/{cardId} {
       allow read: if isAuthenticated();
-      // Allow create if authenticated (validation is handled in client/function mostly, but basic auth check is needed)
       allow create: if isAuthenticated();
-      // Allow update/delete if creator
       allow update, delete: if isAuthenticated() && resource.data.creatorId == request.auth.uid;
     }
 
-    // Battles Collection
+    // Battles Collection (Production - Strict Rules)
     match /battles/{battleId} {
-      // 開発中は認証済みユーザーなら誰でも読み取り可能
-      // TODO: 本番環境ではバトル参加者のみに制限する
-      allow read: if isAuthenticated();
+      // バトル参加者のみ読み取り可能
+      allow read: if isAuthenticated() && isBattleParticipant(resource.data);
 
-      // バトルの作成・更新はバックエンドのみ (Server Actions経由)
-      // フロントエンドから直接書き込みはできない
+      // バトルの作成・更新はバックエンドのみ
+      // 本番環境ではサービスアカウントのみに制限することを推奨
       allow write: if false;
     }
 
-    // Battle Requests Collection (Matching)
-    match /battle_requests/{requestId} {
-      // 認証済みユーザーなら読み書き可能
-      // 詳細な制御（自分のサークルIDが含まれるものだけ）はクエリレベルで行う
-      // 本番環境では request.resource.data.from_circle_id == user.circleId 等のチェックを追加推奨
-      allow read: if isAuthenticated();
-      // バックエンドがWriteする場合はAdmin SDKを使うためここでのAllowは不要だが、
-      // フロントエンドからWriteしないなら allow write: if false で良い。
-      // 実装を確認すると、Server Action (backend) が Write しているならルールは無関係 (Admin SDK bypasses rules).
-      // しかし、もしフロントエンドが直接書き込んでいるなら必要。
-      // 今回は `backend/pkg/battle/repository_request.go` で書き込んでいるため、バックエンドがAdmin SDKを使っていればルールは不要。
-      // エラーログを見ると `Uncaught Error in snapshot listener` なので、READ (onSnapshot) で落ちている。
-      // よって allow read が必要。
-      allow read: if isAuthenticated();
-      allow write: if false; // Backend only
-    }
-
-    // Default rule: Deny everything else by default for safety
+    // Default rule: Deny everything else
     match /{document=**} {
       allow read, write: if false;
     }
