@@ -48,8 +48,8 @@ jobs:
       - name: Format check
         run: npm run format
 
-      # - name: Run tests
-      #   run: npm run test
+      - name: Run tests
+        run: npm run test
 
       - name: Build check
         run: npm run build
