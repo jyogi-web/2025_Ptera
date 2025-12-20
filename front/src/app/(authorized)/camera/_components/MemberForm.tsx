@@ -1,4 +1,5 @@
 import type { Card } from "@/types/app";
+import { styles } from "../_styles/page.styles";
 
 export type CameraFormType = {
   name: Card["name"];
@@ -35,78 +36,62 @@ export default function MemberForm({
 }: Props) {
   return (
     <>
-      <div className="bg-gray-800 rounded-lg p-6 mb-6">
-        <div className="flex justify-between items-center mb-4">
-          <h2 className="text-xl font-semibold">部員情報</h2>
+      <div style={styles.cyberFrame} className="p-6 mb-6">
+        <div className="flex justify-between items-center mb-6 border-b border-cyan-500/20 pb-4">
+          <h2 className="text-xl font-bold text-cyan-400 tracking-wider">
+            MEMBER_INFO
+          </h2>
           <button
             type="button"
             onClick={onAIComplete}
             disabled={!uploadedImageUrl || isAIPending}
-            className="px-4 py-2 bg-purple-600 hover:bg-purple-700 disabled:bg-gray-600 disabled:cursor-not-allowed rounded-lg text-sm font-semibold transition-colors flex items-center gap-2"
+            style={{
+              ...styles.cyberButton,
+              fontSize: "0.8rem",
+              padding: "6px 16px",
+              ...(!!uploadedImageUrl && !isAIPending
+                ? {}
+                : styles.cyberButtonDisabled),
+            }}
+            onMouseEnter={(e) => {
+              if (!!uploadedImageUrl && !isAIPending)
+                Object.assign(e.currentTarget.style, styles.cyberButtonActive);
+            }}
+            onMouseLeave={(e) => {
+              if (!!uploadedImageUrl && !isAIPending)
+                Object.assign(e.currentTarget.style, styles.cyberButton);
+            }}
           >
             {isAIPending ? (
-              <>
-                <svg
-                  className="animate-spin h-4 w-4 text-white"
-                  xmlns="http://www.w3.org/2000/svg"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                >
-                  <title>AI解析中</title>
-                  <circle
-                    className="opacity-25"
-                    cx="12"
-                    cy="12"
-                    r="10"
-                    stroke="currentColor"
-                    strokeWidth="4"
-                  />
-                  <path
-                    className="opacity-75"
-                    fill="currentColor"
-                    d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
-                  />
-                </svg>
-                AI解析中...
-              </>
+              <span className="flex items-center gap-2">
+                <span className="animate-spin">⟳</span> ANALYZING...
+              </span>
             ) : (
-              <>
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  width="16"
-                  height="16"
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  stroke="currentColor"
-                  strokeWidth="2"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                >
-                  <title>AI補完</title>
-                  <path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h7" />
-                  <line x1="16" x2="22" y1="5" y2="5" />
-                  <line x1="19" x2="19" y1="2" y2="8" />
-                  <circle cx="12" cy="12" r="3" />
-                  <path d="M12 16v.01" />
-                </svg>
-                AI補完
-              </>
+              <span className="flex items-center gap-2">
+                <span>✦</span> AI_AUTO_FILL
+              </span>
             )}
           </button>
         </div>
 
-        <div className="space-y-4">
-          <div>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div className="md:col-span-2">
             <label
               htmlFor="member-name"
-              className="block text-sm font-medium mb-2"
+              className="block text-xs font-mono text-cyan-500/80 mb-2 uppercase"
             >
-              名前
+              Name / 名前
             </label>
             <input
               type="text"
               id="member-name"
-              className="w-full px-4 py-2 bg-gray-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+              style={styles.cyberInput}
+              onFocus={(e) =>
+                Object.assign(e.currentTarget.style, styles.cyberInputFocus)
+              }
+              onBlur={(e) =>
+                Object.assign(e.currentTarget.style, styles.cyberInput)
+              }
               value={form.name}
               onChange={(e) =>
                 setForm((prev) => ({ ...prev, name: e.target.value }))
@@ -118,47 +103,59 @@ export default function MemberForm({
           <div>
             <label
               htmlFor="member-faculty"
-              className="block text-sm font-medium mb-2"
+              className="block text-xs font-mono text-cyan-500/80 mb-2 uppercase"
             >
-              学部
+              Faculty / 学部
             </label>
             <input
               type="text"
               id="member-faculty"
-              className="w-full px-4 py-2 bg-gray-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+              style={styles.cyberInput}
+              onFocus={(e) =>
+                Object.assign(e.currentTarget.style, styles.cyberInputFocus)
+              }
+              onBlur={(e) =>
+                Object.assign(e.currentTarget.style, styles.cyberInput)
+              }
               value={form.faculty}
               onChange={(e) =>
                 setForm((prev) => ({ ...prev, faculty: e.target.value }))
               }
-              placeholder="例: 情報工学部、工学部、社会環境学部"
+              placeholder="例: 情報工学部"
             />
           </div>
 
           <div>
             <label
               htmlFor="member-department"
-              className="block text-sm font-medium mb-2"
+              className="block text-xs font-mono text-cyan-500/80 mb-2 uppercase"
             >
-              学科
+              Department / 学科
             </label>
             <input
               type="text"
               id="member-department"
-              className="w-full px-4 py-2 bg-gray-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+              style={styles.cyberInput}
+              onFocus={(e) =>
+                Object.assign(e.currentTarget.style, styles.cyberInputFocus)
+              }
+              onBlur={(e) =>
+                Object.assign(e.currentTarget.style, styles.cyberInput)
+              }
               value={form.department}
               onChange={(e) =>
                 setForm((prev) => ({ ...prev, department: e.target.value }))
               }
-              placeholder="例: 情報工学科、電子情報工学科"
+              placeholder="例: 情報工学科"
             />
           </div>
 
           <div>
             <label
               htmlFor="member-grade"
-              className="block text-sm font-medium mb-2"
+              className="block text-xs font-mono text-cyan-500/80 mb-2 uppercase"
             >
-              学年
+              Grade / 学年
             </label>
             <select
               id="member-grade"
@@ -169,64 +166,98 @@ export default function MemberForm({
                   grade: e.target.value ? Number(e.target.value) : null,
                 }))
               }
-              className="w-full px-4 py-2 bg-gray-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+              style={styles.cyberInput}
+              onFocus={(e) =>
+                Object.assign(e.currentTarget.style, styles.cyberInputFocus)
+              }
+              onBlur={(e) =>
+                Object.assign(e.currentTarget.style, styles.cyberInput)
+              }
             >
-              <option value="">選択してください</option>
-              <option value="1">1年</option>
-              <option value="2">2年</option>
-              <option value="3">3年</option>
-              <option value="4">4年</option>
+              <option value="" className="bg-slate-900">
+                SELECT GRADE
+              </option>
+              <option value="1" className="bg-slate-900">
+                1st Year
+              </option>
+              <option value="2" className="bg-slate-900">
+                2nd Year
+              </option>
+              <option value="3" className="bg-slate-900">
+                3rd Year
+              </option>
+              <option value="4" className="bg-slate-900">
+                4th Year
+              </option>
             </select>
           </div>
 
           <div>
             <label
               htmlFor="member-position"
-              className="block text-sm font-medium mb-2"
+              className="block text-xs font-mono text-cyan-500/80 mb-2 uppercase"
             >
-              役職
+              Position / 役職
             </label>
             <input
               type="text"
               id="member-position"
-              className="w-full px-4 py-2 bg-gray-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+              style={styles.cyberInput}
+              onFocus={(e) =>
+                Object.assign(e.currentTarget.style, styles.cyberInputFocus)
+              }
+              onBlur={(e) =>
+                Object.assign(e.currentTarget.style, styles.cyberInput)
+              }
               value={form.position}
               onChange={(e) =>
                 setForm((prev) => ({ ...prev, position: e.target.value }))
               }
-              placeholder="例: 部長、副部長、会計"
+              placeholder="例: 部長"
             />
           </div>
 
-          <div>
+          <div className="md:col-span-2">
             <label
               htmlFor="member-hobby"
-              className="block text-sm font-medium mb-2"
+              className="block text-xs font-mono text-cyan-500/80 mb-2 uppercase"
             >
-              趣味
+              Hobby / 趣味
             </label>
             <input
               type="text"
               id="member-hobby"
-              className="w-full px-4 py-2 bg-gray-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+              style={styles.cyberInput}
+              onFocus={(e) =>
+                Object.assign(e.currentTarget.style, styles.cyberInputFocus)
+              }
+              onBlur={(e) =>
+                Object.assign(e.currentTarget.style, styles.cyberInput)
+              }
               value={form.hobby}
               onChange={(e) =>
                 setForm((prev) => ({ ...prev, hobby: e.target.value }))
               }
-              placeholder="例: カラオケ、麻雀、プログラミング"
+              placeholder="例: プログラミング"
             />
           </div>
 
-          <div>
+          <div className="md:col-span-2">
             <label
               htmlFor="member-comment"
-              className="block text-sm font-medium mb-2"
+              className="block text-xs font-mono text-cyan-500/80 mb-2 uppercase"
             >
-              コメント
+              Comment / コメント
             </label>
             <textarea
               id="member-comment"
-              className="w-full px-4 py-2 bg-gray-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 resize-none"
+              style={{ ...styles.cyberInput, resize: "none" }}
+              onFocus={(e) =>
+                Object.assign(e.currentTarget.style, styles.cyberInputFocus)
+              }
+              onBlur={(e) =>
+                Object.assign(e.currentTarget.style, styles.cyberInput)
+              }
               rows={3}
               value={form.description}
               onChange={(e) =>
@@ -235,7 +266,7 @@ export default function MemberForm({
                   description: e.target.value,
                 }))
               }
-              placeholder="部員の特徴や性格など（例: いつも遅刻する、ムードメーカー）"
+              placeholder="部員の特徴など"
             />
           </div>
         </div>
@@ -243,17 +274,33 @@ export default function MemberForm({
 
       {/* アクションボタン（撮影後に表示） */}
       {capturedImage && (
-        <>
+        <div className="mb-8">
           {/* カード化ボタン */}
           <button
             type="button"
-            className="w-full py-4 px-6 bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 rounded-lg font-bold text-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+            style={{
+              ...styles.cyberButton,
+              width: "100%",
+              padding: "16px",
+              fontSize: "1.1rem",
+              ...(uploadedImageUrl && !isSaving && isFormValid
+                ? {}
+                : styles.cyberButtonDisabled),
+            }}
             onClick={onMakeCard}
             disabled={!uploadedImageUrl || isSaving || !isFormValid}
+            onMouseEnter={(e) => {
+              if (uploadedImageUrl && !isSaving && isFormValid)
+                Object.assign(e.currentTarget.style, styles.cyberButtonActive);
+            }}
+            onMouseLeave={(e) => {
+              if (uploadedImageUrl && !isSaving && isFormValid)
+                Object.assign(e.currentTarget.style, styles.cyberButton);
+            }}
           >
-            {isSaving ? "作成中..." : "カード化する"}
+            {isSaving ? "PROCESSING..." : "GENERATE CARD // execute"}
           </button>
-        </>
+        </div>
       )}
     </>
   );

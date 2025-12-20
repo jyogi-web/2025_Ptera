@@ -1,5 +1,6 @@
 import Image from "next/image";
 import type { RefObject } from "react";
+import { styles } from "../_styles/page.styles";
 import CameraPreview, { type CameraPreviewHandle } from "./CameraPreview";
 
 type Props = {
@@ -30,9 +31,12 @@ export default function CameraCapture({
   onFileChange,
 }: Props) {
   return (
-    <div className="flex gap-6 mb-6">
+    <div className="flex flex-col md:flex-row gap-6 mb-6">
       {/* カメラプレビューエリア */}
-      <div className="bg-gray-800 rounded-lg overflow-hidden flex-1">
+      <div
+        style={styles.cyberFrame}
+        className="flex-1 min-h-[300px] md:min-h-[400px]"
+      >
         {!capturedImage ? (
           <CameraPreview ref={cameraRef} onReadyChange={onReadyChange} />
         ) : (
@@ -46,25 +50,50 @@ export default function CameraCapture({
               className="object-cover"
             />
             {/* 再撮影・確定ボタン */}
-            <div className="absolute inset-0 flex items-end justify-center gap-4 pb-4 bg-black/30">
+            <div className="absolute inset-0 flex items-end justify-center gap-4 pb-4 bg-black/50">
               <button
                 type="button"
                 onClick={onRetake}
-                className="px-6 py-3 bg-gray-600 hover:bg-gray-700 rounded-lg font-semibold transition-colors"
+                style={styles.cyberButton}
+                onMouseEnter={(e) => {
+                  Object.assign(
+                    e.currentTarget.style,
+                    styles.cyberButtonActive,
+                  );
+                }}
+                onMouseLeave={(e) => {
+                  Object.assign(e.currentTarget.style, styles.cyberButton);
+                }}
               >
-                再撮影
+                RETAKE
               </button>
               <button
                 type="button"
-                className="px-6 py-3 bg-cyan-500 hover:bg-cyan-600 rounded-lg font-semibold transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                style={{
+                  ...styles.cyberButton,
+                  ...(isUploading || !!uploadedImageUrl
+                    ? styles.cyberButtonDisabled
+                    : {}),
+                }}
                 onClick={onConfirm}
                 disabled={isUploading || !!uploadedImageUrl}
+                onMouseEnter={(e) => {
+                  if (!isUploading && !uploadedImageUrl)
+                    Object.assign(
+                      e.currentTarget.style,
+                      styles.cyberButtonActive,
+                    );
+                }}
+                onMouseLeave={(e) => {
+                  if (!isUploading && !uploadedImageUrl)
+                    Object.assign(e.currentTarget.style, styles.cyberButton);
+                }}
               >
                 {isUploading
-                  ? "保存中..."
+                  ? "SAVING..."
                   : uploadedImageUrl
-                    ? "保存済み"
-                    : "確定"}
+                    ? "SAVED"
+                    : "CONFIRM"}
               </button>
             </div>
           </div>
@@ -72,35 +101,34 @@ export default function CameraCapture({
       </div>
 
       {/* 右側：撮影ボタンと情報 */}
-      <div className="flex-1 flex flex-col justify-start">
+      <div className="flex-1 flex flex-col justify-start items-center pt-4 md:pt-10">
         {!capturedImage && (
-          <div className="flex flex-col items-center gap-4">
+          <div className="flex flex-col items-center gap-8">
             <button
               type="button"
               onClick={onCapture}
               disabled={!cameraReady}
-              className="w-24 h-24 rounded-full bg-cyan-500 hover:bg-cyan-600 disabled:bg-gray-500 disabled:cursor-not-allowed transition-colors shadow-lg flex items-center justify-center"
+              style={{
+                ...styles.shutterButton,
+                opacity: cameraReady ? 1 : 0.5,
+                cursor: cameraReady ? "pointer" : "not-allowed",
+              }}
               aria-label="撮影"
             >
-              <svg
-                aria-hidden="true"
-                className="w-10 h-10 text-white"
-                fill="currentColor"
-                viewBox="0 0 24 24"
-              >
-                <circle cx="12" cy="12" r="8" />
-              </svg>
+              <div style={styles.shutterButtonInner} />
             </button>
-            <p className="text-sm text-gray-400">撮影ボタン</p>
+            <p className="text-sm text-cyan-400 font-mono tracking-widest">
+              SHUTTER
+            </p>
 
-            <div className="w-full border-t border-gray-700 my-2"></div>
+            <div className="w-full border-t border-cyan-500/30 my-2"></div>
 
             <button
               type="button"
               onClick={() => fileInputRef.current?.click()}
-              className="flex flex-col items-center gap-2 text-gray-400 hover:text-white transition-colors"
+              className="flex flex-col items-center gap-2 text-slate-400 hover:text-cyan-300 transition-colors"
             >
-              <div className="w-12 h-12 rounded-full bg-gray-700 flex items-center justify-center">
+              <div className="w-12 h-12 rounded bg-slate-800/50 flex items-center justify-center border border-slate-700 hover:border-cyan-500/50">
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
                   width="24"
@@ -118,7 +146,7 @@ export default function CameraCapture({
                   <path d="m21 15-3.086-3.086a2 2 0 0 0-2.828 0L6 21" />
                 </svg>
               </div>
-              <span className="text-xs">画像を選択</span>
+              <span className="text-xs font-mono">SELECT FILE</span>
             </button>
           </div>
         )}

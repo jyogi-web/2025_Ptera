@@ -9,6 +9,7 @@ import { deleteImage, uploadImage } from "@/lib/storage";
 import CameraCapture from "./_components/CameraCapture";
 import type { CameraPreviewHandle } from "./_components/CameraPreview";
 import MemberForm, { type CameraFormType } from "./_components/MemberForm";
+import { styles } from "./_styles/page.styles";
 import { completeCardAction } from "./actions";
 
 const dataURLtoFile = (dataurl: string, filename: string): File => {
@@ -280,9 +281,11 @@ export default function CameraPage() {
     form.department.trim() !== "";
 
   return (
-    <div className="min-h-screen bg-gray-900 text-white">
-      <div className="container mx-auto px-4 py-8">
-        <h1 className="text-3xl font-bold mb-6">部員をカード化</h1>
+    <div style={styles.container}>
+      <div className="container mx-auto px-4">
+        <div style={styles.header}>
+          <h1 style={styles.title}>MEMBER_DATA_ENTRY</h1>
+        </div>
 
         <div className="max-w-4xl mx-auto">
           {/* カメラプレビューとボタンの横並びレイアウト */}
