@@ -17,6 +17,7 @@ export const styles: { [key: string]: CSSProperties } = {
     background: "#050b14",
     display: "flex",
     flexDirection: "column",
+    paddingTop: "80px", // Header height compensation
   },
   contentWrapper: {
     flex: 1,

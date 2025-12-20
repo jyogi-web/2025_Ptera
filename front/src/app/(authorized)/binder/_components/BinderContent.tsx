@@ -17,7 +17,6 @@ export function BinderContent({ cards }: BinderContentProps) {
       {/* Header */}
       <div style={styles.header} className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-bold tracking-wide">マイ・バインダー</h1>
           <p className="text-sm text-gray-400">Total Cards: {cards.length}</p>
         </div>
         {cards.length > 0 && (
