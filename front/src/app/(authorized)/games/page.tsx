@@ -1,7 +1,7 @@
 "use client";
 
 import dynamic from "next/dynamic";
-import Link from "next/link";
+
 import { useCallback, useEffect, useState } from "react";
 import { styles } from "./_styles/page.styles";
 
@@ -79,11 +79,6 @@ export default function Games() {
     <div style={styles.container}>
       <div style={styles.overlay}>
         <div style={styles.controls}>
-          <Link href="/generate-qr">
-            <button type="button" style={styles.qrButton}>
-              QRコード生成
-            </button>
-          </Link>
           {!isRunning ? (
             <button
               type="button"
@@ -112,11 +107,7 @@ export default function Games() {
               </button>
             </div>
             {records.map((record, index) => (
-              <div
-                // biome-ignore lint/suspicious/noArrayIndexKey: Simple list, no stable ID available
-                key={index}
-                style={styles.recordItem}
-              >
+              <div key={`${record.time}-${index}`} style={styles.recordItem}>
                 <span>{record.time}</span> -{" "}
                 <strong>{record.duration}秒</strong>
               </div>
