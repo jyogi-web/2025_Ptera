@@ -5,7 +5,6 @@ export const styles: { [key: string]: CSSProperties } = {
     position: "relative",
     width: "100%",
     aspectRatio: "3/4",
-    // Removed margin: "16px auto" to fit better in grid
     cursor: "pointer",
     padding: 0,
     border: "none",
@@ -15,20 +14,20 @@ export const styles: { [key: string]: CSSProperties } = {
   mainGlow: {
     position: "absolute",
     inset: 0,
-    backgroundColor: "rgba(22, 78, 99, 0.1)", // bg-cyan-900/10
-    borderRadius: "0.75rem", // rounded-xl
-    border: "1px solid rgba(6, 182, 212, 0.5)", // border-cyan-500/50
+    backgroundColor: "rgba(22, 78, 99, 0.1)",
+    borderRadius: "0.75rem",
+    border: "1px solid rgba(6, 182, 212, 0.5)",
     boxShadow: "0 0 20px rgba(0, 218, 193, 0.2)",
     backdropFilter: "blur(12px)",
     zIndex: 0,
   },
   cornerBase: {
     position: "absolute",
-    width: "10px", // Slightly smaller for grid
+    width: "10px",
     height: "10px",
     zIndex: 20,
     boxShadow: "0 0 5px rgba(0, 218, 193, 0.8)",
-    borderColor: "#22d3ee", // border-cyan-400
+    borderColor: "#22d3ee",
   },
   cornerTL: {
     top: 0,
@@ -60,8 +59,8 @@ export const styles: { [key: string]: CSSProperties } = {
   },
   imageArea: {
     position: "absolute",
-    inset: "6px", // Reduced padding
-    bottom: "40px", // Adjusted for smaller card
+    inset: "6px",
+    bottom: "40px",
     borderRadius: "2px",
     overflow: "hidden",
     backgroundColor: "rgba(0, 0, 0, 0.6)",
@@ -75,7 +74,7 @@ export const styles: { [key: string]: CSSProperties } = {
     flexDirection: "column",
     alignItems: "center",
     justifyContent: "center",
-    color: "rgba(14, 116, 144, 0.5)", // text-cyan-700/50
+    color: "rgba(14, 116, 144, 0.5)",
     backgroundImage: "url('/assets/hex_grid.png')",
     backgroundPosition: "center",
     backgroundSize: "cover",
@@ -101,50 +100,45 @@ export const styles: { [key: string]: CSSProperties } = {
     alignItems: "center",
     gap: "4px",
   },
-  // Favorite Badge (Moved to Top-Left)
   labelBadgeContent: {
     position: "absolute",
     top: "4px",
-    left: "4px", // Changed from right to left
+    left: "4px",
     zIndex: 30,
     backgroundColor: "rgba(0, 0, 0, 0.9)",
-    // Cyber border effect using drop-shadow since clip-path cuts borders
     filter: "drop-shadow(0 0 2px rgba(250, 204, 21, 0.8))",
     padding: "4px 8px 4px 6px",
-    // Angled tech shape (cut top-left and bottom-right)
     clipPath:
       "polygon(6px 0, 100% 0, 100% calc(100% - 6px), calc(100% - 6px) 100%, 0 100%, 0 6px)",
-    borderLeft: "2px solid #facc15", // Accent border on left
+    borderLeft: "2px solid #facc15",
   },
   labelText: {
-    color: "#facc15", // yellow-400
+    color: "#facc15",
     fontWeight: "bold",
-    fontSize: "0.8rem", // Slightly larger
+    fontSize: "0.8rem",
     letterSpacing: "0.1em",
     textTransform: "uppercase",
     fontFamily: "monospace",
-    textShadow: "0 0 5px rgba(250, 204, 21, 0.8)", // Neon glow
+    textShadow: "0 0 5px rgba(250, 204, 21, 0.8)",
   },
-  // Grade Badge (Top-Right)
   gradeBadge: {
     position: "absolute",
     top: "4px",
     right: "4px",
     zIndex: 30,
     backgroundColor: "rgba(0, 0, 0, 0.8)",
-    border: "1px solid rgba(6, 182, 212, 0.8)", // Cyan border
+    border: "1px solid rgba(6, 182, 212, 0.8)",
     padding: "2px 6px",
     borderRadius: "4px",
   },
   gradeText: {
-    color: "#22d3ee", // cyan-400
+    color: "#22d3ee",
     fontWeight: "bold",
     fontSize: "0.7rem",
     fontFamily: "monospace",
   },
-  // Position Text (Below Name)
   positionText: {
-    color: "rgba(165, 243, 252, 0.7)", // cyan-200/70
+    color: "rgba(165, 243, 252, 0.7)",
     fontSize: "0.6rem",
     fontFamily: "monospace",
     marginTop: "2px",
@@ -172,7 +166,7 @@ export const styles: { [key: string]: CSSProperties } = {
   },
   partnerNameText: {
     color: "white",
-    fontSize: "0.7rem", // Smaller font
+    fontSize: "0.7rem",
     fontWeight: 500,
     letterSpacing: "0.05em",
     fontFamily: "monospace",
