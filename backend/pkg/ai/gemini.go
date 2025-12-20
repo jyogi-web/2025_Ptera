@@ -152,7 +152,7 @@ func (s *GeminiService) AnalyzeCardImage(ctx context.Context, imageURL string, c
 }
 
 func (s *GeminiService) Close() error {
-	// 新しいSDKのClientにはCloseメソッドがないか、http.Clientを共有しているため明示的なCloseが不要な場合があります。
-	// 必要に応じて実装を確認しますが、現状はnilを返します。
+	// genai.Client does not have a Close method
+	// No cleanup needed for this SDK
 	return nil
 }
