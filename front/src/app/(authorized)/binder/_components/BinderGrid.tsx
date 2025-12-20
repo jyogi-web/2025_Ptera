@@ -1,11 +1,10 @@
-"use client";
-
 import { useEffect, useState } from "react";
 import toast from "react-hot-toast";
-import Card from "@/components/Card";
 import { useAuth } from "@/context/AuthContext";
 import { addFavoriteCard, getFavoriteCards } from "@/lib/firestore";
 import type { Card as CardType } from "@/types/app";
+import { cyberToastStyle } from "../_styles/toast.styles";
+import { BinderCard } from "./BinderCard";
 
 interface BinderGridProps {
   cards: CardType[];
@@ -37,10 +36,6 @@ export function BinderGrid({
     loadFavorites();
   }, [user]);
 
-  const getLabel = (index: number): string | undefined => {
-    return index < 3 ? "1st" : undefined;
-  };
-
   const handleCardClick = async (card: CardType) => {
     if (!user || processing) return;
 
@@ -49,8 +44,9 @@ export function BinderGrid({
 
       if (isFavorite) {
         toast("既に推しメン登録済みです", {
-          icon: "⭐",
+          icon: "",
           duration: 2000,
+          style: cyberToastStyle,
         });
         onFavoriteSelected();
         return;
@@ -60,14 +56,27 @@ export function BinderGrid({
         setProcessing(true);
         await addFavoriteCard(user.id, card.id);
         setFavoriteCardIds([card.id]);
-        toast.success(`${card.name}を推しメンに登録しました！`, {
-          icon: "⭐",
+        toast.success(`${card.name}を推しメンに登録しました`, {
+          icon: "",
           duration: 3000,
+          style: {
+            ...cyberToastStyle,
+            border: "1px solid #facc15", // Yellow border for success
+            color: "#fef08a",
+            boxShadow: "0 0 15px rgba(250, 204, 21, 0.3)",
+          },
         });
         onFavoriteSelected();
       } catch (error) {
         console.error("Failed to update favorite:", error);
-        toast.error("操作に失敗しました");
+        toast.error("操作に失敗しました", {
+          style: {
+            ...cyberToastStyle,
+            border: "1px solid #ef4444", // Red border for error
+            color: "#fecaca",
+            boxShadow: "0 0 15px rgba(239, 68, 68, 0.3)",
+          },
+        });
         onFavoriteSelected();
       } finally {
         setProcessing(false);
@@ -76,15 +85,16 @@ export function BinderGrid({
     }
 
     toast("カード詳細ページは未実装です", {
-      icon: "ℹ️",
+      icon: "",
       duration: 2000,
+      style: cyberToastStyle,
     });
   };
 
   return (
     <div>
       <div className="grid grid-cols-3 gap-3">
-        {cards.map((card, index) => (
+        {cards.map((card) => (
           <div
             key={card.id}
             className={`transition-all ${
@@ -95,16 +105,11 @@ export function BinderGrid({
                 : ""
             }`}
           >
-            <Card
+            <BinderCard
               card={card}
-              label={getLabel(index)}
               onClick={() => handleCardClick(card)}
+              isFavorite={favoriteCardIds.includes(card.id)}
             />
-            {favoriteCardIds.includes(card.id) && (
-              <div className="text-center text-yellow-400 text-xs mt-1">
-                ⭐ 推しメン
-              </div>
-            )}
           </div>
         ))}
       </div>
@@ -132,7 +137,7 @@ export function FavoriteButton({
           : "bg-blue-500 text-white hover:bg-blue-600"
       } ${disabled ? "opacity-50 cursor-not-allowed" : ""}`}
     >
-      {isSelectingFavorite ? "⭐ 選択中" : "推しメン登録"}
+      {isSelectingFavorite ? " 選択中" : "推しメン登録"}
     </button>
   );
 }
