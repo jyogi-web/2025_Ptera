@@ -18,23 +18,12 @@ function getAdminApp() {
     );
   }
 
-  // デバッグ: 環境変数の最初の50文字を表示
-  console.log(
-    "FIREBASE_SERVICE_ACCOUNT_KEY (first 50 chars):",
-    serviceAccountKey.substring(0, 50),
-  );
-  console.log("Length:", serviceAccountKey.length);
-
   try {
     const credentials = JSON.parse(serviceAccountKey);
     return initializeApp({
       credential: cert(credentials),
     });
   } catch (error) {
-    console.error(
-      "Raw value causing error:",
-      serviceAccountKey.substring(0, 100),
-    );
     throw new Error(
       `Failed to parse FIREBASE_SERVICE_ACCOUNT_KEY: ${error instanceof Error ? error.message : "Invalid JSON"}`,
     );
@@ -67,6 +56,111 @@ export async function getSession() {
 }
 
 /**
+ * Firestoreのドキュメントデータをバリデーション
+ */
+function validateCardData(docId: string, data: any): {
+  valid: boolean;
+  card?: import("@/types/app").Card;
+  error?: string;
+} {
+  // 必須フィールドのチェック
+  if (typeof data.name !== "string" || data.name.trim().length === 0) {
+    return { valid: false, error: `Card ${docId}: name is missing or invalid` };
+  }
+
+  if (typeof data.grade !== "number" || Number.isNaN(data.grade)) {
+    return { valid: false, error: `Card ${docId}: grade is missing or invalid` };
+  }
+
+  if (typeof data.position !== "string" || data.position.trim().length === 0) {
+    return {
+      valid: false,
+      error: `Card ${docId}: position is missing or invalid`,
+    };
+  }
+
+  if (
+    typeof data.creatorId !== "string" ||
+    data.creatorId.trim().length === 0
+  ) {
+    return {
+      valid: false,
+      error: `Card ${docId}: creatorId is missing or invalid`,
+    };
+  }
+
+  if (typeof data.hobby !== "string") {
+    return { valid: false, error: `Card ${docId}: hobby is missing or invalid` };
+  }
+
+  if (typeof data.description !== "string") {
+    return {
+      valid: false,
+      error: `Card ${docId}: description is missing or invalid`,
+    };
+  }
+
+  if (typeof data.imageUrl !== "string") {
+    return {
+      valid: false,
+      error: `Card ${docId}: imageUrl is missing or invalid`,
+    };
+  }
+
+  // Timestampフィールドの安全な変換
+  let createdAt: Date;
+  let expiryDate: Date;
+
+  try {
+    if (data.createdAt && typeof data.createdAt.toDate === "function") {
+      createdAt = data.createdAt.toDate();
+    } else {
+      return {
+        valid: false,
+        error: `Card ${docId}: createdAt is not a valid Timestamp`,
+      };
+    }
+
+    if (data.expiryDate && typeof data.expiryDate.toDate === "function") {
+      expiryDate = data.expiryDate.toDate();
+    } else {
+      return {
+        valid: false,
+        error: `Card ${docId}: expiryDate is not a valid Timestamp`,
+      };
+    }
+  } catch (error) {
+    return {
+      valid: false,
+      error: `Card ${docId}: Failed to convert Timestamp - ${error instanceof Error ? error.message : "Unknown error"}`,
+    };
+  }
+
+  // オプショナルフィールドの安全な取得
+  const affiliatedGroup =
+    data.affiliatedGroupRef && typeof data.affiliatedGroupRef.id === "string"
+      ? data.affiliatedGroupRef.id
+      : undefined;
+
+  return {
+    valid: true,
+    card: {
+      id: docId,
+      creatorId: data.creatorId,
+      name: data.name,
+      grade: data.grade,
+      position: data.position,
+      affiliatedGroup,
+      hobby: data.hobby,
+      description: data.description,
+      imageUrl: data.imageUrl,
+      createdAt,
+      expiryDate,
+    },
+  };
+}
+
+/**
  * サーバー側でカードデータを取得
  */
 export async function getCardsFromServer() {
@@ -77,22 +171,25 @@ export async function getCardsFromServer() {
       .limit(100)
       .get();
 
-    const cards = snapshot.docs.map((doc) => {
-      const data = doc.data();
-      return {
-        id: doc.id,
-        creatorId: data.creatorId,
-        name: data.name,
-        grade: data.grade,
-        position: data.position,
-        affiliatedGroup: data.affiliatedGroupRef?.id,
-        hobby: data.hobby,
-        description: data.description,
-        imageUrl: data.imageUrl,
-        createdAt: data.createdAt?.toDate(),
-        expiryDate: data.expiryDate?.toDate(),
-      };
-    });
+    const cards: import("@/types/app").Card[] = [];
+    const errors: string[] = [];
+
+    for (const doc of snapshot.docs) {
+      const result = validateCardData(doc.id, doc.data());
+      
+      if (result.valid && result.card) {
+        cards.push(result.card);
+      } else if (result.error) {
+        console.warn(result.error);
+        errors.push(result.error);
+      }
+    }
+
+    if (errors.length > 0) {
+      console.warn(
+        `Retrieved ${cards.length} valid cards, skipped ${errors.length} invalid documents`,
+      );
+    }
 
     return cards;
   } catch (error) {

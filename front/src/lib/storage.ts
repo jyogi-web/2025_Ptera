@@ -16,9 +16,13 @@ export const uploadImage = async (
   file: File,
   path: string,
 ): Promise<string> => {
-  // Validate file type
-  if (!file.type.startsWith("image/")) {
-    throw new Error("Only image files are allowed");
+  // Strict MIME type whitelist (SVG is explicitly rejected)
+  const ALLOWED_MIME_TYPES = ["image/jpeg", "image/png", "image/webp"];
+  
+  if (!ALLOWED_MIME_TYPES.includes(file.type)) {
+    throw new Error(
+      `Invalid file type: ${file.type}. Only JPEG, PNG, and WebP images are allowed.`,
+    );
   }
 
   // Validate file size (e.g., 5MB limit)

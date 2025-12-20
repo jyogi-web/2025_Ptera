@@ -20,8 +20,8 @@ const nextConfig: NextConfig = {
           ]
         : []),
     ],
-    dangerouslyAllowSVG: true,
-    contentDispositionType: "attachment",
+    dangerouslyAllowSVG: false,
+    contentDispositionType: "inline",
   },
 };
 
