@@ -64,6 +64,7 @@ export default function BinderPage() {
                 fill="none"
                 viewBox="0 0 24 24"
                 stroke="currentColor"
+                aria-label="エラーアイコン"
               >
                 <path
                   strokeLinecap="round"
@@ -94,6 +95,7 @@ export default function BinderPage() {
                 fill="none"
                 viewBox="0 0 24 24"
                 stroke="currentColor"
+                aria-label="空のバインダーアイコン"
               >
                 <path
                   strokeLinecap="round"
