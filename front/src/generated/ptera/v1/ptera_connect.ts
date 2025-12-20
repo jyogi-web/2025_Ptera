@@ -3,7 +3,7 @@
 /* eslint-disable */
 // @ts-nocheck
 
-import { AcceptBattleRequestRequest, AttackRequest, BattleRequest, BattleState, CompleteCardRequest, CompleteCardResponse, RejectBattleRequestRequest, RetreatRequest, SendBattleRequestRequest, StartBattleRequest } from "./ptera_pb";
+import { AcceptBattleRequestRequest, AttackRequest, AttackResponse, BattleRequest, BattleState, CompleteCardRequest, CompleteCardResponse, RejectBattleRequestRequest, RetreatRequest, RetreatResponse, SendBattleRequestRequest, StartBattleRequest, StartBattleResponse } from "./ptera_pb";
 import { MethodKind } from "@bufbuild/protobuf";
 
 /**
@@ -39,7 +39,7 @@ export const BattleService = {
     startBattle: {
       name: "StartBattle",
       I: StartBattleRequest,
-      O: BattleState,
+      O: StartBattleResponse,
       kind: MethodKind.Unary,
     },
     /**
@@ -48,7 +48,7 @@ export const BattleService = {
     attack: {
       name: "Attack",
       I: AttackRequest,
-      O: BattleState,
+      O: AttackResponse,
       kind: MethodKind.Unary,
     },
     /**
@@ -57,7 +57,7 @@ export const BattleService = {
     retreat: {
       name: "Retreat",
       I: RetreatRequest,
-      O: BattleState,
+      O: RetreatResponse,
       kind: MethodKind.Unary,
     },
     /**

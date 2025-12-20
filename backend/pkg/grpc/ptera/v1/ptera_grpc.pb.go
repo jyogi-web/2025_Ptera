@@ -137,9 +137,9 @@ const (
 //
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
 type BattleServiceClient interface {
-	StartBattle(ctx context.Context, in *StartBattleRequest, opts ...grpc.CallOption) (*BattleState, error)
-	Attack(ctx context.Context, in *AttackRequest, opts ...grpc.CallOption) (*BattleState, error)
-	Retreat(ctx context.Context, in *RetreatRequest, opts ...grpc.CallOption) (*BattleState, error)
+	StartBattle(ctx context.Context, in *StartBattleRequest, opts ...grpc.CallOption) (*StartBattleResponse, error)
+	Attack(ctx context.Context, in *AttackRequest, opts ...grpc.CallOption) (*AttackResponse, error)
+	Retreat(ctx context.Context, in *RetreatRequest, opts ...grpc.CallOption) (*RetreatResponse, error)
 	// Battle Request (Matching) RPCs
 	SendBattleRequest(ctx context.Context, in *SendBattleRequestRequest, opts ...grpc.CallOption) (*BattleRequest, error)
 	AcceptBattleRequest(ctx context.Context, in *AcceptBattleRequestRequest, opts ...grpc.CallOption) (*BattleState, error)
@@ -154,9 +154,9 @@ func NewBattleServiceClient(cc grpc.ClientConnInterface) BattleServiceClient {
 	return &battleServiceClient{cc}
 }
 
-func (c *battleServiceClient) StartBattle(ctx context.Context, in *StartBattleRequest, opts ...grpc.CallOption) (*BattleState, error) {
+func (c *battleServiceClient) StartBattle(ctx context.Context, in *StartBattleRequest, opts ...grpc.CallOption) (*StartBattleResponse, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(BattleState)
+	out := new(StartBattleResponse)
 	err := c.cc.Invoke(ctx, BattleService_StartBattle_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
@@ -164,9 +164,9 @@ func (c *battleServiceClient) StartBattle(ctx context.Context, in *StartBattleRe
 	return out, nil
 }
 
-func (c *battleServiceClient) Attack(ctx context.Context, in *AttackRequest, opts ...grpc.CallOption) (*BattleState, error) {
+func (c *battleServiceClient) Attack(ctx context.Context, in *AttackRequest, opts ...grpc.CallOption) (*AttackResponse, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(BattleState)
+	out := new(AttackResponse)
 	err := c.cc.Invoke(ctx, BattleService_Attack_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
@@ -174,9 +174,9 @@ func (c *battleServiceClient) Attack(ctx context.Context, in *AttackRequest, opt
 	return out, nil
 }
 
-func (c *battleServiceClient) Retreat(ctx context.Context, in *RetreatRequest, opts ...grpc.CallOption) (*BattleState, error) {
+func (c *battleServiceClient) Retreat(ctx context.Context, in *RetreatRequest, opts ...grpc.CallOption) (*RetreatResponse, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(BattleState)
+	out := new(RetreatResponse)
 	err := c.cc.Invoke(ctx, BattleService_Retreat_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
@@ -218,9 +218,9 @@ func (c *battleServiceClient) RejectBattleRequest(ctx context.Context, in *Rejec
 // All implementations must embed UnimplementedBattleServiceServer
 // for forward compatibility.
 type BattleServiceServer interface {
-	StartBattle(context.Context, *StartBattleRequest) (*BattleState, error)
-	Attack(context.Context, *AttackRequest) (*BattleState, error)
-	Retreat(context.Context, *RetreatRequest) (*BattleState, error)
+	StartBattle(context.Context, *StartBattleRequest) (*StartBattleResponse, error)
+	Attack(context.Context, *AttackRequest) (*AttackResponse, error)
+	Retreat(context.Context, *RetreatRequest) (*RetreatResponse, error)
 	// Battle Request (Matching) RPCs
 	SendBattleRequest(context.Context, *SendBattleRequestRequest) (*BattleRequest, error)
 	AcceptBattleRequest(context.Context, *AcceptBattleRequestRequest) (*BattleState, error)
@@ -235,13 +235,13 @@ type BattleServiceServer interface {
 // pointer dereference when methods are called.
 type UnimplementedBattleServiceServer struct{}
 
-func (UnimplementedBattleServiceServer) StartBattle(context.Context, *StartBattleRequest) (*BattleState, error) {
+func (UnimplementedBattleServiceServer) StartBattle(context.Context, *StartBattleRequest) (*StartBattleResponse, error) {
 	return nil, status.Error(codes.Unimplemented, "method StartBattle not implemented")
 }
-func (UnimplementedBattleServiceServer) Attack(context.Context, *AttackRequest) (*BattleState, error) {
+func (UnimplementedBattleServiceServer) Attack(context.Context, *AttackRequest) (*AttackResponse, error) {
 	return nil, status.Error(codes.Unimplemented, "method Attack not implemented")
 }
-func (UnimplementedBattleServiceServer) Retreat(context.Context, *RetreatRequest) (*BattleState, error) {
+func (UnimplementedBattleServiceServer) Retreat(context.Context, *RetreatRequest) (*RetreatResponse, error) {
 	return nil, status.Error(codes.Unimplemented, "method Retreat not implemented")
 }
 func (UnimplementedBattleServiceServer) SendBattleRequest(context.Context, *SendBattleRequestRequest) (*BattleRequest, error) {

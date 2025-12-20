@@ -623,6 +623,43 @@ export class StartBattleRequest extends Message<StartBattleRequest> {
 }
 
 /**
+ * @generated from message ptera.v1.StartBattleResponse
+ */
+export class StartBattleResponse extends Message<StartBattleResponse> {
+  /**
+   * @generated from field: ptera.v1.BattleState battle_state = 1;
+   */
+  battleState?: BattleState;
+
+  constructor(data?: PartialMessage<StartBattleResponse>) {
+    super();
+    proto3.util.initPartial(data, this);
+  }
+
+  static readonly runtime: typeof proto3 = proto3;
+  static readonly typeName = "ptera.v1.StartBattleResponse";
+  static readonly fields: FieldList = proto3.util.newFieldList(() => [
+    { no: 1, name: "battle_state", kind: "message", T: BattleState },
+  ]);
+
+  static fromBinary(bytes: Uint8Array, options?: Partial<BinaryReadOptions>): StartBattleResponse {
+    return new StartBattleResponse().fromBinary(bytes, options);
+  }
+
+  static fromJson(jsonValue: JsonValue, options?: Partial<JsonReadOptions>): StartBattleResponse {
+    return new StartBattleResponse().fromJson(jsonValue, options);
+  }
+
+  static fromJsonString(jsonString: string, options?: Partial<JsonReadOptions>): StartBattleResponse {
+    return new StartBattleResponse().fromJsonString(jsonString, options);
+  }
+
+  static equals(a: StartBattleResponse | PlainMessage<StartBattleResponse> | undefined, b: StartBattleResponse | PlainMessage<StartBattleResponse> | undefined): boolean {
+    return proto3.util.equals(StartBattleResponse, a, b);
+  }
+}
+
+/**
  * @generated from message ptera.v1.AttackRequest
  */
 export class AttackRequest extends Message<AttackRequest> {
@@ -664,6 +701,43 @@ export class AttackRequest extends Message<AttackRequest> {
 
   static equals(a: AttackRequest | PlainMessage<AttackRequest> | undefined, b: AttackRequest | PlainMessage<AttackRequest> | undefined): boolean {
     return proto3.util.equals(AttackRequest, a, b);
+  }
+}
+
+/**
+ * @generated from message ptera.v1.AttackResponse
+ */
+export class AttackResponse extends Message<AttackResponse> {
+  /**
+   * @generated from field: ptera.v1.BattleState battle_state = 1;
+   */
+  battleState?: BattleState;
+
+  constructor(data?: PartialMessage<AttackResponse>) {
+    super();
+    proto3.util.initPartial(data, this);
+  }
+
+  static readonly runtime: typeof proto3 = proto3;
+  static readonly typeName = "ptera.v1.AttackResponse";
+  static readonly fields: FieldList = proto3.util.newFieldList(() => [
+    { no: 1, name: "battle_state", kind: "message", T: BattleState },
+  ]);
+
+  static fromBinary(bytes: Uint8Array, options?: Partial<BinaryReadOptions>): AttackResponse {
+    return new AttackResponse().fromBinary(bytes, options);
+  }
+
+  static fromJson(jsonValue: JsonValue, options?: Partial<JsonReadOptions>): AttackResponse {
+    return new AttackResponse().fromJson(jsonValue, options);
+  }
+
+  static fromJsonString(jsonString: string, options?: Partial<JsonReadOptions>): AttackResponse {
+    return new AttackResponse().fromJsonString(jsonString, options);
+  }
+
+  static equals(a: AttackResponse | PlainMessage<AttackResponse> | undefined, b: AttackResponse | PlainMessage<AttackResponse> | undefined): boolean {
+    return proto3.util.equals(AttackResponse, a, b);
   }
 }
 
@@ -713,6 +787,43 @@ export class RetreatRequest extends Message<RetreatRequest> {
 
   static equals(a: RetreatRequest | PlainMessage<RetreatRequest> | undefined, b: RetreatRequest | PlainMessage<RetreatRequest> | undefined): boolean {
     return proto3.util.equals(RetreatRequest, a, b);
+  }
+}
+
+/**
+ * @generated from message ptera.v1.RetreatResponse
+ */
+export class RetreatResponse extends Message<RetreatResponse> {
+  /**
+   * @generated from field: ptera.v1.BattleState battle_state = 1;
+   */
+  battleState?: BattleState;
+
+  constructor(data?: PartialMessage<RetreatResponse>) {
+    super();
+    proto3.util.initPartial(data, this);
+  }
+
+  static readonly runtime: typeof proto3 = proto3;
+  static readonly typeName = "ptera.v1.RetreatResponse";
+  static readonly fields: FieldList = proto3.util.newFieldList(() => [
+    { no: 1, name: "battle_state", kind: "message", T: BattleState },
+  ]);
+
+  static fromBinary(bytes: Uint8Array, options?: Partial<BinaryReadOptions>): RetreatResponse {
+    return new RetreatResponse().fromBinary(bytes, options);
+  }
+
+  static fromJson(jsonValue: JsonValue, options?: Partial<JsonReadOptions>): RetreatResponse {
+    return new RetreatResponse().fromJson(jsonValue, options);
+  }
+
+  static fromJsonString(jsonString: string, options?: Partial<JsonReadOptions>): RetreatResponse {
+    return new RetreatResponse().fromJsonString(jsonString, options);
+  }
+
+  static equals(a: RetreatResponse | PlainMessage<RetreatResponse> | undefined, b: RetreatResponse | PlainMessage<RetreatResponse> | undefined): boolean {
+    return proto3.util.equals(RetreatResponse, a, b);
   }
 }
 

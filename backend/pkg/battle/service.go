@@ -3,6 +3,7 @@ package battle
 import (
 	"context"
 	"fmt"
+	"log/slog"
 	"math"
 	"time"
 
@@ -14,48 +15,62 @@ import (
 
 type Service struct {
 	ptera.UnimplementedBattleServiceServer
-	repo     *Repository
-	cardRepo *CardRepository
+	repo               *Repository
+	cardRepo           *CardRepository
+	logger             *slog.Logger
+	enableMockFallback bool
 }
 
-func NewService(repo *Repository, cardRepo *CardRepository) *Service {
+func NewService(logger *slog.Logger, repo *Repository, cardRepo *CardRepository, enableMockFallback bool) *Service {
 	return &Service{
-		repo:     repo,
-		cardRepo: cardRepo,
+		repo:               repo,
+		cardRepo:           cardRepo,
+		logger:             logger,
+		enableMockFallback: enableMockFallback,
 	}
 }
 
 // StartBattle initializes a new battle
-func (s *Service) StartBattle(ctx context.Context, req *ptera.StartBattleRequest) (*ptera.BattleState, error) {
+func (s *Service) StartBattle(ctx context.Context, req *ptera.StartBattleRequest) (*ptera.StartBattleResponse, error) {
 	// Re-use the internal logic
-	return s.createBattle(ctx, req.MyCircleId, req.OpponentCircleId)
+	state, err := s.createBattle(ctx, req.MyCircleId, req.OpponentCircleId)
+	if err != nil {
+		return nil, err
+	}
+	return &ptera.StartBattleResponse{BattleState: state}, nil
 }
 
 func (s *Service) createBattle(ctx context.Context, myCircleID, opponentCircleID string) (*ptera.BattleState, error) {
 	// Fetch real cards from Firestore
 	myCards, err := s.cardRepo.GetCircleCards(ctx, myCircleID)
 	if err != nil {
-		// If no cards found, fall back to mock cards
-		fmt.Printf("Warning: No cards found for circle %s, using mock cards: %v\n", myCircleID, err)
+		s.logger.Error("failed to get my circle cards", "circle_id", myCircleID, "error", err)
+		if !s.enableMockFallback {
+			return nil, status.Errorf(codes.Internal, "failed to get cards for circle %s", myCircleID)
+		}
+		s.logger.Warn("falling back to mock cards for my circle", "circle_id", myCircleID)
 		myCards = generateMockCards(myCircleID, 5)
 	}
 
 	opponentCards, err := s.cardRepo.GetCircleCards(ctx, opponentCircleID)
 	if err != nil {
-		// If no cards found, fall back to mock cards
-		fmt.Printf("Warning: No cards found for circle %s, using mock cards: %v\n", opponentCircleID, err)
+		s.logger.Error("failed to get opponent circle cards", "circle_id", opponentCircleID, "error", err)
+		if !s.enableMockFallback {
+			return nil, status.Errorf(codes.Internal, "failed to get cards for circle %s", opponentCircleID)
+		}
+		s.logger.Warn("falling back to mock cards for opponent circle", "circle_id", opponentCircleID)
 		opponentCards = generateMockCards(opponentCircleID, 5)
 	}
 
 	// Fetch Circle Names
 	myCircleName, err := s.cardRepo.GetCircleName(ctx, myCircleID)
 	if err != nil {
-		fmt.Printf("Warning: failed to get my circle name: %v\n", err)
+		s.logger.Warn("failed to get my circle name", "circle_id", myCircleID, "error", err)
 		myCircleName = "Circle " + myCircleID
 	}
 	opponentCircleName, err := s.cardRepo.GetCircleName(ctx, opponentCircleID)
 	if err != nil {
-		fmt.Printf("Warning: failed to get opponent circle name: %v\n", err)
+		s.logger.Warn("failed to get opponent circle name", "circle_id", opponentCircleID, "error", err)
 		opponentCircleName = "Circle " + opponentCircleID
 	}
 
@@ -178,7 +193,7 @@ func (s *Service) RejectBattleRequest(ctx context.Context, req *ptera.RejectBatt
 	return battleReq, nil
 }
 
-func (s *Service) Attack(ctx context.Context, req *ptera.AttackRequest) (*ptera.BattleState, error) {
+func (s *Service) Attack(ctx context.Context, req *ptera.AttackRequest) (*ptera.AttackResponse, error) {
 	fmt.Printf("Attack called: BattleId=%s, PlayerId=%s\n", req.BattleId, req.PlayerId) // DEBUG
 	state, err := s.repo.GetBattle(ctx, req.BattleId)
 	if err != nil {
@@ -187,7 +202,7 @@ func (s *Service) Attack(ctx context.Context, req *ptera.AttackRequest) (*ptera.
 	}
 
 	if state.WinnerId != "" {
-		return state, nil
+		return &ptera.AttackResponse{BattleState: state}, nil
 	}
 
 	// Validate Turn
@@ -214,7 +229,7 @@ func (s *Service) Attack(ctx context.Context, req *ptera.AttackRequest) (*ptera.
 	}
 
 	if len(attackerPlayer.Deck) == 0 || len(defenderPlayer.Deck) == 0 {
-		return state, nil
+		return &ptera.AttackResponse{BattleState: state}, nil
 	}
 
 	attackerCard = attackerPlayer.Deck[0]
@@ -253,7 +268,7 @@ func (s *Service) Attack(ctx context.Context, req *ptera.AttackRequest) (*ptera.
 				fmt.Printf("Attack error: failed to save battle (win): %v\n", err) // DEBUG
 				return nil, status.Errorf(codes.Internal, "failed to save battle: %v", err)
 			}
-			return state, nil
+			return &ptera.AttackResponse{BattleState: state}, nil
 		}
 	}
 
@@ -266,17 +281,17 @@ func (s *Service) Attack(ctx context.Context, req *ptera.AttackRequest) (*ptera.
 		return nil, status.Errorf(codes.Internal, "failed to save battle: %v", err)
 	}
 
-	return state, nil
+	return &ptera.AttackResponse{BattleState: state}, nil
 }
 
-func (s *Service) Retreat(ctx context.Context, req *ptera.RetreatRequest) (*ptera.BattleState, error) {
+func (s *Service) Retreat(ctx context.Context, req *ptera.RetreatRequest) (*ptera.RetreatResponse, error) {
 	state, err := s.repo.GetBattle(ctx, req.BattleId)
 	if err != nil {
 		return nil, status.Errorf(codes.NotFound, "battle not found: %v", err)
 	}
 
 	if state.WinnerId != "" {
-		return state, nil
+		return &ptera.RetreatResponse{BattleState: state}, nil
 	}
 
 	// Validate Turn
@@ -315,7 +330,7 @@ func (s *Service) Retreat(ctx context.Context, req *ptera.RetreatRequest) (*pter
 		return nil, status.Errorf(codes.Internal, "failed to save battle: %v", err)
 	}
 
-	return state, nil
+	return &ptera.RetreatResponse{BattleState: state}, nil
 }
 
 func generateMockCards(prefix string, count int) []*ptera.Card {

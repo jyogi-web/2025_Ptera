@@ -13,9 +13,9 @@ service PteraService {
 }
 
 service BattleService {
-  rpc StartBattle(StartBattleRequest) returns (BattleState);
-  rpc Attack(AttackRequest) returns (BattleState);
-  rpc Retreat(RetreatRequest) returns (BattleState);
+  rpc StartBattle(StartBattleRequest) returns (StartBattleResponse);
+  rpc Attack(AttackRequest) returns (AttackResponse);
+  rpc Retreat(RetreatRequest) returns (RetreatResponse);
 
   // Battle Request (Matching) RPCs
   rpc SendBattleRequest(SendBattleRequestRequest) returns (BattleRequest);
@@ -103,15 +103,27 @@ message StartBattleRequest {
   string opponent_circle_id = 2;
 }
 
+message StartBattleResponse {
+  BattleState battle_state = 1;
+}
+
 message AttackRequest {
   string battle_id = 1;
   string player_id = 2; // 認証情報から取るべきだが、一旦IDを送る
+}
+
+message AttackResponse {
+  BattleState battle_state = 1;
 }
 
 message RetreatRequest {
   string battle_id = 1;
   string player_id = 2;
   int32 bench_index = 3;
+}
+
+message RetreatResponse {
+  BattleState battle_state = 1;
 }
 
 // --- Battle Request (Matching) Messages ---

@@ -735,6 +735,50 @@ func (x *StartBattleRequest) GetOpponentCircleId() string {
 	return ""
 }
 
+type StartBattleResponse struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	BattleState   *BattleState           `protobuf:"bytes,1,opt,name=battle_state,json=battleState,proto3" json:"battle_state,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *StartBattleResponse) Reset() {
+	*x = StartBattleResponse{}
+	mi := &file_ptera_v1_ptera_proto_msgTypes[8]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *StartBattleResponse) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*StartBattleResponse) ProtoMessage() {}
+
+func (x *StartBattleResponse) ProtoReflect() protoreflect.Message {
+	mi := &file_ptera_v1_ptera_proto_msgTypes[8]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use StartBattleResponse.ProtoReflect.Descriptor instead.
+func (*StartBattleResponse) Descriptor() ([]byte, []int) {
+	return file_ptera_v1_ptera_proto_rawDescGZIP(), []int{8}
+}
+
+func (x *StartBattleResponse) GetBattleState() *BattleState {
+	if x != nil {
+		return x.BattleState
+	}
+	return nil
+}
+
 type AttackRequest struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
 	BattleId      string                 `protobuf:"bytes,1,opt,name=battle_id,json=battleId,proto3" json:"battle_id,omitempty"`
@@ -745,7 +789,7 @@ type AttackRequest struct {
 
 func (x *AttackRequest) Reset() {
 	*x = AttackRequest{}
-	mi := &file_ptera_v1_ptera_proto_msgTypes[8]
+	mi := &file_ptera_v1_ptera_proto_msgTypes[9]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -757,7 +801,7 @@ func (x *AttackRequest) String() string {
 func (*AttackRequest) ProtoMessage() {}
 
 func (x *AttackRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_ptera_v1_ptera_proto_msgTypes[8]
+	mi := &file_ptera_v1_ptera_proto_msgTypes[9]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -770,7 +814,7 @@ func (x *AttackRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use AttackRequest.ProtoReflect.Descriptor instead.
 func (*AttackRequest) Descriptor() ([]byte, []int) {
-	return file_ptera_v1_ptera_proto_rawDescGZIP(), []int{8}
+	return file_ptera_v1_ptera_proto_rawDescGZIP(), []int{9}
 }
 
 func (x *AttackRequest) GetBattleId() string {
@@ -787,6 +831,50 @@ func (x *AttackRequest) GetPlayerId() string {
 	return ""
 }
 
+type AttackResponse struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	BattleState   *BattleState           `protobuf:"bytes,1,opt,name=battle_state,json=battleState,proto3" json:"battle_state,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *AttackResponse) Reset() {
+	*x = AttackResponse{}
+	mi := &file_ptera_v1_ptera_proto_msgTypes[10]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *AttackResponse) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*AttackResponse) ProtoMessage() {}
+
+func (x *AttackResponse) ProtoReflect() protoreflect.Message {
+	mi := &file_ptera_v1_ptera_proto_msgTypes[10]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use AttackResponse.ProtoReflect.Descriptor instead.
+func (*AttackResponse) Descriptor() ([]byte, []int) {
+	return file_ptera_v1_ptera_proto_rawDescGZIP(), []int{10}
+}
+
+func (x *AttackResponse) GetBattleState() *BattleState {
+	if x != nil {
+		return x.BattleState
+	}
+	return nil
+}
+
 type RetreatRequest struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
 	BattleId      string                 `protobuf:"bytes,1,opt,name=battle_id,json=battleId,proto3" json:"battle_id,omitempty"`
@@ -798,7 +886,7 @@ type RetreatRequest struct {
 
 func (x *RetreatRequest) Reset() {
 	*x = RetreatRequest{}
-	mi := &file_ptera_v1_ptera_proto_msgTypes[9]
+	mi := &file_ptera_v1_ptera_proto_msgTypes[11]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -810,7 +898,7 @@ func (x *RetreatRequest) String() string {
 func (*RetreatRequest) ProtoMessage() {}
 
 func (x *RetreatRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_ptera_v1_ptera_proto_msgTypes[9]
+	mi := &file_ptera_v1_ptera_proto_msgTypes[11]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -823,7 +911,7 @@ func (x *RetreatRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use RetreatRequest.ProtoReflect.Descriptor instead.
 func (*RetreatRequest) Descriptor() ([]byte, []int) {
-	return file_ptera_v1_ptera_proto_rawDescGZIP(), []int{9}
+	return file_ptera_v1_ptera_proto_rawDescGZIP(), []int{11}
 }
 
 func (x *RetreatRequest) GetBattleId() string {
@@ -847,6 +935,50 @@ func (x *RetreatRequest) GetBenchIndex() int32 {
 	return 0
 }
 
+type RetreatResponse struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	BattleState   *BattleState           `protobuf:"bytes,1,opt,name=battle_state,json=battleState,proto3" json:"battle_state,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *RetreatResponse) Reset() {
+	*x = RetreatResponse{}
+	mi := &file_ptera_v1_ptera_proto_msgTypes[12]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *RetreatResponse) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*RetreatResponse) ProtoMessage() {}
+
+func (x *RetreatResponse) ProtoReflect() protoreflect.Message {
+	mi := &file_ptera_v1_ptera_proto_msgTypes[12]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use RetreatResponse.ProtoReflect.Descriptor instead.
+func (*RetreatResponse) Descriptor() ([]byte, []int) {
+	return file_ptera_v1_ptera_proto_rawDescGZIP(), []int{12}
+}
+
+func (x *RetreatResponse) GetBattleState() *BattleState {
+	if x != nil {
+		return x.BattleState
+	}
+	return nil
+}
+
 type BattleRequest struct {
 	state          protoimpl.MessageState `protogen:"open.v1"`
 	RequestId      string                 `protobuf:"bytes,1,opt,name=request_id,json=requestId,proto3" json:"request_id,omitempty"`
@@ -863,7 +995,7 @@ type BattleRequest struct {
 
 func (x *BattleRequest) Reset() {
 	*x = BattleRequest{}
-	mi := &file_ptera_v1_ptera_proto_msgTypes[10]
+	mi := &file_ptera_v1_ptera_proto_msgTypes[13]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -875,7 +1007,7 @@ func (x *BattleRequest) String() string {
 func (*BattleRequest) ProtoMessage() {}
 
 func (x *BattleRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_ptera_v1_ptera_proto_msgTypes[10]
+	mi := &file_ptera_v1_ptera_proto_msgTypes[13]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -888,7 +1020,7 @@ func (x *BattleRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use BattleRequest.ProtoReflect.Descriptor instead.
 func (*BattleRequest) Descriptor() ([]byte, []int) {
-	return file_ptera_v1_ptera_proto_rawDescGZIP(), []int{10}
+	return file_ptera_v1_ptera_proto_rawDescGZIP(), []int{13}
 }
 
 func (x *BattleRequest) GetRequestId() string {
@@ -957,7 +1089,7 @@ type SendBattleRequestRequest struct {
 
 func (x *SendBattleRequestRequest) Reset() {
 	*x = SendBattleRequestRequest{}
-	mi := &file_ptera_v1_ptera_proto_msgTypes[11]
+	mi := &file_ptera_v1_ptera_proto_msgTypes[14]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -969,7 +1101,7 @@ func (x *SendBattleRequestRequest) String() string {
 func (*SendBattleRequestRequest) ProtoMessage() {}
 
 func (x *SendBattleRequestRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_ptera_v1_ptera_proto_msgTypes[11]
+	mi := &file_ptera_v1_ptera_proto_msgTypes[14]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -982,7 +1114,7 @@ func (x *SendBattleRequestRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use SendBattleRequestRequest.ProtoReflect.Descriptor instead.
 func (*SendBattleRequestRequest) Descriptor() ([]byte, []int) {
-	return file_ptera_v1_ptera_proto_rawDescGZIP(), []int{11}
+	return file_ptera_v1_ptera_proto_rawDescGZIP(), []int{14}
 }
 
 func (x *SendBattleRequestRequest) GetFromCircleId() string {
@@ -1008,7 +1140,7 @@ type AcceptBattleRequestRequest struct {
 
 func (x *AcceptBattleRequestRequest) Reset() {
 	*x = AcceptBattleRequestRequest{}
-	mi := &file_ptera_v1_ptera_proto_msgTypes[12]
+	mi := &file_ptera_v1_ptera_proto_msgTypes[15]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1020,7 +1152,7 @@ func (x *AcceptBattleRequestRequest) String() string {
 func (*AcceptBattleRequestRequest) ProtoMessage() {}
 
 func (x *AcceptBattleRequestRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_ptera_v1_ptera_proto_msgTypes[12]
+	mi := &file_ptera_v1_ptera_proto_msgTypes[15]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1033,7 +1165,7 @@ func (x *AcceptBattleRequestRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use AcceptBattleRequestRequest.ProtoReflect.Descriptor instead.
 func (*AcceptBattleRequestRequest) Descriptor() ([]byte, []int) {
-	return file_ptera_v1_ptera_proto_rawDescGZIP(), []int{12}
+	return file_ptera_v1_ptera_proto_rawDescGZIP(), []int{15}
 }
 
 func (x *AcceptBattleRequestRequest) GetRequestId() string {
@@ -1052,7 +1184,7 @@ type RejectBattleRequestRequest struct {
 
 func (x *RejectBattleRequestRequest) Reset() {
 	*x = RejectBattleRequestRequest{}
-	mi := &file_ptera_v1_ptera_proto_msgTypes[13]
+	mi := &file_ptera_v1_ptera_proto_msgTypes[16]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1064,7 +1196,7 @@ func (x *RejectBattleRequestRequest) String() string {
 func (*RejectBattleRequestRequest) ProtoMessage() {}
 
 func (x *RejectBattleRequestRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_ptera_v1_ptera_proto_msgTypes[13]
+	mi := &file_ptera_v1_ptera_proto_msgTypes[16]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1077,7 +1209,7 @@ func (x *RejectBattleRequestRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use RejectBattleRequestRequest.ProtoReflect.Descriptor instead.
 func (*RejectBattleRequestRequest) Descriptor() ([]byte, []int) {
-	return file_ptera_v1_ptera_proto_rawDescGZIP(), []int{13}
+	return file_ptera_v1_ptera_proto_rawDescGZIP(), []int{16}
 }
 
 func (x *RejectBattleRequestRequest) GetRequestId() string {
@@ -1177,15 +1309,21 @@ const file_ptera_v1_ptera_proto_rawDesc = "" +
 	"\x12StartBattleRequest\x12 \n" +
 	"\fmy_circle_id\x18\x01 \x01(\tR\n" +
 	"myCircleId\x12,\n" +
-	"\x12opponent_circle_id\x18\x02 \x01(\tR\x10opponentCircleId\"I\n" +
+	"\x12opponent_circle_id\x18\x02 \x01(\tR\x10opponentCircleId\"O\n" +
+	"\x13StartBattleResponse\x128\n" +
+	"\fbattle_state\x18\x01 \x01(\v2\x15.ptera.v1.BattleStateR\vbattleState\"I\n" +
 	"\rAttackRequest\x12\x1b\n" +
 	"\tbattle_id\x18\x01 \x01(\tR\bbattleId\x12\x1b\n" +
-	"\tplayer_id\x18\x02 \x01(\tR\bplayerId\"k\n" +
+	"\tplayer_id\x18\x02 \x01(\tR\bplayerId\"J\n" +
+	"\x0eAttackResponse\x128\n" +
+	"\fbattle_state\x18\x01 \x01(\v2\x15.ptera.v1.BattleStateR\vbattleState\"k\n" +
 	"\x0eRetreatRequest\x12\x1b\n" +
 	"\tbattle_id\x18\x01 \x01(\tR\bbattleId\x12\x1b\n" +
 	"\tplayer_id\x18\x02 \x01(\tR\bplayerId\x12\x1f\n" +
 	"\vbench_index\x18\x03 \x01(\x05R\n" +
-	"benchIndex\"\xc9\x02\n" +
+	"benchIndex\"K\n" +
+	"\x0fRetreatResponse\x128\n" +
+	"\fbattle_state\x18\x01 \x01(\v2\x15.ptera.v1.BattleStateR\vbattleState\"\xc9\x02\n" +
 	"\rBattleRequest\x12\x1d\n" +
 	"\n" +
 	"request_id\x18\x01 \x01(\tR\trequestId\x12$\n" +
@@ -1211,11 +1349,11 @@ const file_ptera_v1_ptera_proto_rawDesc = "" +
 	"\n" +
 	"request_id\x18\x01 \x01(\tR\trequestId2]\n" +
 	"\fPteraService\x12M\n" +
-	"\fCompleteCard\x12\x1d.ptera.v1.CompleteCardRequest\x1a\x1e.ptera.v1.CompleteCardResponse2\xc5\x03\n" +
-	"\rBattleService\x12B\n" +
-	"\vStartBattle\x12\x1c.ptera.v1.StartBattleRequest\x1a\x15.ptera.v1.BattleState\x128\n" +
-	"\x06Attack\x12\x17.ptera.v1.AttackRequest\x1a\x15.ptera.v1.BattleState\x12:\n" +
-	"\aRetreat\x12\x18.ptera.v1.RetreatRequest\x1a\x15.ptera.v1.BattleState\x12P\n" +
+	"\fCompleteCard\x12\x1d.ptera.v1.CompleteCardRequest\x1a\x1e.ptera.v1.CompleteCardResponse2\xd4\x03\n" +
+	"\rBattleService\x12J\n" +
+	"\vStartBattle\x12\x1c.ptera.v1.StartBattleRequest\x1a\x1d.ptera.v1.StartBattleResponse\x12;\n" +
+	"\x06Attack\x12\x17.ptera.v1.AttackRequest\x1a\x18.ptera.v1.AttackResponse\x12>\n" +
+	"\aRetreat\x12\x18.ptera.v1.RetreatRequest\x1a\x19.ptera.v1.RetreatResponse\x12P\n" +
 	"\x11SendBattleRequest\x12\".ptera.v1.SendBattleRequestRequest\x1a\x17.ptera.v1.BattleRequest\x12R\n" +
 	"\x13AcceptBattleRequest\x12$.ptera.v1.AcceptBattleRequestRequest\x1a\x15.ptera.v1.BattleState\x12T\n" +
 	"\x13RejectBattleRequest\x12$.ptera.v1.RejectBattleRequestRequest\x1a\x17.ptera.v1.BattleRequestBAZ?github.com/jyogi-web/2025_Ptera/backend/pkg/grpc/ptera/v1;pterab\x06proto3"
@@ -1232,7 +1370,7 @@ func file_ptera_v1_ptera_proto_rawDescGZIP() []byte {
 	return file_ptera_v1_ptera_proto_rawDescData
 }
 
-var file_ptera_v1_ptera_proto_msgTypes = make([]protoimpl.MessageInfo, 14)
+var file_ptera_v1_ptera_proto_msgTypes = make([]protoimpl.MessageInfo, 17)
 var file_ptera_v1_ptera_proto_goTypes = []any{
 	(*User)(nil),                       // 0: ptera.v1.User
 	(*Card)(nil),                       // 1: ptera.v1.Card
@@ -1242,39 +1380,45 @@ var file_ptera_v1_ptera_proto_goTypes = []any{
 	(*BattleState)(nil),                // 5: ptera.v1.BattleState
 	(*Player)(nil),                     // 6: ptera.v1.Player
 	(*StartBattleRequest)(nil),         // 7: ptera.v1.StartBattleRequest
-	(*AttackRequest)(nil),              // 8: ptera.v1.AttackRequest
-	(*RetreatRequest)(nil),             // 9: ptera.v1.RetreatRequest
-	(*BattleRequest)(nil),              // 10: ptera.v1.BattleRequest
-	(*SendBattleRequestRequest)(nil),   // 11: ptera.v1.SendBattleRequestRequest
-	(*AcceptBattleRequestRequest)(nil), // 12: ptera.v1.AcceptBattleRequestRequest
-	(*RejectBattleRequestRequest)(nil), // 13: ptera.v1.RejectBattleRequestRequest
-	(*timestamppb.Timestamp)(nil),      // 14: google.protobuf.Timestamp
+	(*StartBattleResponse)(nil),        // 8: ptera.v1.StartBattleResponse
+	(*AttackRequest)(nil),              // 9: ptera.v1.AttackRequest
+	(*AttackResponse)(nil),             // 10: ptera.v1.AttackResponse
+	(*RetreatRequest)(nil),             // 11: ptera.v1.RetreatRequest
+	(*RetreatResponse)(nil),            // 12: ptera.v1.RetreatResponse
+	(*BattleRequest)(nil),              // 13: ptera.v1.BattleRequest
+	(*SendBattleRequestRequest)(nil),   // 14: ptera.v1.SendBattleRequestRequest
+	(*AcceptBattleRequestRequest)(nil), // 15: ptera.v1.AcceptBattleRequestRequest
+	(*RejectBattleRequestRequest)(nil), // 16: ptera.v1.RejectBattleRequestRequest
+	(*timestamppb.Timestamp)(nil),      // 17: google.protobuf.Timestamp
 }
 var file_ptera_v1_ptera_proto_depIdxs = []int32{
-	14, // 0: ptera.v1.Card.created_at:type_name -> google.protobuf.Timestamp
+	17, // 0: ptera.v1.Card.created_at:type_name -> google.protobuf.Timestamp
 	6,  // 1: ptera.v1.BattleState.player_me:type_name -> ptera.v1.Player
 	6,  // 2: ptera.v1.BattleState.player_opponent:type_name -> ptera.v1.Player
 	1,  // 3: ptera.v1.Player.deck:type_name -> ptera.v1.Card
-	14, // 4: ptera.v1.BattleRequest.created_at:type_name -> google.protobuf.Timestamp
-	3,  // 5: ptera.v1.PteraService.CompleteCard:input_type -> ptera.v1.CompleteCardRequest
-	7,  // 6: ptera.v1.BattleService.StartBattle:input_type -> ptera.v1.StartBattleRequest
-	8,  // 7: ptera.v1.BattleService.Attack:input_type -> ptera.v1.AttackRequest
-	9,  // 8: ptera.v1.BattleService.Retreat:input_type -> ptera.v1.RetreatRequest
-	11, // 9: ptera.v1.BattleService.SendBattleRequest:input_type -> ptera.v1.SendBattleRequestRequest
-	12, // 10: ptera.v1.BattleService.AcceptBattleRequest:input_type -> ptera.v1.AcceptBattleRequestRequest
-	13, // 11: ptera.v1.BattleService.RejectBattleRequest:input_type -> ptera.v1.RejectBattleRequestRequest
-	4,  // 12: ptera.v1.PteraService.CompleteCard:output_type -> ptera.v1.CompleteCardResponse
-	5,  // 13: ptera.v1.BattleService.StartBattle:output_type -> ptera.v1.BattleState
-	5,  // 14: ptera.v1.BattleService.Attack:output_type -> ptera.v1.BattleState
-	5,  // 15: ptera.v1.BattleService.Retreat:output_type -> ptera.v1.BattleState
-	10, // 16: ptera.v1.BattleService.SendBattleRequest:output_type -> ptera.v1.BattleRequest
-	5,  // 17: ptera.v1.BattleService.AcceptBattleRequest:output_type -> ptera.v1.BattleState
-	10, // 18: ptera.v1.BattleService.RejectBattleRequest:output_type -> ptera.v1.BattleRequest
-	12, // [12:19] is the sub-list for method output_type
-	5,  // [5:12] is the sub-list for method input_type
-	5,  // [5:5] is the sub-list for extension type_name
-	5,  // [5:5] is the sub-list for extension extendee
-	0,  // [0:5] is the sub-list for field type_name
+	5,  // 4: ptera.v1.StartBattleResponse.battle_state:type_name -> ptera.v1.BattleState
+	5,  // 5: ptera.v1.AttackResponse.battle_state:type_name -> ptera.v1.BattleState
+	5,  // 6: ptera.v1.RetreatResponse.battle_state:type_name -> ptera.v1.BattleState
+	17, // 7: ptera.v1.BattleRequest.created_at:type_name -> google.protobuf.Timestamp
+	3,  // 8: ptera.v1.PteraService.CompleteCard:input_type -> ptera.v1.CompleteCardRequest
+	7,  // 9: ptera.v1.BattleService.StartBattle:input_type -> ptera.v1.StartBattleRequest
+	9,  // 10: ptera.v1.BattleService.Attack:input_type -> ptera.v1.AttackRequest
+	11, // 11: ptera.v1.BattleService.Retreat:input_type -> ptera.v1.RetreatRequest
+	14, // 12: ptera.v1.BattleService.SendBattleRequest:input_type -> ptera.v1.SendBattleRequestRequest
+	15, // 13: ptera.v1.BattleService.AcceptBattleRequest:input_type -> ptera.v1.AcceptBattleRequestRequest
+	16, // 14: ptera.v1.BattleService.RejectBattleRequest:input_type -> ptera.v1.RejectBattleRequestRequest
+	4,  // 15: ptera.v1.PteraService.CompleteCard:output_type -> ptera.v1.CompleteCardResponse
+	8,  // 16: ptera.v1.BattleService.StartBattle:output_type -> ptera.v1.StartBattleResponse
+	10, // 17: ptera.v1.BattleService.Attack:output_type -> ptera.v1.AttackResponse
+	12, // 18: ptera.v1.BattleService.Retreat:output_type -> ptera.v1.RetreatResponse
+	13, // 19: ptera.v1.BattleService.SendBattleRequest:output_type -> ptera.v1.BattleRequest
+	5,  // 20: ptera.v1.BattleService.AcceptBattleRequest:output_type -> ptera.v1.BattleState
+	13, // 21: ptera.v1.BattleService.RejectBattleRequest:output_type -> ptera.v1.BattleRequest
+	15, // [15:22] is the sub-list for method output_type
+	8,  // [8:15] is the sub-list for method input_type
+	8,  // [8:8] is the sub-list for extension type_name
+	8,  // [8:8] is the sub-list for extension extendee
+	0,  // [0:8] is the sub-list for field type_name
 }
 
 func init() { file_ptera_v1_ptera_proto_init() }
@@ -1286,14 +1430,14 @@ func file_ptera_v1_ptera_proto_init() {
 	file_ptera_v1_ptera_proto_msgTypes[1].OneofWrappers = []any{}
 	file_ptera_v1_ptera_proto_msgTypes[3].OneofWrappers = []any{}
 	file_ptera_v1_ptera_proto_msgTypes[4].OneofWrappers = []any{}
-	file_ptera_v1_ptera_proto_msgTypes[10].OneofWrappers = []any{}
+	file_ptera_v1_ptera_proto_msgTypes[13].OneofWrappers = []any{}
 	type x struct{}
 	out := protoimpl.TypeBuilder{
 		File: protoimpl.DescBuilder{
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: unsafe.Slice(unsafe.StringData(file_ptera_v1_ptera_proto_rawDesc), len(file_ptera_v1_ptera_proto_rawDesc)),
 			NumEnums:      0,
-			NumMessages:   14,
+			NumMessages:   17,
 			NumExtensions: 0,
 			NumServices:   2,
 		},

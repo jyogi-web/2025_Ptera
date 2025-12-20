@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"log"
+	"log/slog"
 	"net"
 	"os"
 	"os/signal"
@@ -37,12 +38,17 @@ func main() {
 		log.Println("No .env.local file found, using system environment variables")
 	}
 
-	if err := run(); err != nil {
-		log.Fatalf("failed to run server: %v", err)
+	// Initialize structured logger
+	logger := slog.New(slog.NewJSONHandler(os.Stdout, nil))
+	slog.SetDefault(logger)
+
+	if err := run(logger); err != nil {
+		logger.Error("failed to run server", "error", err)
+		os.Exit(1)
 	}
 }
 
-func run() error {
+func run(logger *slog.Logger) error {
 	apiKey := os.Getenv("GEMINI_API_KEY")
 	if apiKey == "" {
 		return fmt.Errorf("GEMINI_API_KEY environment variable is not set")
@@ -65,7 +71,8 @@ func run() error {
 	// Create Battle Service
 	battleRepo := battle.NewRepository(firestoreClient)
 	cardRepo := battle.NewCardRepository(firestoreClient)
-	battleService := battle.NewService(battleRepo, cardRepo)
+	enableMockFallback := os.Getenv("ENABLE_MOCK_FALLBACK") == "true"
+	battleService := battle.NewService(logger, battleRepo, cardRepo, enableMockFallback)
 
 	lis, err := net.Listen("tcp", fmt.Sprintf(":%d", defaultPort))
 	if err != nil {
@@ -86,9 +93,9 @@ func run() error {
 	reflection.Register(grpcServer)
 
 	go func() {
-		log.Printf("server listening at %v", lis.Addr())
+		logger.Info("server listening", "address", lis.Addr())
 		if err := grpcServer.Serve(lis); err != nil {
-			log.Printf("failed to serve: %v", err)
+			logger.Error("failed to serve", "error", err)
 			return
 		}
 	}()

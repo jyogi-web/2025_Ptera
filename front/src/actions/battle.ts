@@ -21,7 +21,7 @@ export async function startBattleAction(
       opponentCircleId,
     });
     // Serialize to plain object to avoid Next.js warnings about "Plain Object"
-    return JSON.parse(JSON.stringify(response));
+    return JSON.parse(JSON.stringify(response.battleState));
   } catch (error) {
     console.error("StartBattle Error:", error);
     throw new Error(
@@ -39,7 +39,7 @@ export async function attackAction(battleId: string, playerId: string) {
       battleId,
       playerId,
     });
-    return JSON.parse(JSON.stringify(response));
+    return JSON.parse(JSON.stringify(response.battleState));
   } catch (error) {
     console.error("Attack Error:", error);
     throw new Error("Failed to attack");
@@ -60,7 +60,7 @@ export async function retreatAction(
       playerId,
       benchIndex,
     });
-    return JSON.parse(JSON.stringify(response));
+    return JSON.parse(JSON.stringify(response.battleState));
   } catch (error) {
     console.error("Retreat Error:", error);
     throw new Error("Failed to retreat");
