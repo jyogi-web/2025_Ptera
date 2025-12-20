@@ -86,7 +86,7 @@ describe("converter", () => {
 
       const result = convertCard("card-123", mockData);
 
-      expect(result).toEqual({
+      expect(result).toMatchObject({
         id: "card-123",
         creatorId: "user-123",
         name: "Taro Yamada",
@@ -99,6 +99,13 @@ describe("converter", () => {
         createdAt: date,
         expiryDate: expiryDate,
       });
+
+      // バトルステータスの存在と型をチェック
+      expect(result.maxHp).toEqual(expect.any(Number));
+      expect(result.attack).toEqual(expect.any(Number));
+      expect(result.flavor).toEqual(expect.any(String));
+      expect(result.maxHp).toBeGreaterThan(0);
+      expect(result.attack).toBeGreaterThan(0);
     });
 
     it("should handle optional affiliatedGroupRef", () => {
