@@ -27,6 +27,14 @@ export interface FirestoreUser {
   updatedAt: Timestamp;
 }
 
+export interface FirestoreCircle {
+  name: string;
+  description: string;
+  memberIds: string[]; // User UIDs
+  createdAt: Timestamp;
+  updatedAt: Timestamp;
+}
+
 export interface FirestoreGroup {
   name: string;
   description: string;

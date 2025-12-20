@@ -1,5 +1,6 @@
 import {
   addDoc,
+  arrayUnion,
   collection,
   deleteDoc,
   doc,
@@ -7,17 +8,27 @@ import {
   getDocs,
   limit,
   orderBy,
+  type QueryConstraint,
   query,
+  runTransaction,
   serverTimestamp,
+  setDoc,
   Timestamp,
   updateDoc,
+  where,
 } from "firebase/firestore";
 import { convertCard } from "@/helper/converter";
-import type { Card } from "@/types/app";
-import type { FirestoreCard } from "@/types/firestore";
+import type { Card, Circle, User } from "@/types/app";
+import type {
+  FirestoreCard,
+  FirestoreCircle,
+  FirestoreUser,
+} from "@/types/firestore";
 import { db } from "./firebase";
 
 const CARDS_COLLECTION = "cards";
+const USERS_COLLECTION = "users";
+const CIRCLES_COLLECTION = "circles";
 
 /**
  * Validate card data before writing to Firestore
@@ -55,6 +66,9 @@ const validateCardData = (data: Partial<FirestoreCard>) => {
   if (data.imageUrl !== undefined && typeof data.imageUrl !== "string") {
     errors.push("Image URL must be a string");
   }
+  if (data.circleId !== undefined && typeof data.circleId !== "string") {
+    errors.push("Circle ID must be a string");
+  }
 
   if (errors.length > 0) {
     throw new Error(`Validation failed: ${errors.join(", ")}`);
@@ -69,6 +83,8 @@ const validateCardData = (data: Partial<FirestoreCard>) => {
     description: data.description?.trim() || "",
     imageUrl: data.imageUrl?.trim() || "",
     creatorId: data.creatorId?.trim() || "",
+    circleId: data.circleId?.trim() || "",
+    expiryDate: data.expiryDate,
   };
 };
 
@@ -145,12 +161,18 @@ const isValidFirestoreCard = (id: string, data: any): data is FirestoreCard => {
   return true;
 };
 
-export const getCards = async (): Promise<Card[]> => {
-  const q = query(
-    collection(db, CARDS_COLLECTION),
+export const getCards = async (circleId?: string): Promise<Card[]> => {
+  const constraints: QueryConstraint[] = [
     orderBy("createdAt", "desc"),
     limit(20),
-  );
+  ];
+
+  if (circleId) {
+    constraints.unshift(where("circleId", "==", circleId));
+  }
+
+  const q = query(collection(db, CARDS_COLLECTION), ...constraints);
+
   const querySnapshot = await getDocs(q);
 
   return querySnapshot.docs
@@ -193,4 +215,119 @@ export const updateCard = async (
 export const deleteCardFirestore = async (id: string): Promise<void> => {
   const docRef = doc(db, CARDS_COLLECTION, id);
   await deleteDoc(docRef);
+};
+
+// --- User & Circle Management ---
+
+export const createUser = async (user: User): Promise<void> => {
+  const userRef = doc(db, USERS_COLLECTION, user.id);
+  const userSnap = await getDoc(userRef);
+
+  if (!userSnap.exists()) {
+    await setDoc(userRef, {
+      id: user.id,
+      displayName: user.name,
+      email: user.email || "",
+      photoURL: user.iconUrl,
+      createdAt: serverTimestamp(),
+      updatedAt: serverTimestamp(),
+    });
+  }
+};
+
+export const getUser = async (
+  userId: string,
+): Promise<FirestoreUser | null> => {
+  const userRef = doc(db, USERS_COLLECTION, userId);
+  const userSnap = await getDoc(userRef);
+
+  if (userSnap.exists()) {
+    return userSnap.data() as FirestoreUser;
+  }
+  return null;
+};
+
+export const createCircle = async (
+  name: string,
+  userId: string,
+): Promise<string> => {
+  const circleRef = doc(collection(db, CIRCLES_COLLECTION)); // Auto-generate ID
+  const userRef = doc(db, USERS_COLLECTION, userId);
+
+  try {
+    await runTransaction(db, async (transaction) => {
+      // Create Circle Document
+      transaction.set(circleRef, {
+        name,
+        memberIds: [userId],
+        createdAt: serverTimestamp(),
+        updatedAt: serverTimestamp(),
+      });
+
+      // Update User with Circle ID
+      transaction.update(userRef, {
+        circleId: circleRef.id,
+        updatedAt: serverTimestamp(),
+      });
+    });
+
+    return circleRef.id;
+  } catch (error) {
+    console.error("Failed to create circle:", error);
+    throw error;
+  }
+};
+
+export const joinCircle = async (
+  userId: string,
+  circleId: string,
+): Promise<void> => {
+  const circleRef = doc(db, CIRCLES_COLLECTION, circleId);
+  const userRef = doc(db, USERS_COLLECTION, userId);
+
+  try {
+    await runTransaction(db, async (transaction) => {
+      // First read the circle document and validate it exists
+      const circleDoc = await transaction.get(circleRef);
+
+      if (!circleDoc.exists()) {
+        throw new Error(`Circle with ID ${circleId} does not exist`);
+      }
+
+      // Update user document with circleId
+      transaction.update(userRef, {
+        circleId: circleId,
+        updatedAt: serverTimestamp(),
+      });
+
+      // Update circle document with userId
+      transaction.update(circleRef, {
+        memberIds: arrayUnion(userId),
+        updatedAt: serverTimestamp(),
+      });
+    });
+  } catch (error) {
+    console.error("Failed to join circle:", error);
+    throw error; // Re-throw to let callers handle
+  }
+};
+
+export const getCircles = async (): Promise<Circle[]> => {
+  const q = query(
+    collection(db, CIRCLES_COLLECTION),
+    orderBy("createdAt", "desc"),
+  );
+  const querySnapshot = await getDocs(q);
+
+  return querySnapshot.docs.map((doc) => {
+    const data = doc.data() as FirestoreCircle;
+    return {
+      id: doc.id,
+      name: data.name,
+      description: data.description,
+      memberIds: data.memberIds || [],
+      createdAt: data.createdAt.toDate(),
+      updatedAt: data.updatedAt.toDate(),
+    };
+  });
 };
