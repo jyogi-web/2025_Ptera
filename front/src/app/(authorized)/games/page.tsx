@@ -116,25 +116,7 @@ export default function Games() {
         )}
       </div>
 
-      {showSignal && (
-        <div
-          style={{
-            position: "absolute",
-            top: "50%",
-            left: "50%",
-            transform: "translate(-50%, -50%)",
-            color: "red",
-            fontSize: "5rem",
-            fontWeight: "bold",
-            pointerEvents: "none",
-            zIndex: 20,
-            textShadow:
-              "2px 2px 0 #fff, -2px -2px 0 #fff, 2px -2px 0 #fff, -2px 2px 0 #fff",
-          }}
-        >
-          今
-        </div>
-      )}
+      {showSignal && <div style={styles.signalText}>今</div>}
 
       <div style={styles.scannerWrapper}>
         {isRunning && (
