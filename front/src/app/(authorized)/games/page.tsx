@@ -19,6 +19,7 @@ interface GameRecord {
 
 export default function Games() {
   const [isRunning, setIsRunning] = useState(false);
+  const [showSignal, setShowSignal] = useState(false);
   const [records, setRecords] = useState<GameRecord[]>([]);
 
   useEffect(() => {
@@ -35,11 +36,17 @@ export default function Games() {
 
   const handleStart = () => {
     setIsRunning(true);
+    setShowSignal(false);
     console.log("計測開始準備");
   };
 
+  const handleSignal = useCallback(() => {
+    setShowSignal(true);
+  }, []);
+
   const handleQRLost = useCallback((duration: number) => {
     setIsRunning(false);
+    setShowSignal(false);
     const newRecord: GameRecord = {
       time: new Date().toLocaleString(),
       duration: (duration / 1000).toFixed(3),
@@ -64,6 +71,7 @@ export default function Games() {
 
   const handleTimeout = useCallback(() => {
     setIsRunning(false);
+    setShowSignal(false);
     alert("QRコードが見つかりませんでした。スタート画面に戻ります。");
   }, []);
 
@@ -117,12 +125,33 @@ export default function Games() {
         )}
       </div>
 
+      {showSignal && (
+        <div
+          style={{
+            position: "absolute",
+            top: "50%",
+            left: "50%",
+            transform: "translate(-50%, -50%)",
+            color: "red",
+            fontSize: "5rem",
+            fontWeight: "bold",
+            pointerEvents: "none",
+            zIndex: 20,
+            textShadow:
+              "2px 2px 0 #fff, -2px -2px 0 #fff, 2px -2px 0 #fff, -2px 2px 0 #fff",
+          }}
+        >
+          今
+        </div>
+      )}
+
       <div style={styles.scannerWrapper}>
         {isRunning && (
           <QRScanner
             isRunning={isRunning}
             onQRLost={handleQRLost}
             onTimeout={handleTimeout}
+            onSignal={handleSignal}
           />
         )}
       </div>
