@@ -45,13 +45,7 @@ export const styles: { [key: string]: CSSProperties } = {
     zIndex: -1,
   },
   // Cyber Specifics
-  cyberFrame: {
-    position: "relative",
-    padding: "30px",
-    background: "rgba(5, 20, 35, 0.7)", // semi-transparent deep blue
-    backdropFilter: "blur(10px)",
-    // border is handled by FrameCorners
-  },
+
   neonText: {
     color: "#00dac1",
     textShadow: "0 0 10px rgba(0, 218, 193, 0.5)",
@@ -89,10 +83,7 @@ export const styles: { [key: string]: CSSProperties } = {
     marginBottom: "4px",
     display: "block",
   },
-  glitchEffect: {
-    position: "relative",
-    display: "inline-block",
-  },
+
   headerGradient: {
     background: "linear-gradient(90deg, #00dac1, #0080ff)",
     WebkitBackgroundClip: "text",
