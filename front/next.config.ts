@@ -9,11 +9,16 @@ const nextConfig: NextConfig = {
         hostname: "firebasestorage.googleapis.com",
         pathname: "/**",
       },
-      {
-        protocol: "https",
-        hostname: "placehold.co",
-        pathname: "/**",
-      },
+      // Development only: placehold.co is used for mock/test pages
+      ...(process.env.NODE_ENV === "development"
+        ? [
+            {
+              protocol: "https" as const,
+              hostname: "placehold.co",
+              pathname: "/**",
+            },
+          ]
+        : []),
     ],
     dangerouslyAllowSVG: true,
     contentDispositionType: "attachment",

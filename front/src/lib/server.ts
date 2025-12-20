@@ -10,15 +10,10 @@ function getAdminApp() {
     return apps[0];
   }
 
-  const serviceAccountKey = process.env.FIREBASE_SERVICE_ACCOUNT_KEY;
-  if (!serviceAccountKey) {
-    throw new Error("FIREBASE_SERVICE_ACCOUNT_KEY is not defined");
-  }
-
   return initializeApp({
     credential: cert(
       // 環境変数から認証情報を取得
-      JSON.parse(serviceAccountKey),
+      JSON.parse(process.env.FIREBASE_SERVICE_ACCOUNT_KEY as string),
     ),
   });
 }
