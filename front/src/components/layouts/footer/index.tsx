@@ -44,7 +44,7 @@ export const Footer = () => {
   if (!user) return null;
 
   // 特定のパスで非表示にする場合はここに追加
-  const hiddenPaths = ["/login", "/"];
+  const hiddenPaths = ["/login", "/", "/battle"];
   if (hiddenPaths.includes(pathname)) return null;
 
   return (

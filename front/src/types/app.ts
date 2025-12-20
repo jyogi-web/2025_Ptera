@@ -28,6 +28,10 @@ export interface Card {
   imageUrl: string; // 画像URL
   createdAt: Date | string; // 作成日時 (serialization safe)
   expiryDate: Date | string; // 有効期限 (serialization safe)
+  // バトル用ステータス（Converterで生成、Firestoreにはない場合も）
+  maxHp: number;
+  attack: number;
+  flavor: string;
 }
 
 export interface Circle {

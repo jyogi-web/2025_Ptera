@@ -6,10 +6,16 @@ import type { Card as CardType } from "@/types/app";
 interface CardProps {
   card: CardType;
   label?: string;
+  variant?: "default" | "battle";
   onClick?: (card: CardType) => void;
 }
 
-export default function Card({ card, label, onClick }: CardProps) {
+export default function Card({
+  card,
+  label,
+  variant = "default",
+  onClick,
+}: CardProps) {
   // カード作成からの経過日数を計算
   const getDaysElapsed = (createdAt: Date | string): number => {
     const date =
@@ -74,13 +80,28 @@ export default function Card({ card, label, onClick }: CardProps) {
         <div className="mt-2 px-1 space-y-1">
           <p className="text-sm font-bold truncate text-white">{card.name}</p>
           <div className="flex items-center justify-between text-[10px]">
-            <span className="text-cyan-400 font-mono">{card.position}</span>
-            <span className="text-gray-400">{daysElapsed}日前</span>
+            {variant !== "battle" && (
+              <>
+                <span className="text-cyan-400 font-mono">{card.position}</span>
+                <span className="text-gray-400">{daysElapsed}日前</span>
+              </>
+            )}
           </div>
-          {card.hobby && (
-            <p className="text-[10px] text-gray-400 truncate">
-              🎯 {card.hobby}
-            </p>
+          {variant === "battle" ? (
+            <div className="flex gap-2 text-[10px] items-center mt-1">
+              <span className="bg-red-500/20 text-red-300 px-1.5 py-0.5 rounded border border-red-500/30">
+                ATK {card.attack}
+              </span>
+              <span className="bg-green-500/20 text-green-300 px-1.5 py-0.5 rounded border border-green-500/30">
+                HP {card.maxHp}
+              </span>
+            </div>
+          ) : (
+            card.hobby && (
+              <p className="text-[10px] text-gray-400 truncate">
+                🎯 {card.hobby}
+              </p>
+            )
           )}
         </div>
       </div>

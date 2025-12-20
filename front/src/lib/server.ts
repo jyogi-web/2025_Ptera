@@ -180,6 +180,10 @@ function validateCardData(
       imageUrl: data.imageUrl,
       createdAt,
       expiryDate,
+      // バトルステータス生成 (一旦ランダム + 学年補正)
+      maxHp: 500 + (data.grade || 1) * 50 + Math.floor(Math.random() * 100),
+      attack: 100 + (data.grade || 1) * 20 + Math.floor(Math.random() * 50),
+      flavor: "今日も元気にお布団から出られない。",
     },
   };
 }

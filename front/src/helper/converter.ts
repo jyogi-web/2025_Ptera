@@ -39,5 +39,11 @@ export const convertCard = (docId: string, data: FirestoreCard): Card => {
 
     createdAt: data.createdAt ? data.createdAt.toDate() : new Date(),
     expiryDate: data.expiryDate ? data.expiryDate.toDate() : new Date(),
+
+    // バトルステータス生成 (一旦ランダム + 学年補正)
+    // 学年: 1~4, その他は1扱い
+    maxHp: 500 + (data.grade || 1) * 50 + Math.floor(Math.random() * 100),
+    attack: 100 + (data.grade || 1) * 20 + Math.floor(Math.random() * 50),
+    flavor: "今日も元気にお布団から出られない。",
   };
 };
