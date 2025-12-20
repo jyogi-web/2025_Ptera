@@ -64,7 +64,8 @@ func run() error {
 
 	// Create Battle Service
 	battleRepo := battle.NewRepository(firestoreClient)
-	battleService := battle.NewService(battleRepo)
+	cardRepo := battle.NewCardRepository(firestoreClient)
+	battleService := battle.NewService(battleRepo, cardRepo)
 
 	lis, err := net.Listen("tcp", fmt.Sprintf(":%d", defaultPort))
 	if err != nil {

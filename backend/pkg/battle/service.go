@@ -13,42 +13,37 @@ import (
 
 type Service struct {
 	ptera.UnimplementedBattleServiceServer
-	repo *Repository
+	repo     *Repository
+	cardRepo *CardRepository
 }
 
-func NewService(repo *Repository) *Service {
-	return &Service{repo: repo}
+func NewService(repo *Repository, cardRepo *CardRepository) *Service {
+	return &Service{
+		repo:     repo,
+		cardRepo: cardRepo,
+	}
 }
 
 // StartBattle initializes a new battle
 func (s *Service) StartBattle(ctx context.Context, req *ptera.StartBattleRequest) (*ptera.BattleState, error) {
-	// TODO: Fetch real cards from Firestore using Circle IDs
-	// For now, we simulate fetching cards. In a real world scenario,
-	// we would inject a CardRepository or helper to fetch circle members.
-	// Since the requirement is to migrate logic, and we don't have existing Go code to fetch cards from Firestore cleanly yet (except via direct client),
-	// we will assume the request might need to carry minimal info OR we fetch from Firestore here.
-	// Given checks: The repository for Battle is strictly for BattleState.
-	// We might need to query the `users/circles` or similar.
+	// Fetch real cards from Firestore
+	myCards, err := s.cardRepo.GetCircleCards(ctx, req.MyCircleId)
+	if err != nil {
+		// If no cards found, fall back to mock cards
+		fmt.Printf("Warning: No cards found for circle %s, using mock cards: %v\n", req.MyCircleId, err)
+		myCards = generateMockCards(req.MyCircleId, 5)
+	}
 
-	// MOCKING CARD FETCH for this iteration to focus on BATTLE LOGIC MIGRATION.
-	// Ideally, we should fetch cards from `circles/{id}/members` (users) -> then fetch their cards.
-	// For simplicity in this step, I'll generate random cards based on circle ID seed effectively or just dummy cards.
+	opponentCards, err := s.cardRepo.GetCircleCards(ctx, req.OpponentCircleId)
+	if err != nil {
+		// If no cards found, fall back to mock cards
+		fmt.Printf("Warning: No cards found for circle %s, using mock cards: %v\n", req.OpponentCircleId, err)
+		opponentCards = generateMockCards(req.OpponentCircleId, 5)
+	}
 
-	// WAIT, the `useBattle` hook in frontend accepted `myCards` and `opponentCards`.
-	// The `StartBattleRequest` only has `circle_id`.
-	// If I don't fetch cards here, I can't build the deck.
-	// To make this work WITHOUT re-implementing `GetCards` logic in Go immediately:
-	// A) Backend Mock: Generate dummy cards.
-	// B) Frontend passes Card IDs? (Safe-ish)
-	// C) Implement `GetCards` in Go.
-
-	// I will implement a Helper to mock/generate cards for now to prove the Battle Logic works,
-	// as "fetching cards" properly is a separate domain (Circle/User domain).
-	// Although, to be "Complete", I should probably just fetch them.
-
-	// Let's create dummy decks based on Circle ID to show it works.
-	myDeck := BuildDeck(generateMockCards(req.MyCircleId, 5))
-	opponentDeck := BuildDeck(generateMockCards(req.OpponentCircleId, 5))
+	// Build decks from the fetched/mock cards
+	myDeck := BuildDeck(myCards)
+	opponentDeck := BuildDeck(opponentCards)
 
 	battleID := fmt.Sprintf("battle-%d", time.Now().UnixNano())
 

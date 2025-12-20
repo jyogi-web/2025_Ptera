@@ -159,15 +159,13 @@ export default function BattleField({
         <p className="text-xs text-blue-300 mb-1">Bench (Click to Retreat)</p>
         <div className="flex gap-2 justify-center min-h-[80px]">
           {myBench.map((card, i) => (
-            <button
-              type="button"
-              key={card.id}
-              className="w-16 cursor-pointer transform hover:scale-105 transition-transform outline-none border-none bg-transparent p-0"
-              onClick={() => !winnerId && onRetreat(i)}
-              disabled={!!winnerId}
-            >
-              <Card card={adaptCard(card)} variant="battle" />
-            </button>
+            <div key={card.id} className="w-16">
+              <Card
+                card={adaptCard(card)}
+                variant="battle"
+                onClick={() => !winnerId && onRetreat(i)}
+              />
+            </div>
           ))}
         </div>
 
