@@ -25,6 +25,7 @@ export interface FirestoreUser {
   photoURL?: string;
   bio?: string;
   circleId?: string; // Circle ID
+  favoriteCardIds?: string[]; // 推しメンのカードID配列
   createdAt: Timestamp;
   updatedAt: Timestamp;
 }
