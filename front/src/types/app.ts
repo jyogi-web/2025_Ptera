@@ -1,9 +1,10 @@
 // 認証済みユーザーなど、アプリ内のユーザー実体
 export interface User {
-  id: string; // ユーザーID
-  name: string; // 名前
-  iconUrl: string; // アイコンURL
-  email?: string; // Eメール
+  id: string; // Auth UID
+  name: string; // Display Name
+  iconUrl: string; // Photo URL
+  email?: string; // Email
+  circleId?: string; // Circle ID
 }
 
 // ユーザーのステータス情報（ランク、CP、学年など）
@@ -20,10 +21,18 @@ export interface Card {
   name: string; // 名前
   grade: number; // 学年
   position: string; // 役割
-  affiliatedGroup?: string; // サークル名
+  affiliatedGroup?: string; // サークル名 (Legacy/Display purpose)
+  circleId?: string; // Circle ID (System)
   hobby: string; // 趣味
   description: string; // 説明文
   imageUrl: string; // 画像URL
   createdAt: Date; // 作成日時
   expiryDate: Date; // 有効期限
+}
+
+export interface Circle {
+  id: string;
+  name: string;
+  description?: string;
+  memberIds: string[];
 }
