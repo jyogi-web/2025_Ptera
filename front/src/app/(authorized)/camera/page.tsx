@@ -240,9 +240,9 @@ export default function CameraPage() {
   };
 
   const handleMakeCard = async () => {
-    if (!uploadedImageUrl || !user) {
+    if (!uploadedImageUrl || !user || !user.circleId) {
       toast.error(
-        "画像のアップロードが完了していないか、ログインしていません。",
+        "画像のアップロードが完了していないか、ログインしていないか、サークルに所属していません。",
       );
       return;
     }
