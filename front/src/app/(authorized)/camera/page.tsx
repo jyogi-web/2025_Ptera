@@ -77,7 +77,9 @@ const dataURLtoFile = (dataurl: string, filename: string): File => {
 
 export default function CameraPage() {
   const cameraRef = useRef<CameraPreviewHandle>(null);
+  const fileInputRef = useRef<HTMLInputElement>(null);
   const [capturedImage, setCapturedImage] = useState<string | null>(null);
+  const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [cameraReady, setCameraReady] = useState(false);
   const [uploadedImageUrl, setUploadedImageUrl] = useState<string | null>(null);
   const [uploadedImagePath, setUploadedImagePath] = useState<string | null>(
@@ -123,12 +125,38 @@ export default function CameraPage() {
       }
 
       setCapturedImage(imageSrc);
+      setSelectedFile(null); // Clear selected file when capturing new image
     } catch (error) {
       console.error("Unexpected error during capture.", error);
       setCapturedImage(null);
       toast.error(
         "撮影中にエラーが発生しました。時間をおいてからもう一度お試しください。",
       );
+    }
+  };
+
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    // Validate file type
+    if (!file.type.startsWith("image/")) {
+      toast.error("画像ファイルを選択してください。");
+      return;
+    }
+
+    try {
+      const reader = new FileReader();
+      reader.onload = (event) => {
+        if (typeof event.target?.result === "string") {
+          setCapturedImage(event.target.result);
+          setSelectedFile(file);
+        }
+      };
+      reader.readAsDataURL(file);
+    } catch (error) {
+      console.error("Error reading file:", error);
+      toast.error("画像の読み込みに失敗しました。");
     }
   };
 
@@ -148,9 +176,18 @@ export default function CameraPage() {
         throw new Error("ログインしていません。");
       }
       const timestamp = Date.now();
-      const file = dataURLtoFile(capturedImage, `card-${timestamp}.png`);
+
+      let file: File;
+      if (selectedFile) {
+        file = selectedFile;
+      } else {
+        file = dataURLtoFile(capturedImage, `card-${timestamp}.png`);
+      }
+
       // Upload to user-specific path: users/{userId}/cards/{filename}
-      const uploadPath = `users/${user.id}/cards/${timestamp}.png`;
+      const extension = selectedFile ? selectedFile.name.split('.').pop() : 'png';
+      const uploadPath = `users/${user.id}/cards/${timestamp}.${extension}`;
+
       const url = await uploadImage(file, uploadPath);
 
       setUploadedImageUrl(url);
@@ -350,6 +387,33 @@ export default function CameraPage() {
                     </svg>
                   </button>
                   <p className="text-sm text-gray-400">撮影ボタン</p>
+
+                  <div className="w-full border-t border-gray-700 my-2"></div>
+
+                  <button
+                    type="button"
+                    onClick={() => fileInputRef.current?.click()}
+                    className="flex flex-col items-center gap-2 text-gray-400 hover:text-white transition-colors"
+                  >
+                    <div className="w-12 h-12 rounded-full bg-gray-700 flex items-center justify-center">
+                      <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        width="24"
+                        height="24"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="currentColor"
+                        strokeWidth="2"
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                      >
+                        <rect width="18" height="18" x="3" y="3" rx="2" ry="2" />
+                        <circle cx="9" cy="9" r="2" />
+                        <path d="m21 15-3.086-3.086a2 2 0 0 0-2.828 0L6 21" />
+                      </svg>
+                    </div>
+                    <span className="text-xs">画像を選択</span>
+                  </button>
                 </div>
               )}
             </div>
@@ -581,14 +645,7 @@ export default function CameraPage() {
           {/* アクションボタン（撮影後に表示） */}
           {capturedImage && (
             <>
-              <div className="flex gap-4 mb-6">
-                <button
-                  type="button"
-                  className="flex-1 py-3 px-6 bg-blue-600 hover:bg-blue-700 rounded-lg font-semibold transition-colors"
-                >
-                  ギャラリーから選択
-                </button>
-              </div>
+
 
               {/* カード化ボタン */}
               <button
@@ -602,6 +659,13 @@ export default function CameraPage() {
             </>
           )}
         </div>
+        <input
+          type="file"
+          ref={fileInputRef}
+          onChange={handleFileChange}
+          accept="image/*"
+          className="hidden"
+        />
       </div>
     </div>
   );
