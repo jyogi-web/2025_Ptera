@@ -1,10 +1,18 @@
 "use client";
 
 import { Animator, Text } from "@arwes/react";
+import { useAuth } from "@/context/AuthContext";
+import Loading from "../loading";
 import { GameCard } from "./_components/GameCard";
 import { styles } from "./_styles/page.styles";
 
 export default function GameHub() {
+  const { loading } = useAuth();
+
+  if (loading) {
+    return <Loading />;
+  }
+
   return (
     <div style={styles.container}>
       <Animator active={true}>

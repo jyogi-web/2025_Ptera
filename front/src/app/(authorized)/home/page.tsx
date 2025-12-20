@@ -5,6 +5,7 @@ import { useEffect, useState } from "react";
 import { useAuth } from "@/context/AuthContext";
 import { getFavoriteCards } from "@/lib/firestore";
 import type { Card } from "@/types/app";
+import Loading from "../loading";
 import { CharacterDisplay } from "./_components/CharacterDisplay";
 
 import { styles } from "./_styles/page.styles";
@@ -36,6 +37,10 @@ export default function Home() {
 
     loadFavorites();
   }, [user]);
+
+  if (loading) {
+    return <Loading />;
+  }
 
   return (
     <div style={styles.container}>

@@ -7,6 +7,7 @@ import toast from "react-hot-toast";
 import { useAuth } from "@/context/AuthContext";
 import { createCircle, getCircles, joinCircle } from "@/lib/firestore";
 import type { Circle } from "@/types/app";
+import Loading from "../loading";
 import { styles } from "./_styles/page.styles";
 
 export default function CirclePage() {
@@ -33,6 +34,10 @@ export default function CirclePage() {
 
     fetchCircles();
   }, []);
+
+  if (loading) {
+    return <Loading />;
+  }
 
   const handleCreateCircle = async (e: React.FormEvent) => {
     e.preventDefault();
