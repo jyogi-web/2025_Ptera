@@ -4,7 +4,7 @@ import dynamic from "next/dynamic";
 import Link from "next/link";
 import { useCallback, useEffect, useState } from "react";
 
-const QRScanner = dynamic(() => import("../../components/QRScanner"), {
+const QRScanner = dynamic(() => import("@/components/QRScanner"), {
   ssr: false,
 });
 
