@@ -76,76 +76,9 @@ export const styles: { [key: string]: CSSProperties } = {
     scrollbarWidth: "thin",
   },
   // Enhanced Cyber Styles
-  cyberListItem: {
-    display: "flex",
-    justifyContent: "space-between",
-    alignItems: "center",
-    background:
-      "linear-gradient(90deg, rgba(15, 23, 42, 0.8) 0%, rgba(15, 23, 42, 0.4) 100%)",
-    padding: "16px",
-    border: "1px solid rgba(249, 115, 22, 0.2)",
-    borderLeft: "4px solid rgba(249, 115, 22, 0.4)",
-    marginBottom: "12px",
-    transition: "all 0.3s cubic-bezier(0.4, 0, 0.2, 1)",
-    clipPath:
-      "polygon(0 0, 100% 0, 100% calc(100% - 10px), calc(100% - 10px) 100%, 0 100%)",
-    position: "relative",
-    overflow: "hidden",
-  },
-  cyberListItemHover: {
-    background:
-      "linear-gradient(90deg, rgba(249, 115, 22, 0.15) 0%, rgba(249, 115, 22, 0.05) 100%)",
-    borderColor: "rgba(249, 115, 22, 0.6)",
-    borderLeftColor: "#f97316",
-    boxShadow: "0 0 20px rgba(249, 115, 22, 0.15)",
-    transform: "translateX(4px)",
-  },
-  cyberButton: {
-    position: "relative",
-    display: "flex",
-    alignItems: "center",
-    gap: "8px",
-    padding: "8px 20px",
-    background:
-      "linear-gradient(45deg, rgba(249, 115, 22, 0.1), rgba(249, 115, 22, 0.2))",
-    border: "1px solid rgba(249, 115, 22, 0.5)",
-    color: "#fdba74", // Orange-200
-    fontSize: "0.85rem",
-    fontWeight: "bold",
-    letterSpacing: "1px",
-    cursor: "pointer",
-    transition: "all 0.2s ease",
-    clipPath: "polygon(10px 0, 100% 0, 100% 100%, 0 100%, 0 10px)",
-    textTransform: "uppercase",
-  },
-  cyberButtonHover: {
-    background: "rgba(249, 115, 22, 0.8)",
-    boxShadow: "0 0 20px rgba(249, 115, 22, 0.6)",
-    borderColor: "#f97316",
-    color: "#fff",
-    textShadow: "0 0 5px rgba(255, 255, 255, 0.8)",
-  },
-  cyberButtonBack: {
-    display: "flex",
-    alignItems: "center",
-    gap: "8px",
-    color: "#22d3ee",
-    fontFamily: "monospace",
-    fontSize: "0.9rem",
-    background: "transparent",
-    border: "1px solid transparent",
-    padding: "6px 12px",
-    borderRadius: "4px",
-    transition: "all 0.2s ease",
-    cursor: "pointer",
-  },
-  cyberButtonBackHover: {
-    color: "#a5f3fc",
-    background: "rgba(34, 211, 238, 0.1)",
-    borderColor: "rgba(34, 211, 238, 0.3)",
-    boxShadow: "0 0 10px rgba(34, 211, 238, 0.2)",
-    textShadow: "0 0 5px rgba(34, 211, 238, 0.5)",
-  },
+  // Enhanced Cyber Styles
+  // (Refactored to Tailwind classes in page.tsx)
+
   // Radar Animation Style
   radarContainer: {
     position: "relative",

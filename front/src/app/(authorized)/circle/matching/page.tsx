@@ -152,29 +152,29 @@ export default function MatchingPage() {
                         </div>
                       ) : (
                         opponentCircles.map((circle) => (
-                          // biome-ignore lint/a11y/noStaticElementInteractions: Visual hover effect only
                           <div
                             key={circle.id}
-                            style={styles.cyberListItem}
-                            className="group/item"
-                            onMouseEnter={(e) => {
-                              Object.assign(
-                                e.currentTarget.style,
-                                styles.cyberListItemHover,
-                              );
-                            }}
-                            onMouseLeave={(e) => {
-                              Object.assign(
-                                e.currentTarget.style,
-                                styles.cyberListItem,
-                              );
+                            // biome-ignore lint/a11y/noNoninteractiveTabindex: Keyboard accessible for visual effects
+                            tabIndex={0}
+                            className="group/item relative flex items-center justify-between p-4 mb-3 overflow-hidden
+                              bg-gradient-to-r from-slate-900/80 to-slate-900/40
+                              border border-orange-500/20 border-l-4 border-l-orange-500/40
+                              transition-all duration-300 ease-[cubic-bezier(0.4,0,0.2,1)]
+                              hover:bg-gradient-to-r hover:from-orange-500/15 hover:to-orange-500/5
+                              hover:border-orange-500/60 hover:border-l-orange-500 hover:shadow-[0_0_20px_rgba(249,115,22,0.15)] hover:translate-x-1
+                              focus-visible:bg-gradient-to-r focus-visible:from-orange-500/15 focus-visible:to-orange-500/5
+                              focus-visible:border-orange-500/60 focus-visible:border-l-orange-500 focus-visible:shadow-[0_0_20px_rgba(249,115,22,0.15)] focus-visible:translate-x-1
+                              outline-none"
+                            style={{
+                              clipPath:
+                                "polygon(0 0, 100% 0, 100% calc(100% - 10px), calc(100% - 10px) 100%, 0 100%)",
                             }}
                           >
                             <div className="flex flex-col">
                               <span className="text-xs text-gray-500 font-mono mb-1">
                                 TARGET_ID: {circle.id.substring(0, 6)}...
                               </span>
-                              <span className="font-bold text-white text-lg tracking-wide group-hover/item:text-orange-300 transition-colors">
+                              <span className="font-bold text-white text-lg tracking-wide group-hover/item:text-orange-300 group-focus-visible/item:text-orange-300 transition-colors">
                                 {circle.name}
                               </span>
                             </div>
@@ -185,18 +185,16 @@ export default function MatchingPage() {
                                 handleSendRequest(circle.id, circle.name)
                               }
                               disabled={loadingBattle}
-                              style={styles.cyberButton}
-                              onMouseEnter={(e) => {
-                                Object.assign(
-                                  e.currentTarget.style,
-                                  styles.cyberButtonHover,
-                                );
-                              }}
-                              onMouseLeave={(e) => {
-                                Object.assign(
-                                  e.currentTarget.style,
-                                  styles.cyberButton,
-                                );
+                              className="relative flex items-center gap-2 px-5 py-2
+                                bg-gradient-to-br from-orange-500/10 to-orange-500/20
+                                border border-orange-500/50 text-orange-200 text-sm font-bold tracking-widest uppercase cursor-pointer
+                                transition-all duration-200
+                                hover:bg-orange-500/80 hover:shadow-[0_0_20px_rgba(249,115,22,0.6)] hover:border-orange-500 hover:text-white hover:drop-shadow-[0_0_5px_rgba(255,255,255,0.8)]
+                                focus-visible:bg-orange-500/80 focus-visible:shadow-[0_0_20px_rgba(249,115,22,0.6)] focus-visible:border-orange-500 focus-visible:text-white focus-visible:drop-shadow-[0_0_5px_rgba(255,255,255,0.8)]
+                                outline-none disabled:opacity-50 disabled:cursor-not-allowed"
+                              style={{
+                                clipPath:
+                                  "polygon(10px 0, 100% 0, 100% 100%, 0 100%, 0 10px)",
                               }}
                             >
                               <span className="w-1.5 h-1.5 bg-orange-400 rounded-full" />
