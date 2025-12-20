@@ -1,11 +1,14 @@
 "use client";
 
 import { Animator, AnimatorGeneralProvider } from "@arwes/react";
+import { doc, onSnapshot } from "firebase/firestore";
 import { Loader2, LogIn } from "lucide-react";
 import { usePathname } from "next/navigation";
 import { useEffect, useMemo, useState } from "react";
 import { useAuth } from "@/context/AuthContext";
-import type { UserStats } from "@/types/app";
+import { db } from "@/lib/firebase";
+import { getFavoriteCards } from "@/lib/firestore";
+import type { Card, UserStats } from "@/types/app";
 import { HeaderInfoPanel } from "./HeaderInfoPanel";
 import { HeaderStatusPanel } from "./HeaderStatusPanel";
 
@@ -47,7 +50,47 @@ export const Header = (): React.JSX.Element | null => {
     setActivate(true);
   }, []);
 
+  const [favorite, setFavorite] = useState<Card | null>(null);
+
+  useEffect(() => {
+    if (!user) return;
+
+    const userRef = doc(db, "users", user.id);
+
+    // Subscribe to user document changes to react to favorite updates in real-time
+    const unsubscribe = onSnapshot(
+      userRef,
+      async (snapshot) => {
+        try {
+          const data = snapshot.data();
+          const favoriteCardIds: string[] = data?.favoriteCardIds || [];
+
+          if (favoriteCardIds.length === 0) {
+            setFavorite(null);
+            return;
+          }
+
+          // Load the latest favorite card (the last one in the array)
+          const favorites = await getFavoriteCards(user.id);
+          if (favorites.length > 0)
+            setFavorite(favorites[favorites.length - 1]);
+        } catch (e) {
+          console.error("Failed to update favorite for header:", e);
+        }
+      },
+      (err) => {
+        console.error("Favorite snapshot error:", err);
+      },
+    );
+
+    return () => unsubscribe();
+  }, [user]);
+
   if (!isHeaderVisible) return null;
+
+  const gradeLabel = favorite
+    ? `大学${favorite.grade}年目`
+    : mockUserStats.grade;
 
   const handleLogin = async () => {
     if (isLoggingIn) return;
@@ -74,15 +117,11 @@ export const Header = (): React.JSX.Element | null => {
               {/* ログイン時: HUDステータスパネル */}
               {user && (
                 <div className="flex items-center justify-center w-full space-x-0 text-sm md:text-base">
-                  <HeaderStatusPanel
-                    active={activate}
-                    rank={mockUserStats.rank}
-                    cp={mockUserStats.cp}
-                  />
+                  <HeaderStatusPanel active={activate} favorite={favorite} />
                   <HeaderInfoPanel
                     active={activate}
                     today={today}
-                    grade={mockUserStats.grade}
+                    grade={gradeLabel}
                   />
                 </div>
               )}
