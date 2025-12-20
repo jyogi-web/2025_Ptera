@@ -130,6 +130,7 @@ const QRScanner: React.FC<QRScannerProps> = ({
 
           if (!qrDetectedRef.current) {
             console.log("QRコードを検出しました:", code.data);
+            startTimeRef.current = performance.now();
             qrDetectedRef.current = true;
             if (timeoutTimerRef.current) {
               clearTimeout(timeoutTimerRef.current);
@@ -211,12 +212,7 @@ const QRScanner: React.FC<QRScannerProps> = ({
     };
   }, [onQRLost, isRunning, targetQRData, onTimeout]);
 
-  useEffect(() => {
-    if (isRunning && qrDetectedRef.current) {
-      startTimeRef.current = performance.now();
-      console.log("計測開始:", startTimeRef.current);
-    }
-  }, [isRunning]);
+
 
   // ズームコントロール用の関数
   const handleZoom = (newZoom: number) => {
