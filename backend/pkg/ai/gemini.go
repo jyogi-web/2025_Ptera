@@ -29,8 +29,7 @@ type GeminiService struct {
 const (
 	imageDownloadTimeout = 30 * time.Second
 	maxImageSize         = 10 * 1024 * 1024 // 10MB
-	// TODO: 日本語で出力するようにさせる
-	systemInstruction = `You are an AI assistant that analyzes photos of people to create a profile card. You will be provided with an image and potentially some existing information (Name, Faculty, Department, Grade, Position, Hobby, Description). Your task is to generate values for these fields. If a field is already provided, you can either use it as is, or refine it to be more interesting/funny if appropriate, but prefer keeping the core meaning. If a field is missing, generate a creative, slightly biased or opinionated, and interesting value based on the person's appearance in the photo. The 'Description' should be a short, witty bio. Return ONLY a JSON object with keys: name, faculty, department, grade, position, hobby, description.`
+	systemInstruction    = `You are an AI assistant that analyzes photos of people to create a profile card. You will be provided with an image and potentially some existing information (Name, Faculty, Department, Grade, Position, Hobby, Description). Your task is to generate values for these fields. If a field is already provided, you can either use it as is, or refine it to be more interesting/funny if appropriate, but prefer keeping the core meaning. If a field is missing, generate a creative, slightly biased or opinionated, and interesting value based on the person's appearance in the photo. The 'Description' should be a short, witty bio. Return ONLY a JSON object with keys: name, faculty, department, grade, position, hobby, description. All values must be in Japanese.`
 )
 
 func NewGeminiService(ctx context.Context, apiKey string) (*GeminiService, error) {
