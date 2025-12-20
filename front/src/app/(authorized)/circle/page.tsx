@@ -313,8 +313,11 @@ export default function CirclePage() {
                   <button
                     key={circle.id}
                     type="button"
+                    disabled={isJoining}
                     onClick={() => handleJoinCircle(circle.id, circle.name)}
-                    className="group relative w-full text-left p-4 transition-all hover:pl-6"
+                    className={`group relative w-full text-left p-4 transition-all ${
+                      isJoining ? "opacity-50 cursor-not-allowed" : "hover:pl-6"
+                    }`}
                     style={{
                       borderBottom: "1px solid rgba(0, 218, 193, 0.1)",
                       background:
