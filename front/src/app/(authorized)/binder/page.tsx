@@ -13,10 +13,7 @@ export default function BinderPage() {
 
   useEffect(() => {
     const fetchCards = async () => {
-      // Only fetch if user logged in. If user has no circleId, it fetches "global" cards (depends on getCards logic)
-      // or we can skip fetching. For now, pass what we have.
-      // Ideally, if no circleId, we might want to show nothing or public cards?
-      // Based on plan: "自分のサークルのカードのみを表示".
+      // Only fetch if user logged in and has circleId
       if (!user?.circleId) {
         setLoading(false);
         return;
@@ -34,7 +31,7 @@ export default function BinderPage() {
     if (user) {
       fetchCards();
     } else {
-      // Wait for auth to load, or if not logged in (though AuthGuard prevents this), do nothing
+      // Wait for auth to load
       if (loading === false && !user) setLoading(false);
     }
   }, [user, loading]);
@@ -61,14 +58,37 @@ export default function BinderPage() {
           <p className="text-sm text-gray-400">Total Cards: {cards.length}</p>
         </div>
 
-        {/* Grid */}
-        <div className="grid grid-cols-3 gap-3">
-          {cards.length === 0 ? (
-            <div className="col-span-3 text-center text-gray-500 py-10">
-              カードがまだありません。
+        {/* Empty State */}
+        {cards.length === 0 && (
+          <div className="flex flex-col items-center justify-center py-20">
+            <div className="text-gray-400 text-center">
+              <svg
+                className="w-16 h-16 mx-auto mb-4"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+                aria-label="空のバインダーアイコン"
+              >
+                <title>空のバインダーアイコン</title>
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M20 13V6a2 2 0 00-2-2H6a2 2 0 00-2 2v7m16 0v5a2 2 0 01-2 2H6a2 2 0 01-2-2v-5m16 0h-2.586a1 1 0 00-.707.293l-2.414 2.414a1 1 0 01-.707.293h-3.172a1 1 0 01-.707-.293l-2.414-2.414A1 1 0 006.586 13H4"
+                />
+              </svg>
+              <p className="text-lg font-semibold mb-2">カードがありません</p>
+              <p className="text-sm">
+                カメラから新しいカードを作成してみましょう！
+              </p>
             </div>
-          ) : (
-            cards.map((card, index) => (
+          </div>
+        )}
+
+        {/* Grid */}
+        {cards.length > 0 && (
+          <div className="grid grid-cols-3 gap-3">
+            {cards.map((card, index) => (
               <Card
                 key={card.id}
                 card={card}
@@ -78,9 +98,9 @@ export default function BinderPage() {
                   // TODO: カード詳細ページへの遷移など
                 }}
               />
-            ))
-          )}
-        </div>
+            ))}
+          </div>
+        )}
       </div>
     </div>
   );

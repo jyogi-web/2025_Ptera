@@ -36,8 +36,8 @@ export const convertCard = (docId: string, data: FirestoreCard): Card => {
     hobby: data.hobby,
     description: data.description,
     imageUrl: data.imageUrl,
-    createdAt: createdAt,
-    // Note: expiryDate should always exist due to validation, fallback for safety
-    expiryDate: data.expiryDate ? data.expiryDate.toDate() : defaultExpiryDate,
+
+    createdAt: data.createdAt ? data.createdAt.toDate() : new Date(),
+    expiryDate: data.expiryDate ? data.expiryDate.toDate() : new Date(),
   };
 };
