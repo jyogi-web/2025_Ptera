@@ -8,10 +8,10 @@ import {
   limit,
   orderBy,
   query,
+  runTransaction,
   serverTimestamp,
   setDoc,
   Timestamp,
-  updateDoc,
   where,
 } from "firebase/firestore";
 import { convertCard } from "@/helper/converter";
@@ -221,41 +221,65 @@ export const createCircle = async (
   name: string,
   userId: string,
 ): Promise<string> => {
-  // Create Circle Document
-  const circleRef = await addDoc(collection(db, CIRCLES_COLLECTION), {
-    name,
-    memberIds: [userId],
-    createdAt: serverTimestamp(),
-    updatedAt: serverTimestamp(),
-  });
-
-  // Update User with Circle ID
+  const circleRef = doc(collection(db, CIRCLES_COLLECTION)); // Auto-generate ID
   const userRef = doc(db, USERS_COLLECTION, userId);
-  await updateDoc(userRef, {
-    circleId: circleRef.id,
-    updatedAt: serverTimestamp(),
-  });
 
-  return circleRef.id;
+  try {
+    await runTransaction(db, async (transaction) => {
+      // Create Circle Document
+      transaction.set(circleRef, {
+        name,
+        memberIds: [userId],
+        createdAt: serverTimestamp(),
+        updatedAt: serverTimestamp(),
+      });
+
+      // Update User with Circle ID
+      transaction.update(userRef, {
+        circleId: circleRef.id,
+        updatedAt: serverTimestamp(),
+      });
+    });
+
+    return circleRef.id;
+  } catch (error) {
+    console.error("Failed to create circle:", error);
+    throw error;
+  }
 };
 
 export const joinCircle = async (
   userId: string,
   circleId: string,
 ): Promise<void> => {
-  // Update User with Circle ID
-  const userRef = doc(db, USERS_COLLECTION, userId);
-  await updateDoc(userRef, {
-    circleId: circleId,
-    updatedAt: serverTimestamp(),
-  });
-
-  // Update Circle with Member ID
   const circleRef = doc(db, CIRCLES_COLLECTION, circleId);
-  await updateDoc(circleRef, {
-    memberIds: arrayUnion(userId),
-    updatedAt: serverTimestamp(),
-  });
+  const userRef = doc(db, USERS_COLLECTION, userId);
+
+  try {
+    await runTransaction(db, async (transaction) => {
+      // First read the circle document and validate it exists
+      const circleDoc = await transaction.get(circleRef);
+
+      if (!circleDoc.exists()) {
+        throw new Error(`Circle with ID ${circleId} does not exist`);
+      }
+
+      // Update user document with circleId
+      transaction.update(userRef, {
+        circleId: circleId,
+        updatedAt: serverTimestamp(),
+      });
+
+      // Update circle document with userId
+      transaction.update(circleRef, {
+        memberIds: arrayUnion(userId),
+        updatedAt: serverTimestamp(),
+      });
+    });
+  } catch (error) {
+    console.error("Failed to join circle:", error);
+    throw error; // Re-throw to let callers handle
+  }
 };
 
 export const getCircles = async (): Promise<Circle[]> => {
