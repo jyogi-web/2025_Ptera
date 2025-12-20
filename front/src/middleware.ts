@@ -5,7 +5,8 @@ export function middleware(request: NextRequest) {
   const session = request.cookies.get("session");
 
   // Define protected routes
-  const protectedRoutes = ["/firestore-test"];
+  // Define protected routes
+  const protectedRoutes: string[] = [];
 
   const isProtectedRoute = protectedRoutes.some((route) =>
     request.nextUrl.pathname.startsWith(route),
@@ -19,5 +20,5 @@ export function middleware(request: NextRequest) {
 }
 
 export const config = {
-  matcher: ["/firestore-test/:path*"],
+  matcher: [],
 };
