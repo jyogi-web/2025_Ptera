@@ -1,10 +1,10 @@
 "use client";
 
 import { useState } from "react";
-import { useAuth } from "@/context/AuthContext";
 import type { Card } from "@/types/app";
 import { styles } from "../_styles/page.styles";
 import { BinderGrid } from "./BinderGrid";
+import { useAuth } from "@/context/AuthContext";
 
 interface BinderContentProps {
   cards: Card[];
@@ -46,10 +46,8 @@ export function BinderContent({ cards }: BinderContentProps) {
       <div style={styles.scrollableGrid}>
         {requireJoin && (
           <div className="mb-4 p-4 rounded border border-yellow-400 bg-yellow-900/20 text-yellow-200">
-            <div className="font-bold">サークル加入が必要です</div>
-            <div className="text-sm">
-              初回利用時はサークルに参加する必要があります。先にサークル参加を完了してください。
-            </div>
+            <div className="font-bold">Circle membership required</div>
+            <div className="text-sm">First-time users must join a circle before using this feature. Please complete circle membership first.</div>
           </div>
         )}
         {/* Empty State */}
