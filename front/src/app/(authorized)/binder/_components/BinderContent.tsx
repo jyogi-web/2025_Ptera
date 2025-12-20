@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { useAuth } from "@/context/AuthContext";
 import type { Card } from "@/types/app";
 import { styles } from "../_styles/page.styles";
 import { BinderGrid } from "./BinderGrid";
@@ -11,6 +12,8 @@ interface BinderContentProps {
 
 export function BinderContent({ cards }: BinderContentProps) {
   const [isSelectingFavorite, setIsSelectingFavorite] = useState(false);
+  const { user } = useAuth();
+  const requireJoin = !!user && !user.circleId;
 
   return (
     <div style={styles.contentWrapper}>
@@ -41,6 +44,14 @@ export function BinderContent({ cards }: BinderContentProps) {
 
       {/* Scrollable Area */}
       <div style={styles.scrollableGrid}>
+        {requireJoin && (
+          <div className="mb-4 p-4 rounded border border-yellow-400 bg-yellow-900/20 text-yellow-200">
+            <div className="font-bold">サークル加入が必要です</div>
+            <div className="text-sm">
+              初回利用時はサークルに参加する必要があります。先にサークル参加を完了してください。
+            </div>
+          </div>
+        )}
         {/* Empty State */}
         {cards.length === 0 && (
           <div className="flex flex-col items-center justify-center py-20">
