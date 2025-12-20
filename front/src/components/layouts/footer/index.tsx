@@ -24,7 +24,7 @@ const FOOTER_ITEMS = [
     icon: Users,
   },
   {
-    label: "Battle",
+    label: "バトル",
     href: "/circle/matching",
     icon: Sword,
   },
