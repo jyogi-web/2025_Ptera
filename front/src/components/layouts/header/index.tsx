@@ -32,7 +32,7 @@ export const Header = (): React.JSX.Element | null => {
   // 現在はモックデータを使用しています
   // 今後、以下のデータをAuthContextまたはAPIから取得する必要があります
   const mockUserStats: UserStats = {
-    grade: "大学3年目",
+    grade: "大学ーー年目",
     rank: 42,
     cp: 15000,
   };
