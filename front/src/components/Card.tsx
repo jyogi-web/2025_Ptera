@@ -11,9 +11,18 @@ interface CardProps {
 
 export default function Card({ card, label, onClick }: CardProps) {
   // カード作成からの経過日数を計算
-  const getDaysElapsed = (createdAt: Date): number => {
+  const getDaysElapsed = (createdAt: Date | string): number => {
+    const date =
+      typeof createdAt === "string" ? new Date(createdAt) : createdAt;
+
+    // Validate parsed date
+    if (Number.isNaN(date.getTime())) {
+      console.warn("Invalid date encountered in Card:", createdAt);
+      return 0;
+    }
+
     const now = new Date();
-    const diffTime = Math.abs(now.getTime() - createdAt.getTime());
+    const diffTime = Math.abs(now.getTime() - date.getTime());
     const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
     return diffDays;
   };

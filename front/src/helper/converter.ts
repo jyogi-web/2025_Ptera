@@ -1,16 +1,20 @@
 import type { UserInfo } from "firebase/auth";
 import type { Card, User } from "@/types/app";
-import type { FirestoreCard } from "@/types/firestore";
+import type { FirestoreCard, FirestoreUser } from "@/types/firestore";
 
 /**
  * Firebase AuthのUserInfoをアプリ内のUser型に変換する
  */
-export const convertUser = (firebaseUser: UserInfo): User => {
+export const convertUser = (
+  firebaseUser: UserInfo,
+  firestoreUser?: FirestoreUser,
+): User => {
   return {
     id: firebaseUser.uid,
     name: firebaseUser.displayName || "No Name",
     iconUrl: firebaseUser.photoURL || "",
     email: firebaseUser.email || undefined,
+    circleId: firestoreUser?.circleId,
   };
 };
 
