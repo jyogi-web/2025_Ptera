@@ -44,8 +44,9 @@ export const Footer = () => {
   if (!user) return null;
 
   // 特定のパスで非表示にする場合はここに追加
-  const hiddenPaths = ["/login", "/", "/battle"];
-  if (hiddenPaths.includes(pathname)) return null;
+  const isHiddenPath =
+    ["/login", "/"].includes(pathname) || pathname.startsWith("/battle");
+  if (isHiddenPath) return null;
 
   return (
     <AnimatorGeneralProvider duration={{ enter: 200, exit: 200 }}>
