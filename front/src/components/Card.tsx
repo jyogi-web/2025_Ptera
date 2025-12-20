@@ -1,8 +1,8 @@
 "use client";
 
 import Image from "next/image";
-import type { Card as CardType } from "@/types/app";
 import { calculateGraduationDate } from "@/helper/converter";
+import type { Card as CardType } from "@/types/app";
 
 interface CardProps {
   card: CardType;
@@ -68,11 +68,15 @@ export default function Card({ card, label, onClick }: CardProps) {
           <div className="flex items-center justify-between text-[10px]">
             <span className="text-cyan-400 font-mono">{card.position}</span>
             <span className="text-gray-400">
-              {daysUntilGraduation > 0 ? `卒業まで${daysUntilGraduation}日` : '卒業済み'}
+              {daysUntilGraduation > 0
+                ? `卒業まで${daysUntilGraduation}日`
+                : "卒業済み"}
             </span>
           </div>
           {card.hobby && (
-            <p className="text-[10px] text-gray-400 truncate">🎯 {card.hobby}</p>
+            <p className="text-[10px] text-gray-400 truncate">
+              🎯 {card.hobby}
+            </p>
           )}
         </div>
       </div>
