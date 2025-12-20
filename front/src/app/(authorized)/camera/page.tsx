@@ -10,47 +10,14 @@ import type { Card } from "@/types/app";
 import { completeCardAction } from "./actions";
 import CameraPreview, { type CameraPreviewHandle } from "./CameraPreview";
 
-type Faculty =
-  | "information-engineering"
-  | "engineering"
-  | "social-environment"
-  | "";
-type Department =
-  | "情報工学科"
-  | "情報通信工学科"
-  | "情報システム工学科"
-  | "情報マネジメント学科"
-  | "電子情報工学科"
-  | "生命環境化学科"
-  | "知能機械工学科"
-  | "電気工学科"
-  | "社会環境学科"
-  | "";
-
 type CameraForm = {
   name: Card["name"];
   grade: Card["grade"] | null;
   position: Card["position"];
   hobby: Card["hobby"]; // 趣味
   description: Card["description"]; // UI 上のコメント
-  faculty: Faculty;
-  department: Department;
-};
-
-const DEPARTMENTS: Record<Exclude<Faculty, "">, Department[]> = {
-  "information-engineering": [
-    "情報工学科",
-    "情報通信工学科",
-    "情報システム工学科",
-    "情報マネジメント学科",
-  ],
-  engineering: [
-    "電子情報工学科",
-    "生命環境化学科",
-    "知能機械工学科",
-    "電気工学科",
-  ],
-  "social-environment": ["社会環境学科"],
+  faculty: string;
+  department: string;
 };
 
 const dataURLtoFile = (dataurl: string, filename: string): File => {
@@ -98,11 +65,6 @@ export default function CameraPage() {
     faculty: "",
     department: "",
   });
-
-  const handleFacultyChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-    const newFaculty = e.target.value as Faculty;
-    setForm((prev) => ({ ...prev, faculty: newFaculty, department: "" }));
-  };
 
   const handleCapture = () => {
     if (!cameraRef.current) {
@@ -224,9 +186,8 @@ export default function CameraPage() {
         setForm((prev) => ({
           ...prev,
           name: result.data?.name || prev.name,
-          faculty: (result.data?.faculty as Faculty) || prev.faculty,
-          department:
-            (result.data?.department as Department) || prev.department,
+          faculty: result.data?.faculty || prev.faculty,
+          department: result.data?.department || prev.department,
           grade: result.data?.grade ? Number(result.data.grade) : prev.grade,
           position: result.data?.position || prev.position,
           hobby: result.data?.hobby || prev.hobby,
@@ -313,8 +274,8 @@ export default function CameraPage() {
     form.name.trim() !== "" &&
     form.grade !== null &&
     form.position.trim() !== "" &&
-    form.faculty !== "" &&
-    form.department !== "";
+    form.faculty.trim() !== "" &&
+    form.department.trim() !== "";
 
   return (
     <div className="min-h-screen bg-gray-900 text-white">
@@ -517,17 +478,16 @@ export default function CameraPage() {
                 >
                   学部
                 </label>
-                <select
+                <input
+                  type="text"
                   id="member-faculty"
-                  value={form.faculty}
-                  onChange={handleFacultyChange}
                   className="w-full px-4 py-2 bg-gray-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-                >
-                  <option value="">選択してください</option>
-                  <option value="information-engineering">情報工学部</option>
-                  <option value="engineering">工学部</option>
-                  <option value="social-environment">社会環境学部</option>
-                </select>
+                  value={form.faculty}
+                  onChange={(e) =>
+                    setForm((prev) => ({ ...prev, faculty: e.target.value }))
+                  }
+                  placeholder="例: 情報工学部、工学部、社会環境学部"
+                />
               </div>
 
               <div>
@@ -537,31 +497,16 @@ export default function CameraPage() {
                 >
                   学科
                 </label>
-                <select
+                <input
+                  type="text"
                   id="member-department"
+                  className="w-full px-4 py-2 bg-gray-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
                   value={form.department}
                   onChange={(e) =>
-                    setForm((prev) => ({
-                      ...prev,
-                      department: e.target.value as Department,
-                    }))
+                    setForm((prev) => ({ ...prev, department: e.target.value }))
                   }
-                  disabled={!form.faculty}
-                  className="w-full px-4 py-2 bg-gray-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:opacity-50 disabled:cursor-not-allowed"
-                >
-                  <option value="">
-                    {form.faculty
-                      ? "選択してください"
-                      : "先に学部を選択してください"}
-                  </option>
-                  {form.faculty &&
-                    DEPARTMENTS[form.faculty] &&
-                    DEPARTMENTS[form.faculty].map((dept) => (
-                      <option key={dept} value={dept}>
-                        {dept}
-                      </option>
-                    ))}
-                </select>
+                  placeholder="例: 情報工学科、電子情報工学科"
+                />
               </div>
 
               <div>
