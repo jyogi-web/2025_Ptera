@@ -58,7 +58,10 @@ export async function getSession() {
 /**
  * Firestoreのドキュメントデータをバリデーション
  */
-function validateCardData(docId: string, data: any): {
+function validateCardData(
+  docId: string,
+  data: Record<string, unknown>,
+): {
   valid: boolean;
   card?: import("@/types/app").Card;
   error?: string;
@@ -69,7 +72,10 @@ function validateCardData(docId: string, data: any): {
   }
 
   if (typeof data.grade !== "number" || Number.isNaN(data.grade)) {
-    return { valid: false, error: `Card ${docId}: grade is missing or invalid` };
+    return {
+      valid: false,
+      error: `Card ${docId}: grade is missing or invalid`,
+    };
   }
 
   if (typeof data.position !== "string" || data.position.trim().length === 0) {
@@ -90,7 +96,10 @@ function validateCardData(docId: string, data: any): {
   }
 
   if (typeof data.hobby !== "string") {
-    return { valid: false, error: `Card ${docId}: hobby is missing or invalid` };
+    return {
+      valid: false,
+      error: `Card ${docId}: hobby is missing or invalid`,
+    };
   }
 
   if (typeof data.description !== "string") {
@@ -112,7 +121,13 @@ function validateCardData(docId: string, data: any): {
   let expiryDate: Date;
 
   try {
-    if (data.createdAt && typeof data.createdAt.toDate === "function") {
+    if (
+      data.createdAt &&
+      typeof data.createdAt === "object" &&
+      data.createdAt !== null &&
+      "toDate" in data.createdAt &&
+      typeof data.createdAt.toDate === "function"
+    ) {
       createdAt = data.createdAt.toDate();
     } else {
       return {
@@ -121,7 +136,13 @@ function validateCardData(docId: string, data: any): {
       };
     }
 
-    if (data.expiryDate && typeof data.expiryDate.toDate === "function") {
+    if (
+      data.expiryDate &&
+      typeof data.expiryDate === "object" &&
+      data.expiryDate !== null &&
+      "toDate" in data.expiryDate &&
+      typeof data.expiryDate.toDate === "function"
+    ) {
       expiryDate = data.expiryDate.toDate();
     } else {
       return {
@@ -138,7 +159,11 @@ function validateCardData(docId: string, data: any): {
 
   // オプショナルフィールドの安全な取得
   const affiliatedGroup =
-    data.affiliatedGroupRef && typeof data.affiliatedGroupRef.id === "string"
+    data.affiliatedGroupRef &&
+    typeof data.affiliatedGroupRef === "object" &&
+    data.affiliatedGroupRef !== null &&
+    "id" in data.affiliatedGroupRef &&
+    typeof data.affiliatedGroupRef.id === "string"
       ? data.affiliatedGroupRef.id
       : undefined;
 
@@ -176,7 +201,7 @@ export async function getCardsFromServer() {
 
     for (const doc of snapshot.docs) {
       const result = validateCardData(doc.id, doc.data());
-      
+
       if (result.valid && result.card) {
         cards.push(result.card);
       } else if (result.error) {
