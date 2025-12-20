@@ -44,11 +44,9 @@ export function BinderGrid({
   const handleCardClick = async (card: CardType) => {
     if (!user || processing) return;
 
-    // 推しメン登録モードの場合
     if (isSelectingFavorite) {
       const isFavorite = favoriteCardIds.includes(card.id);
 
-      // 既に推しメンの場合は何もしない
       if (isFavorite) {
         toast("既に推しメン登録済みです", {
           icon: "⭐",
@@ -60,11 +58,8 @@ export function BinderGrid({
 
       try {
         setProcessing(true);
-
-        // 推しメン登録（既存の推しメンは自動的に解除される）
         await addFavoriteCard(user.id, card.id);
-        setFavoriteCardIds([card.id]); // 1人のみ
-
+        setFavoriteCardIds([card.id]);
         toast.success(`${card.name}を推しメンに登録しました！`, {
           icon: "⭐",
           duration: 3000,
@@ -80,7 +75,6 @@ export function BinderGrid({
       return;
     }
 
-    // 通常モード：カード詳細に遷移
     toast("カード詳細ページは未実装です", {
       icon: "ℹ️",
       duration: 2000,
@@ -89,14 +83,11 @@ export function BinderGrid({
 
   return (
     <div>
-      {/* カードグリッド */}
       <div className="grid grid-cols-3 gap-3">
         {cards.map((card, index) => (
-          <button
+          <div
             key={card.id}
-            type="button"
-            onClick={() => handleCardClick(card)}
-            className={`cursor-pointer transition-all text-left ${
+            className={`transition-all ${
               processing ? "opacity-50 pointer-events-none" : ""
             } ${
               isSelectingFavorite
@@ -104,19 +95,23 @@ export function BinderGrid({
                 : ""
             }`}
           >
-            <Card card={card} label={getLabel(index)} />
+            <Card
+              card={card}
+              label={getLabel(index)}
+              onClick={() => handleCardClick(card)}
+            />
             {favoriteCardIds.includes(card.id) && (
               <div className="text-center text-yellow-400 text-xs mt-1">
                 ⭐ 推しメン
               </div>
             )}
-          </button>
+          </div>
         ))}
       </div>
     </div>
   );
 }
-// 推しメン登録ボタンコンポーネント
+
 export function FavoriteButton({
   isSelectingFavorite,
   onToggle,

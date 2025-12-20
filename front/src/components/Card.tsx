@@ -10,17 +10,13 @@ interface CardProps {
 }
 
 export default function Card({ card, label, onClick }: CardProps) {
-  // カード作成からの経過日数を計算
   const getDaysElapsed = (createdAt: Date | string): number => {
     const date =
       typeof createdAt === "string" ? new Date(createdAt) : createdAt;
-
-    // Validate parsed date
     if (Number.isNaN(date.getTime())) {
       console.warn("Invalid date encountered in Card:", createdAt);
       return 0;
     }
-
     const now = new Date();
     const diffTime = Math.abs(now.getTime() - date.getTime());
     const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
@@ -36,19 +32,16 @@ export default function Card({ card, label, onClick }: CardProps) {
       onClick={() => onClick?.(card)}
     >
       <div className="rounded-xl bg-gray-900/80 p-2">
-        {/* Badge */}
         {label && (
           <span className="absolute -top-1 -left-1 select-none rounded-md bg-cyan-500 px-1.5 py-0.5 text-[10px] font-bold text-black shadow">
             {label}
           </span>
         )}
 
-        {/* 学年バッジ */}
         <div className="absolute top-1 right-1 bg-gradient-to-r from-purple-600/90 to-pink-600/90 px-2 py-0.5 rounded-md text-[10px] font-bold text-white shadow-lg z-10">
           {card.grade}年
         </div>
 
-        {/* Card Image */}
         <div className="aspect-[3/4] rounded-lg bg-gray-800 overflow-hidden relative">
           {card.imageUrl ? (
             <Image
@@ -66,11 +59,9 @@ export default function Card({ card, label, onClick }: CardProps) {
               </div>
             </div>
           )}
-          {/* グラデーションオーバーレイ */}
           <div className="absolute inset-0 bg-gradient-to-t from-gray-900/80 via-transparent to-transparent" />
         </div>
 
-        {/* Card Info */}
         <div className="mt-2 px-1 space-y-1">
           <p className="text-sm font-bold truncate text-white">{card.name}</p>
           <div className="flex items-center justify-between text-[10px]">
