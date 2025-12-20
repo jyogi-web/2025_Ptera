@@ -1,5 +1,6 @@
 "use client";
 
+import { Animator, FrameCorners } from "@arwes/react";
 import { useEffect, useState } from "react";
 import { CharacterDisplay } from "@/components/home/CharacterDisplay";
 import { useAuth } from "@/context/AuthContext";
@@ -48,21 +49,46 @@ export default function Home() {
       </div>
 
       <div style={styles.contentWrapper}>
-        {/* Character Display Area */}
-        {loading ? (
-          <div className="text-gray-400 text-center py-20">読み込み中...</div>
-        ) : favoriteCard ? (
-          <CharacterDisplay
-            name="推しメン"
-            partnerName={`${favoriteCard.name} (${favoriteCard.grade}年生)`}
-            imageUrl={favoriteCard.imageUrl}
-          />
-        ) : (
-          <div className="text-gray-400 text-center py-20">
-            <p className="mb-2">推しメンが登録されていません</p>
-            <p className="text-sm">バインダーからカードを選択してください</p>
+        <Animator active={true}>
+          <div className="w-full relative flex flex-col items-center">
+            {/* Character Display Area */}
+            <div className="relative w-full p-4">
+              {/* Frame for the character area */}
+              <FrameCorners
+                strokeWidth={2}
+                cornerLength={20}
+                style={{
+                  color: "#00dac1",
+                  backgroundColor: "rgba(3, 15, 25, 0.4)",
+                  zIndex: 0,
+                }}
+              />
+
+              <div className="relative z-10">
+                {loading ? (
+                  <div className="text-cyan-500/50 font-mono text-center py-20 animate-pulse text-sm">
+                    LOADING DATA...
+                  </div>
+                ) : favoriteCard ? (
+                  <CharacterDisplay
+                    name="推しメン"
+                    partnerName={`${favoriteCard.name} (${favoriteCard.grade}年生)`}
+                    imageUrl={favoriteCard.imageUrl}
+                  />
+                ) : (
+                  <div className="text-gray-400 text-center py-20 flex flex-col items-center gap-4">
+                    <p style={styles.neonTextSecondary} className="text-lg">
+                      NO DATA FOUND
+                    </p>
+                    <p className="text-xs text-gray-500 font-mono">
+                      SELECT FROM BINDER
+                    </p>
+                  </div>
+                )}
+              </div>
+            </div>
           </div>
-        )}
+        </Animator>
       </div>
     </div>
   );

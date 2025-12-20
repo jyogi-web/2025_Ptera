@@ -37,4 +37,36 @@ export const styles: { [key: string]: CSSProperties } = {
     pointerEvents: "none",
     zIndex: -1,
   },
+  neonText: {
+    color: "#00dac1",
+    textShadow: "0 0 10px rgba(0, 218, 193, 0.5)",
+    fontFamily: "'Orbitron', sans-serif",
+    letterSpacing: "0.05em",
+  },
+  neonTextSecondary: {
+    color: "#f700ff",
+    textShadow: "0 0 10px rgba(247, 0, 255, 0.5)",
+  },
+  headerGradient: {
+    background: "linear-gradient(90deg, #00dac1, #0080ff)",
+    WebkitBackgroundClip: "text",
+    WebkitTextFillColor: "transparent",
+    fontWeight: "bold",
+    lineHeight: "1.2",
+    paddingBottom: "10px",
+  },
+  panelTitle: {
+    fontSize: "10px",
+    textTransform: "uppercase",
+    letterSpacing: "2px",
+    color: "#5f7e97",
+    marginBottom: "4px",
+    display: "block",
+  },
+  cyberFrame: {
+    position: "relative",
+    padding: "20px",
+    background: "rgba(5, 20, 35, 0.7)",
+    backdropFilter: "blur(10px)",
+  },
 };
