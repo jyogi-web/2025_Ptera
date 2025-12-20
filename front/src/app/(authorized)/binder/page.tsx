@@ -1,12 +1,36 @@
 "use client";
 
+import Card from "@/components/Card";
+import type { Card as CardType } from "@/types/app";
+
 export default function BinderPage() {
-  const cards = Array.from({ length: 12 }).map((_, i) => ({
-    id: `card-${i + 1}`,
-    name: `メンバー ${i + 1}`,
-    grade: (i % 4) + 1,
-    label: i < 3 ? "1st" : undefined,
-  }));
+  // モックデータ: Card型に準拠
+  const cards: CardType[] = Array.from({ length: 12 }).map((_, i) => {
+    const createdAt = new Date();
+    createdAt.setDate(createdAt.getDate() - (i + 1) * 10); // 作成日を過去に設定
+
+    const expiryDate = new Date();
+    expiryDate.setDate(expiryDate.getDate() + 1450); // 有効期限を未来に設定
+
+    return {
+      id: `card-${i + 1}`,
+      creatorId: `creator-${i + 1}`,
+      name: `メンバー ${i + 1}`,
+      grade: (i % 4) + 1,
+      position: ["部長", "副部長", "会計", "広報"][i % 4],
+      affiliatedGroup: "サンプルサークル",
+      hobby: ["音楽鑑賞", "読書", "スポーツ", "映画鑑賞"][i % 4],
+      description: `サンプルメンバー${i + 1}の説明文です。`,
+      imageUrl: "", // 空の場合はプレースホルダー表示
+      createdAt,
+      expiryDate,
+    };
+  });
+
+  // ラベル情報を別途管理（最初の3枚に"1st"ラベル）
+  const getLabel = (index: number): string | undefined => {
+    return index < 3 ? "1st" : undefined;
+  };
 
   return (
     <div className="min-h-screen bg-gray-950 text-white">
@@ -19,28 +43,16 @@ export default function BinderPage() {
 
         {/* Grid */}
         <div className="grid grid-cols-3 gap-3">
-          {cards.map((c) => (
-            <div
-              key={c.id}
-              className="relative rounded-xl bg-gradient-to-b from-cyan-500/20 via-fuchsia-500/10 to-transparent p-[2px]"
-            >
-              <div className="rounded-xl bg-gray-900/80 p-2">
-                {/* Badge */}
-                {c.label && (
-                  <span className="absolute -top-1 -left-1 select-none rounded-md bg-cyan-500 px-1.5 py-0.5 text-[10px] font-bold text-black shadow">
-                    {c.label}
-                  </span>
-                )}
-                {/* Card content placeholder */}
-                <div className="aspect-[3/4] rounded-lg bg-gray-800 flex items-center justify-center text-gray-400 text-xs">
-                  画像プレースホルダー
-                </div>
-                <div className="mt-2 px-1">
-                  <p className="text-sm font-semibold truncate">{c.name}</p>
-                  <p className="text-[11px] text-gray-400">残り: 1450日</p>
-                </div>
-              </div>
-            </div>
+          {cards.map((card, index) => (
+            <Card
+              key={card.id}
+              card={card}
+              label={getLabel(index)}
+              onClick={(card) => {
+                console.log("Card clicked:", card);
+                // TODO: カード詳細ページへの遷移など
+              }}
+            />
           ))}
         </div>
       </div>
