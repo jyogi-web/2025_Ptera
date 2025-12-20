@@ -185,7 +185,9 @@ export default function CameraPage() {
       }
 
       // Upload to user-specific path: users/{userId}/cards/{filename}
-      const extension = selectedFile ? selectedFile.name.split('.').pop() : 'png';
+      const extension = selectedFile
+        ? selectedFile.name.split(".").pop()
+        : "png";
       const uploadPath = `users/${user.id}/cards/${timestamp}.${extension}`;
 
       const url = await uploadImage(file, uploadPath);
@@ -407,7 +409,15 @@ export default function CameraPage() {
                         strokeLinecap="round"
                         strokeLinejoin="round"
                       >
-                        <rect width="18" height="18" x="3" y="3" rx="2" ry="2" />
+                        <title>画像アイコン</title>
+                        <rect
+                          width="18"
+                          height="18"
+                          x="3"
+                          y="3"
+                          rx="2"
+                          ry="2"
+                        />
                         <circle cx="9" cy="9" r="2" />
                         <path d="m21 15-3.086-3.086a2 2 0 0 0-2.828 0L6 21" />
                       </svg>
@@ -645,8 +655,6 @@ export default function CameraPage() {
           {/* アクションボタン（撮影後に表示） */}
           {capturedImage && (
             <>
-
-
               {/* カード化ボタン */}
               <button
                 type="button"
