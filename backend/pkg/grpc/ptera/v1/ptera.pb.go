@@ -28,6 +28,7 @@ type User struct {
 	Name          string                 `protobuf:"bytes,2,opt,name=name,proto3" json:"name,omitempty"`
 	IconUrl       string                 `protobuf:"bytes,3,opt,name=icon_url,json=iconUrl,proto3" json:"icon_url,omitempty"`
 	Email         *string                `protobuf:"bytes,4,opt,name=email,proto3,oneof" json:"email,omitempty"`
+	CircleId      *string                `protobuf:"bytes,5,opt,name=circle_id,json=circleId,proto3,oneof" json:"circle_id,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -90,21 +91,28 @@ func (x *User) GetEmail() string {
 	return ""
 }
 
+func (x *User) GetCircleId() string {
+	if x != nil && x.CircleId != nil {
+		return *x.CircleId
+	}
+	return ""
+}
+
 type Card struct {
-	state         protoimpl.MessageState `protogen:"open.v1"`
-	Id            string                 `protobuf:"bytes,1,opt,name=id,proto3" json:"id,omitempty"`
-	CreatorId     string                 `protobuf:"bytes,2,opt,name=creator_id,json=creatorId,proto3" json:"creator_id,omitempty"`
-	Name          string                 `protobuf:"bytes,3,opt,name=name,proto3" json:"name,omitempty"`
-	Grade         int32                  `protobuf:"varint,4,opt,name=grade,proto3" json:"grade,omitempty"`
-	Position      string                 `protobuf:"bytes,5,opt,name=position,proto3" json:"position,omitempty"`
-	Faculty       string                 `protobuf:"bytes,6,opt,name=faculty,proto3" json:"faculty,omitempty"`
-	Department    string                 `protobuf:"bytes,7,opt,name=department,proto3" json:"department,omitempty"`
-	Hobby         string                 `protobuf:"bytes,8,opt,name=hobby,proto3" json:"hobby,omitempty"`
-	Description   string                 `protobuf:"bytes,9,opt,name=description,proto3" json:"description,omitempty"`
-	ImageUrl      string                 `protobuf:"bytes,10,opt,name=image_url,json=imageUrl,proto3" json:"image_url,omitempty"`
-	CreatedAt     *timestamppb.Timestamp `protobuf:"bytes,11,opt,name=created_at,json=createdAt,proto3" json:"created_at,omitempty"`
-	unknownFields protoimpl.UnknownFields
-	sizeCache     protoimpl.SizeCache
+	state           protoimpl.MessageState `protogen:"open.v1"`
+	Id              string                 `protobuf:"bytes,1,opt,name=id,proto3" json:"id,omitempty"`
+	CreatorId       string                 `protobuf:"bytes,2,opt,name=creator_id,json=creatorId,proto3" json:"creator_id,omitempty"`
+	Name            string                 `protobuf:"bytes,3,opt,name=name,proto3" json:"name,omitempty"`
+	Grade           int32                  `protobuf:"varint,4,opt,name=grade,proto3" json:"grade,omitempty"`
+	Position        string                 `protobuf:"bytes,5,opt,name=position,proto3" json:"position,omitempty"`
+	AffiliatedGroup *string                `protobuf:"bytes,6,opt,name=affiliated_group,json=affiliatedGroup,proto3,oneof" json:"affiliated_group,omitempty"`
+	Hobby           string                 `protobuf:"bytes,7,opt,name=hobby,proto3" json:"hobby,omitempty"`
+	Description     string                 `protobuf:"bytes,8,opt,name=description,proto3" json:"description,omitempty"`
+	ImageUrl        string                 `protobuf:"bytes,9,opt,name=image_url,json=imageUrl,proto3" json:"image_url,omitempty"`
+	CreatedAt       *timestamppb.Timestamp `protobuf:"bytes,10,opt,name=created_at,json=createdAt,proto3" json:"created_at,omitempty"`
+	CircleId        *string                `protobuf:"bytes,11,opt,name=circle_id,json=circleId,proto3,oneof" json:"circle_id,omitempty"`
+	unknownFields   protoimpl.UnknownFields
+	sizeCache       protoimpl.SizeCache
 }
 
 func (x *Card) Reset() {
@@ -172,16 +180,9 @@ func (x *Card) GetPosition() string {
 	return ""
 }
 
-func (x *Card) GetFaculty() string {
-	if x != nil {
-		return x.Faculty
-	}
-	return ""
-}
-
-func (x *Card) GetDepartment() string {
-	if x != nil {
-		return x.Department
+func (x *Card) GetAffiliatedGroup() string {
+	if x != nil && x.AffiliatedGroup != nil {
+		return *x.AffiliatedGroup
 	}
 	return ""
 }
@@ -214,6 +215,65 @@ func (x *Card) GetCreatedAt() *timestamppb.Timestamp {
 	return nil
 }
 
+func (x *Card) GetCircleId() string {
+	if x != nil && x.CircleId != nil {
+		return *x.CircleId
+	}
+	return ""
+}
+
+type Circle struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	Id            string                 `protobuf:"bytes,1,opt,name=id,proto3" json:"id,omitempty"`
+	Name          string                 `protobuf:"bytes,2,opt,name=name,proto3" json:"name,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *Circle) Reset() {
+	*x = Circle{}
+	mi := &file_ptera_v1_ptera_proto_msgTypes[2]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *Circle) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*Circle) ProtoMessage() {}
+
+func (x *Circle) ProtoReflect() protoreflect.Message {
+	mi := &file_ptera_v1_ptera_proto_msgTypes[2]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use Circle.ProtoReflect.Descriptor instead.
+func (*Circle) Descriptor() ([]byte, []int) {
+	return file_ptera_v1_ptera_proto_rawDescGZIP(), []int{2}
+}
+
+func (x *Circle) GetId() string {
+	if x != nil {
+		return x.Id
+	}
+	return ""
+}
+
+func (x *Circle) GetName() string {
+	if x != nil {
+		return x.Name
+	}
+	return ""
+}
+
 type CompleteCardRequest struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
 	ImageUrl      string                 `protobuf:"bytes,1,opt,name=image_url,json=imageUrl,proto3" json:"image_url,omitempty"` // 画像URL
@@ -230,7 +290,7 @@ type CompleteCardRequest struct {
 
 func (x *CompleteCardRequest) Reset() {
 	*x = CompleteCardRequest{}
-	mi := &file_ptera_v1_ptera_proto_msgTypes[2]
+	mi := &file_ptera_v1_ptera_proto_msgTypes[3]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -242,7 +302,7 @@ func (x *CompleteCardRequest) String() string {
 func (*CompleteCardRequest) ProtoMessage() {}
 
 func (x *CompleteCardRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_ptera_v1_ptera_proto_msgTypes[2]
+	mi := &file_ptera_v1_ptera_proto_msgTypes[3]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -255,7 +315,7 @@ func (x *CompleteCardRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use CompleteCardRequest.ProtoReflect.Descriptor instead.
 func (*CompleteCardRequest) Descriptor() ([]byte, []int) {
-	return file_ptera_v1_ptera_proto_rawDescGZIP(), []int{2}
+	return file_ptera_v1_ptera_proto_rawDescGZIP(), []int{3}
 }
 
 func (x *CompleteCardRequest) GetImageUrl() string {
@@ -331,7 +391,7 @@ type CompleteCardResponse struct {
 
 func (x *CompleteCardResponse) Reset() {
 	*x = CompleteCardResponse{}
-	mi := &file_ptera_v1_ptera_proto_msgTypes[3]
+	mi := &file_ptera_v1_ptera_proto_msgTypes[4]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -343,7 +403,7 @@ func (x *CompleteCardResponse) String() string {
 func (*CompleteCardResponse) ProtoMessage() {}
 
 func (x *CompleteCardResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_ptera_v1_ptera_proto_msgTypes[3]
+	mi := &file_ptera_v1_ptera_proto_msgTypes[4]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -356,7 +416,7 @@ func (x *CompleteCardResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use CompleteCardResponse.ProtoReflect.Descriptor instead.
 func (*CompleteCardResponse) Descriptor() ([]byte, []int) {
-	return file_ptera_v1_ptera_proto_rawDescGZIP(), []int{3}
+	return file_ptera_v1_ptera_proto_rawDescGZIP(), []int{4}
 }
 
 func (x *CompleteCardResponse) GetName() string {
@@ -426,30 +486,37 @@ var File_ptera_v1_ptera_proto protoreflect.FileDescriptor
 
 const file_ptera_v1_ptera_proto_rawDesc = "" +
 	"\n" +
-	"\x14ptera/v1/ptera.proto\x12\bptera.v1\x1a\x1fgoogle/protobuf/timestamp.proto\"j\n" +
+	"\x14ptera/v1/ptera.proto\x12\bptera.v1\x1a\x1fgoogle/protobuf/timestamp.proto\"\x9a\x01\n" +
 	"\x04User\x12\x0e\n" +
 	"\x02id\x18\x01 \x01(\tR\x02id\x12\x12\n" +
 	"\x04name\x18\x02 \x01(\tR\x04name\x12\x19\n" +
 	"\bicon_url\x18\x03 \x01(\tR\aiconUrl\x12\x19\n" +
-	"\x05email\x18\x04 \x01(\tH\x00R\x05email\x88\x01\x01B\b\n" +
-	"\x06_email\"\xc5\x02\n" +
+	"\x05email\x18\x04 \x01(\tH\x00R\x05email\x88\x01\x01\x12 \n" +
+	"\tcircle_id\x18\x05 \x01(\tH\x01R\bcircleId\x88\x01\x01B\b\n" +
+	"\x06_emailB\f\n" +
+	"\n" +
+	"_circle_id\"\x80\x03\n" +
 	"\x04Card\x12\x0e\n" +
 	"\x02id\x18\x01 \x01(\tR\x02id\x12\x1d\n" +
 	"\n" +
 	"creator_id\x18\x02 \x01(\tR\tcreatorId\x12\x12\n" +
 	"\x04name\x18\x03 \x01(\tR\x04name\x12\x14\n" +
 	"\x05grade\x18\x04 \x01(\x05R\x05grade\x12\x1a\n" +
-	"\bposition\x18\x05 \x01(\tR\bposition\x12\x18\n" +
-	"\afaculty\x18\x06 \x01(\tR\afaculty\x12\x1e\n" +
+	"\bposition\x18\x05 \x01(\tR\bposition\x12.\n" +
+	"\x10affiliated_group\x18\x06 \x01(\tH\x00R\x0faffiliatedGroup\x88\x01\x01\x12\x14\n" +
+	"\x05hobby\x18\a \x01(\tR\x05hobby\x12 \n" +
+	"\vdescription\x18\b \x01(\tR\vdescription\x12\x1b\n" +
+	"\timage_url\x18\t \x01(\tR\bimageUrl\x129\n" +
 	"\n" +
-	"department\x18\a \x01(\tR\n" +
-	"department\x12\x14\n" +
-	"\x05hobby\x18\b \x01(\tR\x05hobby\x12 \n" +
-	"\vdescription\x18\t \x01(\tR\vdescription\x12\x1b\n" +
-	"\timage_url\x18\n" +
-	" \x01(\tR\bimageUrl\x129\n" +
+	"created_at\x18\n" +
+	" \x01(\v2\x1a.google.protobuf.TimestampR\tcreatedAt\x12 \n" +
+	"\tcircle_id\x18\v \x01(\tH\x01R\bcircleId\x88\x01\x01B\x13\n" +
+	"\x11_affiliated_groupB\f\n" +
 	"\n" +
-	"created_at\x18\v \x01(\v2\x1a.google.protobuf.TimestampR\tcreatedAt\"\xe2\x02\n" +
+	"_circle_id\",\n" +
+	"\x06Circle\x12\x0e\n" +
+	"\x02id\x18\x01 \x01(\tR\x02id\x12\x12\n" +
+	"\x04name\x18\x02 \x01(\tR\x04name\"\xe2\x02\n" +
 	"\x13CompleteCardRequest\x12\x1b\n" +
 	"\timage_url\x18\x01 \x01(\tR\bimageUrl\x12\x17\n" +
 	"\x04name\x18\x02 \x01(\tH\x00R\x04name\x88\x01\x01\x12\x1d\n" +
@@ -497,18 +564,19 @@ func file_ptera_v1_ptera_proto_rawDescGZIP() []byte {
 	return file_ptera_v1_ptera_proto_rawDescData
 }
 
-var file_ptera_v1_ptera_proto_msgTypes = make([]protoimpl.MessageInfo, 4)
+var file_ptera_v1_ptera_proto_msgTypes = make([]protoimpl.MessageInfo, 5)
 var file_ptera_v1_ptera_proto_goTypes = []any{
 	(*User)(nil),                  // 0: ptera.v1.User
 	(*Card)(nil),                  // 1: ptera.v1.Card
-	(*CompleteCardRequest)(nil),   // 2: ptera.v1.CompleteCardRequest
-	(*CompleteCardResponse)(nil),  // 3: ptera.v1.CompleteCardResponse
-	(*timestamppb.Timestamp)(nil), // 4: google.protobuf.Timestamp
+	(*Circle)(nil),                // 2: ptera.v1.Circle
+	(*CompleteCardRequest)(nil),   // 3: ptera.v1.CompleteCardRequest
+	(*CompleteCardResponse)(nil),  // 4: ptera.v1.CompleteCardResponse
+	(*timestamppb.Timestamp)(nil), // 5: google.protobuf.Timestamp
 }
 var file_ptera_v1_ptera_proto_depIdxs = []int32{
-	4, // 0: ptera.v1.Card.created_at:type_name -> google.protobuf.Timestamp
-	2, // 1: ptera.v1.PteraService.CompleteCard:input_type -> ptera.v1.CompleteCardRequest
-	3, // 2: ptera.v1.PteraService.CompleteCard:output_type -> ptera.v1.CompleteCardResponse
+	5, // 0: ptera.v1.Card.created_at:type_name -> google.protobuf.Timestamp
+	3, // 1: ptera.v1.PteraService.CompleteCard:input_type -> ptera.v1.CompleteCardRequest
+	4, // 2: ptera.v1.PteraService.CompleteCard:output_type -> ptera.v1.CompleteCardResponse
 	2, // [2:3] is the sub-list for method output_type
 	1, // [1:2] is the sub-list for method input_type
 	1, // [1:1] is the sub-list for extension type_name
@@ -522,15 +590,16 @@ func file_ptera_v1_ptera_proto_init() {
 		return
 	}
 	file_ptera_v1_ptera_proto_msgTypes[0].OneofWrappers = []any{}
-	file_ptera_v1_ptera_proto_msgTypes[2].OneofWrappers = []any{}
+	file_ptera_v1_ptera_proto_msgTypes[1].OneofWrappers = []any{}
 	file_ptera_v1_ptera_proto_msgTypes[3].OneofWrappers = []any{}
+	file_ptera_v1_ptera_proto_msgTypes[4].OneofWrappers = []any{}
 	type x struct{}
 	out := protoimpl.TypeBuilder{
 		File: protoimpl.DescBuilder{
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: unsafe.Slice(unsafe.StringData(file_ptera_v1_ptera_proto_rawDesc), len(file_ptera_v1_ptera_proto_rawDesc)),
 			NumEnums:      0,
-			NumMessages:   4,
+			NumMessages:   5,
 			NumExtensions: 0,
 			NumServices:   1,
 		},
