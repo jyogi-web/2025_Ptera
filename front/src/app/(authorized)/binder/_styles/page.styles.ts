@@ -11,7 +11,7 @@ export const styles: { [key: string]: CSSProperties } = {
     width: "100vw",
     height: "100dvh",
     overflow: "hidden", // Prevent scrolling on the body/container
-    touchAction: "none", // Prevent bounce scroll where supported/needed
+    touchAction: "pan-y", // Allow vertical pan, prevent bounce scroll where supported/needed
     fontFamily: '"Segoe UI", Roboto, Helvetica, Arial, sans-serif',
     color: "#a4b5c9",
     background: "#050b14",
