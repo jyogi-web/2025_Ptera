@@ -1,8 +1,7 @@
 "use client";
 
 import dynamic from "next/dynamic";
-import { useCallback, useEffect, useState } from "react";
-import { Button } from "./_components/Button";
+import { useCallback, useState } from "react";
 import { GameDescription } from "./_components/GameDescription";
 import { styles } from "./_styles/page.styles";
 
@@ -21,19 +20,6 @@ interface GameRecord {
 export default function Games() {
   const [isRunning, setIsRunning] = useState(false);
   const [showSignal, setShowSignal] = useState(false);
-  const [records, setRecords] = useState<GameRecord[]>([]);
-
-  useEffect(() => {
-    // localStorageから記録を読み込み
-    const saved = localStorage.getItem("game_records");
-    if (saved) {
-      try {
-        setRecords(JSON.parse(saved));
-      } catch (e) {
-        console.error("Failed to parse records", e);
-      }
-    }
-  }, []);
 
   const handleStart = () => {
     setIsRunning(true);
@@ -53,22 +39,8 @@ export default function Games() {
       duration: (duration / 1000).toFixed(3),
     };
 
-    // localStorageへの保存
-    setRecords((prev) => {
-      const updatedRecords = [...prev, newRecord];
-      localStorage.setItem("game_records", JSON.stringify(updatedRecords));
-      return updatedRecords;
-    });
-
     alert(` 経過時間: ${newRecord.duration} 秒`);
   }, []);
-
-  const handleReset = () => {
-    if (confirm("記録をすべて削除しますか？")) {
-      setRecords([]);
-      localStorage.removeItem("game_records");
-    }
-  };
 
   const handleTimeout = useCallback(() => {
     setIsRunning(false);
@@ -81,23 +53,6 @@ export default function Games() {
       <div style={styles.overlay}>
         <div style={styles.controls}>
           {!isRunning ? <GameDescription onStart={handleStart} /> : null}
-
-          {records.length > 0 && (
-            <div style={styles.recordsContainer}>
-              <div style={styles.recordsHeader}>
-                <h3 style={styles.historyTitle}>記録履歴</h3>
-                <Button onClick={handleReset} palette="error">
-                  リセット
-                </Button>
-              </div>
-              {records.map((record, index) => (
-                <div key={`${record.time}-${index}`} style={styles.recordItem}>
-                  <span style={styles.recordTime}>{record.time}</span>
-                  <span style={styles.recordDuration}>{record.duration}秒</span>
-                </div>
-              ))}
-            </div>
-          )}
         </div>
 
         {showSignal && <div style={styles.signalText}>!</div>}
