@@ -23,7 +23,6 @@ export interface Card {
   position: string; // 役割
   faculty?: string; // 学部
   department?: string; // 学科
-  memo?: string; // メモや補足
   affiliatedGroup?: string; // サークル名 (Legacy/Display purpose)
   circleId?: string; // Circle ID (System)
   hobby: string; // 趣味

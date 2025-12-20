@@ -1,5 +1,6 @@
 "use client";
 
+import Image from "next/image";
 import { useCallback, useEffect, useState } from "react";
 import toast from "react-hot-toast";
 import Modal from "@/components/ui/Modal";
@@ -142,6 +143,23 @@ export function BinderGrid({
       <Modal isOpen={isModalOpen} onClose={closeModal} title="カード詳細">
         {selectedCard ? (
           <div>
+            {selectedCard.imageUrl ? (
+              <div className="mb-4 relative w-full h-64 rounded-md overflow-hidden">
+                <Image
+                  src={selectedCard.imageUrl}
+                  alt={selectedCard.name}
+                  fill
+                  className="object-cover"
+                  sizes="(max-width: 640px) 100vw, 640px"
+                />
+              </div>
+            ) : (
+              <div
+                className="mb-4 w-full max-h-64 bg-slate-800 rounded-md"
+                aria-hidden
+              />
+            )}
+
             <div className="mb-2 text-lg font-bold text-slate-100">
               {selectedCard.name}
             </div>
@@ -165,11 +183,7 @@ export function BinderGrid({
                 学科: {selectedCard.department}
               </div>
             )}
-            {selectedCard.memo && (
-              <div className="mt-3 text-sm whitespace-pre-wrap text-slate-200">
-                {selectedCard.memo}
-              </div>
-            )}
+            {/* memo field removed — using `description` for comments */}
             {selectedCard.description && (
               <div className="mt-3 text-sm whitespace-pre-wrap text-slate-200">
                 <div className="text-xs text-slate-400 mb-1">作成コメント</div>
