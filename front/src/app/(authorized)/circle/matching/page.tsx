@@ -1,7 +1,6 @@
 "use client";
 
 import { Animator, FrameCorners } from "@arwes/react";
-import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import toast from "react-hot-toast";
 import { BattleRequestList } from "@/components/BattleRequestList";
@@ -9,11 +8,11 @@ import { useAuth } from "@/context/AuthContext";
 import { useBattle } from "@/hooks/useBattle";
 import { getCircles } from "@/lib/firestore";
 import type { Circle } from "@/types/app";
-import { styles } from "../_styles/page.styles";
+import { classes } from "./_styles/classes";
+import { styles } from "./_styles/page.styles";
 
 export default function MatchingPage() {
   const { user } = useAuth();
-  const router = useRouter();
   const [circles, setCircles] = useState<Circle[]>([]);
   const [loading, setLoading] = useState(true);
   const { sendRequest, loading: loadingBattle } = useBattle();
@@ -62,28 +61,14 @@ export default function MatchingPage() {
       <div style={styles.dashboardContent}>
         <Animator active={true}>
           <div className="w-full max-w-4xl relative flex flex-col h-full">
-            <div className="mb-4 flex-none">
-              <button
-                type="button"
-                onClick={() => router.push("/circle")}
-                className="flex items-center gap-2 text-cyan-400 hover:text-cyan-300 transition-colors font-mono"
-              >
-                <span>«</span> BACK TO DASHBOARD
-              </button>
-            </div>
-
             {/* Main Frame Wrapper - using absolute positioning to stretch */}
             <div className="flex-1 relative min-h-0">
               <FrameCorners
                 strokeWidth={2}
                 cornerLength={20}
                 style={{
-                  color: "#00dac1",
-                  backgroundColor: "rgba(3, 15, 25, 0.6)",
-                  backdropFilter: "blur(10px)",
-                  zIndex: 0,
-                  position: "absolute",
-                  inset: 0,
+                  ...styles.frameCornersCommon,
+                  ...styles.frameCornersMain,
                 }}
               />
 
@@ -92,9 +77,6 @@ export default function MatchingPage() {
                   <div>
                     <p style={styles.panelTitle}>TACTICAL OPERATIONS</p>
                     <h1 className="text-2xl md:text-3xl font-bold flex items-center gap-3">
-                      <span className="text-red-400 text-xl md:text-2xl animate-pulse">
-                        ⚔️
-                      </span>
                       <span style={styles.headerGradient}>BATTLE MATCHING</span>
                     </h1>
                   </div>
@@ -121,22 +103,17 @@ export default function MatchingPage() {
                     strokeWidth={2}
                     cornerLength={20}
                     style={{
-                      color: "#f97316", // Orange for battle/opponent
-                      backgroundColor: "rgba(249, 115, 22, 0.05)",
-                      zIndex: 0,
-                      position: "absolute",
-                      inset: 0,
+                      ...styles.frameCornersCommon,
+                      ...styles.frameCornersOpponent,
                     }}
                   />
                   <div className="relative z-10 p-6 flex flex-col h-full">
-                    <div className="flex-none flex items-center justify-between mb-4 border-b border-orange-900/50 pb-2">
+                    <div style={styles.panelHeader}>
                       <div className="flex items-center gap-2">
                         <div className="w-2 h-2 bg-orange-500 rounded-full animate-ping" />
                         <h3
                           className="text-lg md:text-xl font-bold font-mono tracking-wider text-orange-400"
-                          style={{
-                            textShadow: "0 0 10px rgba(249, 115, 22, 0.5)",
-                          }}
+                          style={styles.scanTitle}
                         >
                           SCAN FOR OPPONENTS
                         </h3>
@@ -148,14 +125,22 @@ export default function MatchingPage() {
 
                     <div
                       className="flex-1 overflow-y-auto pr-2 custom-scrollbar space-y-3"
-                      style={{
-                        scrollbarColor: "#7c2d12 transparent",
-                        scrollbarWidth: "thin",
-                      }}
+                      style={styles.requestsScrollContainer}
                     >
                       {loading ? (
-                        <div className="text-orange-500/50 font-mono text-center py-10 animate-pulse">
-                          SEARCHING NETWORK...
+                        <div className="flex flex-col items-center justify-center h-48 gap-4">
+                          <div style={styles.radarContainer}>
+                            <div style={styles.radarCircle} />
+                            <div
+                              style={styles.radarLine}
+                              className="animate-spin"
+                            />
+                            <div className="absolute inset-0 flex items-center justify-center">
+                              <span className="text-orange-500/50 font-mono text-xs animate-pulse">
+                                SCANNING...
+                              </span>
+                            </div>
+                          </div>
                         </div>
                       ) : opponentCircles.length === 0 ? (
                         <div className="text-center py-10 border border-orange-900/30 bg-orange-900/10 rounded">
@@ -170,13 +155,19 @@ export default function MatchingPage() {
                         opponentCircles.map((circle) => (
                           <div
                             key={circle.id}
-                            className="flex justify-between items-center bg-gray-900/60 p-4 border border-orange-900/30 hover:border-orange-500/50 hover:bg-orange-900/10 transition-all group/item"
+                            // biome-ignore lint/a11y/noNoninteractiveTabindex: Keyboard accessible for visual effects
+                            tabIndex={0}
+                            className={classes.listItem}
+                            style={{
+                              clipPath:
+                                "polygon(0 0, 100% 0, 100% calc(100% - 10px), calc(100% - 10px) 100%, 0 100%)",
+                            }}
                           >
                             <div className="flex flex-col">
                               <span className="text-xs text-gray-500 font-mono mb-1">
                                 TARGET_ID: {circle.id.substring(0, 6)}...
                               </span>
-                              <span className="font-bold text-white text-lg tracking-wide group-hover/item:text-orange-300 transition-colors">
+                              <span className="font-bold text-white text-lg tracking-wide group-hover/item:text-orange-300 group-focus-visible/item:text-orange-300 transition-colors">
                                 {circle.name}
                               </span>
                             </div>
@@ -187,7 +178,11 @@ export default function MatchingPage() {
                                 handleSendRequest(circle.id, circle.name)
                               }
                               disabled={loadingBattle}
-                              className="bg-orange-600/20 hover:bg-orange-500/30 text-orange-400 border border-orange-500/50 hover:border-orange-400 px-4 py-2 rounded font-bold text-sm tracking-widest uppercase transition-all disabled:opacity-50 flex items-center gap-2"
+                              className={classes.challengeButton}
+                              style={{
+                                clipPath:
+                                  "polygon(10px 0, 100% 0, 100% 100%, 0 100%, 0 10px)",
+                              }}
                             >
                               <span className="w-1.5 h-1.5 bg-orange-400 rounded-full" />
                               CHALLENGE

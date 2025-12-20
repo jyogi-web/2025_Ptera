@@ -94,7 +94,16 @@ export function BattleRequestList({ myCircleId }: BattleRequestListProps) {
               {incomingRequests.map((req) => (
                 <div
                   key={req.requestId}
-                  className="flex flex-col md:flex-row justify-between items-center bg-gray-900/80 p-4 border border-cyan-900/30 hover:border-cyan-500/50 transition-colors"
+                  className="flex flex-col md:flex-row justify-between items-center transition-all duration-300"
+                  style={{
+                    background:
+                      "linear-gradient(90deg, rgba(0, 218, 193, 0.05) 0%, rgba(15, 23, 42, 0.6) 100%)",
+                    border: "1px solid rgba(0, 218, 193, 0.2)",
+                    borderLeft: "4px solid rgba(0, 218, 193, 0.5)",
+                    padding: "16px",
+                    clipPath:
+                      "polygon(0 0, 100% 0, 100% calc(100% - 10px), calc(100% - 10px) 100%, 0 100%)",
+                  }}
                 >
                   <div className="mb-4 md:mb-0 w-full md:w-auto">
                     <span style={{ ...styles.panelTitle, color: "#5f7e97" }}>
@@ -178,7 +187,16 @@ export function BattleRequestList({ myCircleId }: BattleRequestListProps) {
               {outgoingRequests.map((req) => (
                 <div
                   key={req.requestId}
-                  className="flex flex-col md:flex-row justify-between items-center bg-gray-900/80 p-4 border border-purple-900/30 hover:border-purple-500/50 transition-colors"
+                  className="flex flex-col md:flex-row justify-between items-center transition-all duration-300"
+                  style={{
+                    background:
+                      "linear-gradient(90deg, rgba(247, 0, 255, 0.05) 0%, rgba(15, 23, 42, 0.6) 100%)",
+                    border: "1px solid rgba(247, 0, 255, 0.2)",
+                    borderLeft: "4px solid rgba(247, 0, 255, 0.5)",
+                    padding: "16px",
+                    clipPath:
+                      "polygon(0 0, 100% 0, 100% calc(100% - 10px), calc(100% - 10px) 100%, 0 100%)",
+                  }}
                 >
                   <div className="mb-4 md:mb-0 w-full md:w-auto">
                     <span style={{ ...styles.panelTitle, color: "#5f7e97" }}>
