@@ -21,9 +21,7 @@ export default function BinderPage() {
       } catch (err) {
         console.error("Failed to fetch cards:", err);
         setError(
-          err instanceof Error
-            ? err.message
-            : "カードの取得に失敗しました。",
+          err instanceof Error ? err.message : "カードの取得に失敗しました。",
         );
       } finally {
         setLoading(false);
@@ -66,6 +64,7 @@ export default function BinderPage() {
                 stroke="currentColor"
                 aria-label="エラーアイコン"
               >
+                <title>エラーアイコン</title>
                 <path
                   strokeLinecap="round"
                   strokeLinejoin="round"
@@ -97,6 +96,7 @@ export default function BinderPage() {
                 stroke="currentColor"
                 aria-label="空のバインダーアイコン"
               >
+                <title>空のバインダーアイコン</title>
                 <path
                   strokeLinecap="round"
                   strokeLinejoin="round"
@@ -105,7 +105,9 @@ export default function BinderPage() {
                 />
               </svg>
               <p className="text-lg font-semibold mb-2">カードがありません</p>
-              <p className="text-sm">カメラから新しいカードを作成してみましょう！</p>
+              <p className="text-sm">
+                カメラから新しいカードを作成してみましょう！
+              </p>
             </div>
           </div>
         )}

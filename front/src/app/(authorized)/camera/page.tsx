@@ -1,6 +1,5 @@
 "use client";
 
-import { Timestamp } from "firebase/firestore";
 import Image from "next/image";
 import { useRef, useState } from "react";
 import { useAuth } from "@/context/AuthContext";
