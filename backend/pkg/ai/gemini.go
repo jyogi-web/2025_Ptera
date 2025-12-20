@@ -16,7 +16,7 @@ type CardSuggestions struct {
 	Name        string `json:"name"`
 	Faculty     string `json:"faculty"`
 	Department  string `json:"department"`
-	Grade       string `json:"grade"`
+	Grade       int32  `json:"grade"`
 	Position    string `json:"position"`
 	Hobby       string `json:"hobby"`
 	Description string `json:"description"`
@@ -29,7 +29,7 @@ type GeminiService struct {
 const (
 	imageDownloadTimeout = 30 * time.Second
 	maxImageSize         = 10 * 1024 * 1024 // 10MB
-	systemInstruction    = `You are an AI assistant that analyzes photos of people to create a profile card. You will be provided with an image and potentially some existing information (Name, Faculty, Department, Grade, Position, Hobby, Description). Your task is to generate values for these fields. If a field is already provided, you can either use it as is, or refine it to be more interesting/funny if appropriate, but prefer keeping the core meaning. If a field is missing, generate a creative, slightly biased or opinionated, and interesting value based on the person's appearance in the photo. The 'Description' should be a short, witty bio. Return ONLY a JSON object with keys: name, faculty, department, grade, position, hobby, description. All values must be in Japanese.`
+	systemInstruction    = `You are an AI assistant that analyzes photos of people to create a profile card. You will be provided with an image and potentially some existing information (Name, Faculty, Department, Grade, Position, Hobby, Description). Your task is to generate values for these fields. If a field is already provided, you can either use it as is, or refine it to be more interesting/funny if appropriate, but prefer keeping the core meaning. If a field is missing, generate a creative, slightly biased or opinionated, and interesting value based on the person's appearance in the photo. The 'Description' should be a short, witty bio. Return ONLY a JSON object with keys: name, faculty, department, grade (integer), position, hobby, description. All string values must be in Japanese.`
 )
 
 func NewGeminiService(ctx context.Context, apiKey string) (*GeminiService, error) {
@@ -45,7 +45,7 @@ func NewGeminiService(ctx context.Context, apiKey string) (*GeminiService, error
 	}, nil
 }
 
-func (s *GeminiService) AnalyzeCardImage(ctx context.Context, imageURL string, currentName, currentFaculty, currentDepartment, currentGrade, currentPosition, currentHobby, currentDescription string) (*CardSuggestions, error) {
+func (s *GeminiService) AnalyzeCardImage(ctx context.Context, imageURL string, currentName, currentFaculty, currentDepartment string, currentGrade int32, currentPosition, currentHobby, currentDescription string) (*CardSuggestions, error) {
 	// 画像をダウンロード
 	client := &http.Client{
 		Timeout: imageDownloadTimeout,
@@ -91,7 +91,7 @@ func (s *GeminiService) AnalyzeCardImage(ctx context.Context, imageURL string, c
 				Name: %s
 				Faculty: %s
 				Department: %s
-				Grade: %s
+				Grade: %d
 				Position: %s
 				Hobby: %s
 				Description: %s

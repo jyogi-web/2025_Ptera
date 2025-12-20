@@ -38,7 +38,7 @@ message CompleteCardRequest {
   optional string name = 2; // 既存の名前
   optional string faculty = 3; // 既存の学部
   optional string department = 4; // 既存の学科
-  optional string grade = 5; // 既存の学年
+  optional int32 grade = 5; // 既存の学年
   optional string position = 6; // 既存の職位
   optional string hobby = 7; // 既存の趣味
   optional string description = 8; // 既存の説明文

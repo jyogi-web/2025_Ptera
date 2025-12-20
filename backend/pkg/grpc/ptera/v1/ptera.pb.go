@@ -91,19 +91,20 @@ func (x *User) GetEmail() string {
 }
 
 type Card struct {
-	state           protoimpl.MessageState `protogen:"open.v1"`
-	Id              string                 `protobuf:"bytes,1,opt,name=id,proto3" json:"id,omitempty"`
-	CreatorId       string                 `protobuf:"bytes,2,opt,name=creator_id,json=creatorId,proto3" json:"creator_id,omitempty"`
-	Name            string                 `protobuf:"bytes,3,opt,name=name,proto3" json:"name,omitempty"`
-	Grade           int32                  `protobuf:"varint,4,opt,name=grade,proto3" json:"grade,omitempty"`
-	Position        string                 `protobuf:"bytes,5,opt,name=position,proto3" json:"position,omitempty"`
-	AffiliatedGroup *string                `protobuf:"bytes,6,opt,name=affiliated_group,json=affiliatedGroup,proto3,oneof" json:"affiliated_group,omitempty"`
-	Hobby           string                 `protobuf:"bytes,7,opt,name=hobby,proto3" json:"hobby,omitempty"`
-	Description     string                 `protobuf:"bytes,8,opt,name=description,proto3" json:"description,omitempty"`
-	ImageUrl        string                 `protobuf:"bytes,9,opt,name=image_url,json=imageUrl,proto3" json:"image_url,omitempty"`
-	CreatedAt       *timestamppb.Timestamp `protobuf:"bytes,10,opt,name=created_at,json=createdAt,proto3" json:"created_at,omitempty"`
-	unknownFields   protoimpl.UnknownFields
-	sizeCache       protoimpl.SizeCache
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	Id            string                 `protobuf:"bytes,1,opt,name=id,proto3" json:"id,omitempty"`
+	CreatorId     string                 `protobuf:"bytes,2,opt,name=creator_id,json=creatorId,proto3" json:"creator_id,omitempty"`
+	Name          string                 `protobuf:"bytes,3,opt,name=name,proto3" json:"name,omitempty"`
+	Grade         int32                  `protobuf:"varint,4,opt,name=grade,proto3" json:"grade,omitempty"`
+	Position      string                 `protobuf:"bytes,5,opt,name=position,proto3" json:"position,omitempty"`
+	Faculty       string                 `protobuf:"bytes,6,opt,name=faculty,proto3" json:"faculty,omitempty"`
+	Department    string                 `protobuf:"bytes,7,opt,name=department,proto3" json:"department,omitempty"`
+	Hobby         string                 `protobuf:"bytes,8,opt,name=hobby,proto3" json:"hobby,omitempty"`
+	Description   string                 `protobuf:"bytes,9,opt,name=description,proto3" json:"description,omitempty"`
+	ImageUrl      string                 `protobuf:"bytes,10,opt,name=image_url,json=imageUrl,proto3" json:"image_url,omitempty"`
+	CreatedAt     *timestamppb.Timestamp `protobuf:"bytes,11,opt,name=created_at,json=createdAt,proto3" json:"created_at,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
 }
 
 func (x *Card) Reset() {
@@ -171,9 +172,16 @@ func (x *Card) GetPosition() string {
 	return ""
 }
 
-func (x *Card) GetAffiliatedGroup() string {
-	if x != nil && x.AffiliatedGroup != nil {
-		return *x.AffiliatedGroup
+func (x *Card) GetFaculty() string {
+	if x != nil {
+		return x.Faculty
+	}
+	return ""
+}
+
+func (x *Card) GetDepartment() string {
+	if x != nil {
+		return x.Department
 	}
 	return ""
 }
@@ -212,7 +220,7 @@ type CompleteCardRequest struct {
 	Name          *string                `protobuf:"bytes,2,opt,name=name,proto3,oneof" json:"name,omitempty"`                   // 既存の名前
 	Faculty       *string                `protobuf:"bytes,3,opt,name=faculty,proto3,oneof" json:"faculty,omitempty"`             // 既存の学部
 	Department    *string                `protobuf:"bytes,4,opt,name=department,proto3,oneof" json:"department,omitempty"`       // 既存の学科
-	Grade         *string                `protobuf:"bytes,5,opt,name=grade,proto3,oneof" json:"grade,omitempty"`                 // 既存の学年
+	Grade         *int32                 `protobuf:"varint,5,opt,name=grade,proto3,oneof" json:"grade,omitempty"`                // 既存の学年
 	Position      *string                `protobuf:"bytes,6,opt,name=position,proto3,oneof" json:"position,omitempty"`           // 既存の職位
 	Hobby         *string                `protobuf:"bytes,7,opt,name=hobby,proto3,oneof" json:"hobby,omitempty"`                 // 既存の趣味
 	Description   *string                `protobuf:"bytes,8,opt,name=description,proto3,oneof" json:"description,omitempty"`     // 既存の説明文
@@ -278,11 +286,11 @@ func (x *CompleteCardRequest) GetDepartment() string {
 	return ""
 }
 
-func (x *CompleteCardRequest) GetGrade() string {
+func (x *CompleteCardRequest) GetGrade() int32 {
 	if x != nil && x.Grade != nil {
 		return *x.Grade
 	}
-	return ""
+	return 0
 }
 
 func (x *CompleteCardRequest) GetPosition() string {
@@ -307,19 +315,18 @@ func (x *CompleteCardRequest) GetDescription() string {
 }
 
 type CompleteCardResponse struct {
-	state           protoimpl.MessageState `protogen:"open.v1"`
-	Name            *string                `protobuf:"bytes,1,opt,name=name,proto3,oneof" json:"name,omitempty"`                                                 // 補完された名前
-	Faculty         *string                `protobuf:"bytes,2,opt,name=faculty,proto3,oneof" json:"faculty,omitempty"`                                           // 補完された学部
-	Department      *string                `protobuf:"bytes,3,opt,name=department,proto3,oneof" json:"department,omitempty"`                                     // 補完された学科
-	Grade           *string                `protobuf:"bytes,4,opt,name=grade,proto3,oneof" json:"grade,omitempty"`                                               // 補完された学年
-	Position        *string                `protobuf:"bytes,5,opt,name=position,proto3,oneof" json:"position,omitempty"`                                         // 補完された職位
-	Hobby           *string                `protobuf:"bytes,6,opt,name=hobby,proto3,oneof" json:"hobby,omitempty"`                                               // 補完された趣味
-	Description     *string                `protobuf:"bytes,7,opt,name=description,proto3,oneof" json:"description,omitempty"`                                   // 補完された説明文
-	Success         bool                   `protobuf:"varint,8,opt,name=success,proto3" json:"success,omitempty"`                                                // 補完が成功したかどうかを示すフラグ
-	ErrorMessage    *string                `protobuf:"bytes,9,opt,name=error_message,json=errorMessage,proto3,oneof" json:"error_message,omitempty"`             // エラーメッセージ（存在する場合）
-	ConfidenceScore *float32               `protobuf:"fixed32,10,opt,name=confidence_score,json=confidenceScore,proto3,oneof" json:"confidence_score,omitempty"` // 各フィールドの信頼度スコア（0.0～1.0）
-	unknownFields   protoimpl.UnknownFields
-	sizeCache       protoimpl.SizeCache
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	Name          string                 `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`                                           // 補完された名前
+	Faculty       string                 `protobuf:"bytes,2,opt,name=faculty,proto3" json:"faculty,omitempty"`                                     // 補完された学部
+	Department    string                 `protobuf:"bytes,3,opt,name=department,proto3" json:"department,omitempty"`                               // 補完された学科
+	Grade         int32                  `protobuf:"varint,4,opt,name=grade,proto3" json:"grade,omitempty"`                                        // 補完された学年
+	Position      string                 `protobuf:"bytes,5,opt,name=position,proto3" json:"position,omitempty"`                                   // 補完された職位
+	Hobby         string                 `protobuf:"bytes,6,opt,name=hobby,proto3" json:"hobby,omitempty"`                                         // 補完された趣味
+	Description   string                 `protobuf:"bytes,7,opt,name=description,proto3" json:"description,omitempty"`                             // 補完された説明文
+	Success       bool                   `protobuf:"varint,8,opt,name=success,proto3" json:"success,omitempty"`                                    // 補完が成功したかどうかを示すフラグ
+	ErrorMessage  *string                `protobuf:"bytes,9,opt,name=error_message,json=errorMessage,proto3,oneof" json:"error_message,omitempty"` // エラーメッセージ（存在する場合）
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
 }
 
 func (x *CompleteCardResponse) Reset() {
@@ -353,50 +360,50 @@ func (*CompleteCardResponse) Descriptor() ([]byte, []int) {
 }
 
 func (x *CompleteCardResponse) GetName() string {
-	if x != nil && x.Name != nil {
-		return *x.Name
+	if x != nil {
+		return x.Name
 	}
 	return ""
 }
 
 func (x *CompleteCardResponse) GetFaculty() string {
-	if x != nil && x.Faculty != nil {
-		return *x.Faculty
+	if x != nil {
+		return x.Faculty
 	}
 	return ""
 }
 
 func (x *CompleteCardResponse) GetDepartment() string {
-	if x != nil && x.Department != nil {
-		return *x.Department
+	if x != nil {
+		return x.Department
 	}
 	return ""
 }
 
-func (x *CompleteCardResponse) GetGrade() string {
-	if x != nil && x.Grade != nil {
-		return *x.Grade
+func (x *CompleteCardResponse) GetGrade() int32 {
+	if x != nil {
+		return x.Grade
 	}
-	return ""
+	return 0
 }
 
 func (x *CompleteCardResponse) GetPosition() string {
-	if x != nil && x.Position != nil {
-		return *x.Position
+	if x != nil {
+		return x.Position
 	}
 	return ""
 }
 
 func (x *CompleteCardResponse) GetHobby() string {
-	if x != nil && x.Hobby != nil {
-		return *x.Hobby
+	if x != nil {
+		return x.Hobby
 	}
 	return ""
 }
 
 func (x *CompleteCardResponse) GetDescription() string {
-	if x != nil && x.Description != nil {
-		return *x.Description
+	if x != nil {
+		return x.Description
 	}
 	return ""
 }
@@ -415,13 +422,6 @@ func (x *CompleteCardResponse) GetErrorMessage() string {
 	return ""
 }
 
-func (x *CompleteCardResponse) GetConfidenceScore() float32 {
-	if x != nil && x.ConfidenceScore != nil {
-		return *x.ConfidenceScore
-	}
-	return 0
-}
-
 var File_ptera_v1_ptera_proto protoreflect.FileDescriptor
 
 const file_ptera_v1_ptera_proto_rawDesc = "" +
@@ -432,22 +432,24 @@ const file_ptera_v1_ptera_proto_rawDesc = "" +
 	"\x04name\x18\x02 \x01(\tR\x04name\x12\x19\n" +
 	"\bicon_url\x18\x03 \x01(\tR\aiconUrl\x12\x19\n" +
 	"\x05email\x18\x04 \x01(\tH\x00R\x05email\x88\x01\x01B\b\n" +
-	"\x06_email\"\xd0\x02\n" +
+	"\x06_email\"\xc5\x02\n" +
 	"\x04Card\x12\x0e\n" +
 	"\x02id\x18\x01 \x01(\tR\x02id\x12\x1d\n" +
 	"\n" +
 	"creator_id\x18\x02 \x01(\tR\tcreatorId\x12\x12\n" +
 	"\x04name\x18\x03 \x01(\tR\x04name\x12\x14\n" +
 	"\x05grade\x18\x04 \x01(\x05R\x05grade\x12\x1a\n" +
-	"\bposition\x18\x05 \x01(\tR\bposition\x12.\n" +
-	"\x10affiliated_group\x18\x06 \x01(\tH\x00R\x0faffiliatedGroup\x88\x01\x01\x12\x14\n" +
-	"\x05hobby\x18\a \x01(\tR\x05hobby\x12 \n" +
-	"\vdescription\x18\b \x01(\tR\vdescription\x12\x1b\n" +
-	"\timage_url\x18\t \x01(\tR\bimageUrl\x129\n" +
+	"\bposition\x18\x05 \x01(\tR\bposition\x12\x18\n" +
+	"\afaculty\x18\x06 \x01(\tR\afaculty\x12\x1e\n" +
 	"\n" +
-	"created_at\x18\n" +
-	" \x01(\v2\x1a.google.protobuf.TimestampR\tcreatedAtB\x13\n" +
-	"\x11_affiliated_group\"\xe2\x02\n" +
+	"department\x18\a \x01(\tR\n" +
+	"department\x12\x14\n" +
+	"\x05hobby\x18\b \x01(\tR\x05hobby\x12 \n" +
+	"\vdescription\x18\t \x01(\tR\vdescription\x12\x1b\n" +
+	"\timage_url\x18\n" +
+	" \x01(\tR\bimageUrl\x129\n" +
+	"\n" +
+	"created_at\x18\v \x01(\v2\x1a.google.protobuf.TimestampR\tcreatedAt\"\xe2\x02\n" +
 	"\x13CompleteCardRequest\x12\x1b\n" +
 	"\timage_url\x18\x01 \x01(\tR\bimageUrl\x12\x17\n" +
 	"\x04name\x18\x02 \x01(\tH\x00R\x04name\x88\x01\x01\x12\x1d\n" +
@@ -455,7 +457,7 @@ const file_ptera_v1_ptera_proto_rawDesc = "" +
 	"\n" +
 	"department\x18\x04 \x01(\tH\x02R\n" +
 	"department\x88\x01\x01\x12\x19\n" +
-	"\x05grade\x18\x05 \x01(\tH\x03R\x05grade\x88\x01\x01\x12\x1f\n" +
+	"\x05grade\x18\x05 \x01(\x05H\x03R\x05grade\x88\x01\x01\x12\x1f\n" +
 	"\bposition\x18\x06 \x01(\tH\x04R\bposition\x88\x01\x01\x12\x19\n" +
 	"\x05hobby\x18\a \x01(\tH\x05R\x05hobby\x88\x01\x01\x12%\n" +
 	"\vdescription\x18\b \x01(\tH\x06R\vdescription\x88\x01\x01B\a\n" +
@@ -466,31 +468,20 @@ const file_ptera_v1_ptera_proto_rawDesc = "" +
 	"\x06_gradeB\v\n" +
 	"\t_positionB\b\n" +
 	"\x06_hobbyB\x0e\n" +
-	"\f_description\"\xe1\x03\n" +
-	"\x14CompleteCardResponse\x12\x17\n" +
-	"\x04name\x18\x01 \x01(\tH\x00R\x04name\x88\x01\x01\x12\x1d\n" +
-	"\afaculty\x18\x02 \x01(\tH\x01R\afaculty\x88\x01\x01\x12#\n" +
+	"\f_description\"\xa4\x02\n" +
+	"\x14CompleteCardResponse\x12\x12\n" +
+	"\x04name\x18\x01 \x01(\tR\x04name\x12\x18\n" +
+	"\afaculty\x18\x02 \x01(\tR\afaculty\x12\x1e\n" +
 	"\n" +
-	"department\x18\x03 \x01(\tH\x02R\n" +
-	"department\x88\x01\x01\x12\x19\n" +
-	"\x05grade\x18\x04 \x01(\tH\x03R\x05grade\x88\x01\x01\x12\x1f\n" +
-	"\bposition\x18\x05 \x01(\tH\x04R\bposition\x88\x01\x01\x12\x19\n" +
-	"\x05hobby\x18\x06 \x01(\tH\x05R\x05hobby\x88\x01\x01\x12%\n" +
-	"\vdescription\x18\a \x01(\tH\x06R\vdescription\x88\x01\x01\x12\x18\n" +
+	"department\x18\x03 \x01(\tR\n" +
+	"department\x12\x14\n" +
+	"\x05grade\x18\x04 \x01(\x05R\x05grade\x12\x1a\n" +
+	"\bposition\x18\x05 \x01(\tR\bposition\x12\x14\n" +
+	"\x05hobby\x18\x06 \x01(\tR\x05hobby\x12 \n" +
+	"\vdescription\x18\a \x01(\tR\vdescription\x12\x18\n" +
 	"\asuccess\x18\b \x01(\bR\asuccess\x12(\n" +
-	"\rerror_message\x18\t \x01(\tH\aR\ferrorMessage\x88\x01\x01\x12.\n" +
-	"\x10confidence_score\x18\n" +
-	" \x01(\x02H\bR\x0fconfidenceScore\x88\x01\x01B\a\n" +
-	"\x05_nameB\n" +
-	"\n" +
-	"\b_facultyB\r\n" +
-	"\v_departmentB\b\n" +
-	"\x06_gradeB\v\n" +
-	"\t_positionB\b\n" +
-	"\x06_hobbyB\x0e\n" +
-	"\f_descriptionB\x10\n" +
-	"\x0e_error_messageB\x13\n" +
-	"\x11_confidence_score2]\n" +
+	"\rerror_message\x18\t \x01(\tH\x00R\ferrorMessage\x88\x01\x01B\x10\n" +
+	"\x0e_error_message2]\n" +
 	"\fPteraService\x12M\n" +
 	"\fCompleteCard\x12\x1d.ptera.v1.CompleteCardRequest\x1a\x1e.ptera.v1.CompleteCardResponseBAZ?github.com/jyogi-web/2025_Ptera/backend/pkg/grpc/ptera/v1;pterab\x06proto3"
 
@@ -531,7 +522,6 @@ func file_ptera_v1_ptera_proto_init() {
 		return
 	}
 	file_ptera_v1_ptera_proto_msgTypes[0].OneofWrappers = []any{}
-	file_ptera_v1_ptera_proto_msgTypes[1].OneofWrappers = []any{}
 	file_ptera_v1_ptera_proto_msgTypes[2].OneofWrappers = []any{}
 	file_ptera_v1_ptera_proto_msgTypes[3].OneofWrappers = []any{}
 	type x struct{}

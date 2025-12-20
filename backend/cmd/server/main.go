@@ -42,8 +42,7 @@ func run() error {
 		return fmt.Errorf("GEMINI_API_KEY environment variable is not set")
 	}
 
-	// Create Gemini service with a background context (or separate context if manageable)
-	// Note: In a real app, we might want to handle cancellation if main stops, but for now bg is fine for init.
+	// バックグラウンドコンテキストを使用してGeminiサービスを作成
 	geminiService, err := ai.NewGeminiService(context.Background(), apiKey)
 	if err != nil {
 		return fmt.Errorf("failed to create gemini service: %w", err)
@@ -86,8 +85,6 @@ func (s *server) CompleteCard(ctx context.Context, req *ptera.CompleteCardReques
 		return nil, status.Error(codes.InvalidArgument, "image_url is required")
 	}
 
-	// Use getters to safely handle optional fields (returns "" if nil)
-
 	suggestions, err := s.aiService.AnalyzeCardImage(
 		ctx,
 		req.GetImageUrl(),
@@ -105,13 +102,13 @@ func (s *server) CompleteCard(ctx context.Context, req *ptera.CompleteCardReques
 	}
 
 	return &ptera.CompleteCardResponse{
-		Name:        &suggestions.Name,
-		Faculty:     &suggestions.Faculty,
-		Department:  &suggestions.Department,
-		Grade:       &suggestions.Grade,
-		Position:    &suggestions.Position,
-		Hobby:       &suggestions.Hobby,
-		Description: &suggestions.Description,
+		Name:        suggestions.Name,
+		Faculty:     suggestions.Faculty,
+		Department:  suggestions.Department,
+		Grade:       suggestions.Grade,
+		Position:    suggestions.Position,
+		Hobby:       suggestions.Hobby,
+		Description: suggestions.Description,
 		Success:     true,
 	}, nil
 }
