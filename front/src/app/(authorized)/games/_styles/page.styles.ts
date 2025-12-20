@@ -144,14 +144,14 @@ export const styles: { [key: string]: CSSProperties } = {
     top: "50%",
     left: "50%",
     transform: "translate(-50%, -50%)",
-    color: "#FFF", // White core
-    fontSize: "6rem",
+    color: "#00dac1", // Cyber Cyan
+    fontSize: "12rem",
     fontWeight: "900",
     pointerEvents: "none",
     zIndex: 50,
-    textShadow:
-      "0 0 10px #FF0000, 0 0 20px #FF0000, 0 0 30px #FF0000, 0 0 40px #FF0000",
+    textShadow: "0 0 10px #00dac1, 0 0 40px #00dac1, 4px 4px 0px #ff00ff", // Neon glow + Magenta offset (glitch)
     fontFamily: '"Arial Black", sans-serif',
     letterSpacing: "-5px",
+    fontStyle: "italic", // Speed feel
   },
 };

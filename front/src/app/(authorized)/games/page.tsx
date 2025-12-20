@@ -108,7 +108,7 @@ export default function Games() {
         )}
       </div>
 
-      {showSignal && <div style={styles.signalText}>今</div>}
+      {showSignal && <div style={styles.signalText}>!</div>}
 
       <div style={styles.scannerWrapper}>
         {isRunning && (
