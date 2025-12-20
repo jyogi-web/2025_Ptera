@@ -12,6 +12,42 @@ const MAX_ENEMIES = 4;
 const AI_INTERVAL_MS = 33; // ~30 FPS for AI
 const AIM_ASSIST_RADIUS = 0.3; // Normalized screen space
 
+// --- Type Definitions ---
+interface Landmark {
+  x: number;
+  y: number;
+  z: number;
+}
+
+interface HandsResults {
+  multiHandLandmarks: Landmark[][];
+}
+
+interface HandsOptions {
+  maxNumHands: number;
+  modelComplexity: number;
+  minDetectionConfidence: number;
+  minTrackingConfidence: number;
+}
+
+interface HandsInput {
+  image: HTMLVideoElement;
+}
+
+interface HandsInstance {
+  setOptions: (options: HandsOptions) => void;
+  onResults: (callback: (results: HandsResults) => void) => void;
+  initialize: () => Promise<void>;
+  send: (input: HandsInput) => Promise<void>;
+}
+
+interface CustomWindow extends Window {
+  Hands: new (config: {
+    locateFile: (file: string) => string;
+  }) => HandsInstance;
+  webkitAudioContext: typeof AudioContext;
+}
+
 // --- Three.js & Game State Types ---
 type Enemy = {
   id: string;
@@ -55,8 +91,7 @@ export default function ShootingGame() {
     lasers: [] as THREE.Mesh[] | THREE.Line[],
     reticle: null as THREE.Mesh | null,
     lastTime: 0,
-    // biome-ignore lint/suspicious/noExplicitAny: MediaPipe HandLandmarker type is complex
-    handLandmarker: null as any,
+    handLandmarker: null as HandsInstance | null,
     lastVideoTime: -1,
     lastAITime: 0,
     gesture: {
@@ -72,7 +107,7 @@ export default function ShootingGame() {
   const handleScriptLoad = async () => {
     setLoadingStatus("Loading AI Model...");
     try {
-      const { Hands } = window as any;
+      const { Hands } = window as unknown as CustomWindow;
       if (!Hands) throw new Error("MediaPipe Hands not found in window");
 
       const hands = new Hands({
@@ -101,7 +136,7 @@ export default function ShootingGame() {
   };
 
   // Process AI Results
-  const onHandsResults = (results: any) => {
+  const onHandsResults = (results: HandsResults) => {
     try {
       if (results.multiHandLandmarks && results.multiHandLandmarks.length > 0) {
         const landmarks = results.multiHandLandmarks[0];
@@ -450,7 +485,8 @@ export default function ShootingGame() {
     gameRef.current.lasers = [laser];
 
     gameRef.current.audioCtx = new (
-      window.AudioContext || (window as any).webkitAudioContext
+      window.AudioContext ||
+      (window as unknown as CustomWindow).webkitAudioContext
     )();
 
     const clock = new THREE.Clock();
