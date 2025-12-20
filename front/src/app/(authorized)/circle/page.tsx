@@ -326,6 +326,11 @@ export default function CirclePage() {
                 Start a new collection group.
                 <br />
                 Gather your team's data cards.
+                <br />
+                <span className="block mt-2 text-yellow-300 font-medium">
+                  Note: Circle membership is required — please create a circle
+                  or join an existing one to continue.
+                </span>
               </p>
             </div>
 
