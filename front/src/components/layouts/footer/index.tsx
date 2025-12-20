@@ -1,7 +1,7 @@
 "use client";
 
 import { Animator, AnimatorGeneralProvider } from "@arwes/react";
-import { Book, Home, Rocket, Users } from "lucide-react";
+import { Book, Home, Sword, Users } from "lucide-react";
 import { usePathname, useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { useAuth } from "@/context/AuthContext";
@@ -24,9 +24,9 @@ const FOOTER_ITEMS = [
     icon: Users,
   },
   {
-    label: "ガチャ",
-    href: "/gacha",
-    icon: Rocket,
+    label: "バトル",
+    href: "/circle/matching",
+    icon: Sword,
   },
 ];
 
@@ -45,7 +45,9 @@ export const Footer = () => {
 
   // 特定のパスで非表示にする場合はここに追加
   const isHiddenPath =
-    ["/login", "/"].includes(pathname) || pathname.startsWith("/battle");
+    ["/login", "/"].includes(pathname) ||
+    pathname.startsWith("/battle") ||
+    pathname.startsWith("/circle/matching");
   if (isHiddenPath) return null;
 
   return (
