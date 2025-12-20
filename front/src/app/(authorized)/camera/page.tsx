@@ -227,7 +227,14 @@ export default function CameraPage() {
         return;
       }
 
-      const expiryDate = calculateGraduationDate(form.grade);
+      let expiryDate: Date;
+      try {
+        expiryDate = calculateGraduationDate(form.grade);
+      } catch (error) {
+        console.error("Invalid grade for graduation calculation:", error);
+        toast.error("学年の値が無効です。");
+        return;
+      }
 
       await addCard({
         name: form.name,
