@@ -140,7 +140,7 @@ export default function CirclePage() {
                         <line x1="12" x2="12" y1="22" y2="18" />
                       </svg>
                     </div>
-                    <h3 className="text-xl font-bold">メンバーを追加</h3>
+                    <h3 className="text-xl font-bold">メンバーカードを追加</h3>
                   </div>
                   <p className="text-sm text-gray-400">
                     新しいメンバーのカードを作成します。
