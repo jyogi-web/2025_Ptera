@@ -70,7 +70,7 @@ export default function CardDetails({ card }: Props) {
           <div className="flex justify-between items-center border-b border-gray-800 pb-2">
             <span className="text-gray-400 text-sm">作成日</span>
             <span className="text-white font-mono text-sm">
-              {card.createdAt.toLocaleDateString()}
+              {new Date(card.createdAt).toLocaleDateString()}
             </span>
           </div>
 
@@ -82,7 +82,7 @@ export default function CardDetails({ card }: Props) {
             <div className="bg-gray-800/50 p-3 rounded-lg border border-gray-700">
               <p className="text-xs text-gray-400 mb-1">活動期間</p>
               <p className="text-white font-bold">
-                {getDaysElapsed(card.createdAt)}日
+                {getDaysElapsed(new Date(card.createdAt))}日
               </p>
             </div>
           </div>
