@@ -14,6 +14,13 @@ export default function Card({ card, label, onClick }: CardProps) {
   const getDaysElapsed = (createdAt: Date | string): number => {
     const date =
       typeof createdAt === "string" ? new Date(createdAt) : createdAt;
+
+    // Validate parsed date
+    if (Number.isNaN(date.getTime())) {
+      console.warn("Invalid date encountered in Card:", createdAt);
+      return 0;
+    }
+
     const now = new Date();
     const diffTime = Math.abs(now.getTime() - date.getTime());
     const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));

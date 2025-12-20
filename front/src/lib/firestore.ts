@@ -7,6 +7,7 @@ import {
   getDocs,
   limit,
   orderBy,
+  type QueryConstraint,
   query,
   runTransaction,
   serverTimestamp,
@@ -159,20 +160,16 @@ const isValidFirestoreCard = (id: string, data: any): data is FirestoreCard => {
 };
 
 export const getCards = async (circleId?: string): Promise<Card[]> => {
-  let q = query(
-    collection(db, CARDS_COLLECTION),
+  const constraints: QueryConstraint[] = [
     orderBy("createdAt", "desc"),
     limit(20),
-  );
+  ];
 
   if (circleId) {
-    q = query(
-      collection(db, CARDS_COLLECTION),
-      where("circleId", "==", circleId),
-      orderBy("createdAt", "desc"),
-      limit(20),
-    );
+    constraints.unshift(where("circleId", "==", circleId));
   }
+
+  const q = query(collection(db, CARDS_COLLECTION), ...constraints);
 
   const querySnapshot = await getDocs(q);
 
