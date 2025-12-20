@@ -1,73 +1,36 @@
 "use client";
 
-import dynamic from "next/dynamic";
-import { useCallback, useState } from "react";
-import { GameDescription } from "./_components/GameDescription";
+import { Animator, Text } from "@arwes/react";
+import { GameCard } from "./_components/GameCard";
 import { styles } from "./_styles/page.styles";
 
-const QRScanner = dynamic(
-  () => import("@/app/(authorized)/games/_components/QRScanner"),
-  {
-    ssr: false,
-  },
-);
-
-interface GameRecord {
-  time: string;
-  duration: string;
-}
-
-export default function Games() {
-  const [isRunning, setIsRunning] = useState(false);
-  const [showSignal, setShowSignal] = useState(false);
-
-  const handleStart = () => {
-    setIsRunning(true);
-    setShowSignal(false);
-    console.log("計測開始準備");
-  };
-
-  const handleSignal = useCallback(() => {
-    setShowSignal(true);
-  }, []);
-
-  const handleQRLost = useCallback((duration: number) => {
-    setIsRunning(false);
-    setShowSignal(false);
-    const newRecord: GameRecord = {
-      time: new Date().toLocaleString(),
-      duration: (duration / 1000).toFixed(3),
-    };
-
-    alert(` 経過時間: ${newRecord.duration} 秒`);
-  }, []);
-
-  const handleTimeout = useCallback(() => {
-    setIsRunning(false);
-    setShowSignal(false);
-    alert("QRコードが見つかりませんでした。スタート画面に戻ります。");
-  }, []);
-
+export default function GameHub() {
   return (
     <div style={styles.container}>
-      <div style={styles.overlay}>
-        <div style={styles.controls}>
-          {!isRunning ? <GameDescription onStart={handleStart} /> : null}
+      <Animator active={true}>
+        <div style={styles.header}>
+          <Text as="h1" style={styles.title}>
+            GAME_SELECT
+          </Text>
         </div>
 
-        {showSignal && <div style={styles.signalText}>!</div>}
-
-        <div style={styles.scannerWrapper}>
-          {isRunning && (
-            <QRScanner
-              isRunning={isRunning}
-              onQRLost={handleQRLost}
-              onTimeout={handleTimeout}
-              onSignal={handleSignal}
-            />
-          )}
+        <div style={styles.grid}>
+          <GameCard
+            title="SETSUNA"
+            description="反射神経を研ぎ澄ませ。瞬間勝負のQRバトル。"
+            href="/games/setsuna"
+            color="#00dac1"
+          />
+          {/* Placeholder for future games */}
+          <GameCard
+            title="COMING_SOON"
+            description="Next Operation..."
+            href="#"
+            color="#444"
+            disabled
+          />
         </div>
-      </div>
+      </Animator>
     </div>
   );
 }
