@@ -97,7 +97,7 @@ describe("converter", () => {
         description: "Hello!",
         imageUrl: "https://example.com/card.jpg",
         createdAt: date,
-        expiryDate: date,
+        expiryDate: expiryDate,
       });
     });
 
