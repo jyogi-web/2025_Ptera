@@ -1,6 +1,5 @@
 "use client";
 
-import { Timestamp } from "firebase/firestore";
 import Image from "next/image";
 import { useRef, useState, useTransition } from "react";
 import toast from "react-hot-toast";
@@ -272,7 +271,7 @@ export default function CameraPage() {
         description: form.description,
         imageUrl: uploadedImageUrl,
         creatorId: user.id,
-        expiryDate: Timestamp.fromDate(expiryDate),
+        expiryDate: expiryDate,
       });
 
       console.log("Card created successfully");
