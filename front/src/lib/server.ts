@@ -136,6 +136,7 @@ function validateCardData(
       };
     }
 
+    // expiryDateはオプショナル。存在しない場合は4年後をデフォルトとする
     if (
       data.expiryDate &&
       typeof data.expiryDate === "object" &&
@@ -145,10 +146,8 @@ function validateCardData(
     ) {
       expiryDate = data.expiryDate.toDate();
     } else {
-      return {
-        valid: false,
-        error: `Card ${docId}: expiryDate is not a valid Timestamp`,
-      };
+      // デフォルト: 4年後
+      expiryDate = new Date(Date.now() + 4 * 365 * 24 * 60 * 60 * 1000);
     }
   } catch (error) {
     return {
