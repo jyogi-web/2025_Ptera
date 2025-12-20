@@ -29,7 +29,10 @@ export default function Loading() {
         <div className="relative w-24 h-24">
           <div className="absolute inset-0 border-4 border-cyan-500/30 rounded-full animate-pulse" />
           <div className="absolute inset-0 border-t-4 border-cyan-400 rounded-full animate-spin" />
-          <div className="absolute inset-4 border-b-2 border-cyan-200/50 rounded-full animate-spin-reverse" />
+          <div
+            className="absolute inset-4 border-b-2 border-cyan-200/50 rounded-full animate-spin"
+            style={{ animationDirection: "reverse" }}
+          />
           <div className="absolute inset-0 flex items-center justify-center">
             <div className="w-2 h-2 bg-cyan-400 rounded-full animate-ping" />
           </div>
