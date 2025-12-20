@@ -107,18 +107,23 @@ export const styles: { [key: string]: CSSProperties } = {
     top: "4px",
     left: "4px", // Changed from right to left
     zIndex: 30,
-    backgroundColor: "rgba(0, 0, 0, 0.8)",
-    border: "1px solid rgba(250, 204, 21, 0.8)", // Yellow for Favorite
-    padding: "2px 6px",
-    borderRadius: "4px",
+    backgroundColor: "rgba(0, 0, 0, 0.9)",
+    // Cyber border effect using drop-shadow since clip-path cuts borders
+    filter: "drop-shadow(0 0 2px rgba(250, 204, 21, 0.8))",
+    padding: "4px 8px 4px 6px",
+    // Angled tech shape (cut top-left and bottom-right)
+    clipPath:
+      "polygon(6px 0, 100% 0, 100% calc(100% - 6px), calc(100% - 6px) 100%, 0 100%, 0 6px)",
+    borderLeft: "2px solid #facc15", // Accent border on left
   },
   labelText: {
     color: "#facc15", // yellow-400
     fontWeight: "bold",
-    fontSize: "0.6rem",
+    fontSize: "0.8rem", // Slightly larger
     letterSpacing: "0.1em",
     textTransform: "uppercase",
     fontFamily: "monospace",
+    textShadow: "0 0 5px rgba(250, 204, 21, 0.8)", // Neon glow
   },
   // Grade Badge (Top-Right)
   gradeBadge: {
