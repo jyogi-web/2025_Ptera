@@ -10,9 +10,8 @@ export const styles: { [key: string]: CSSProperties } = {
     zIndex: 0,
     width: "100vw",
     height: "100dvh",
-    overflow: "hidden",
-    touchAction: "none",
-    overscrollBehavior: "none",
+    overflow: "auto", // Allow scrolling if content overflows
+    touchAction: "manipulation", // Allow panning and zooming, but optimize for touch
     fontFamily: '"Segoe UI", Roboto, Helvetica, Arial, sans-serif',
     color: "#fff",
     background: "#111",
@@ -144,6 +143,7 @@ export const styles: { [key: string]: CSSProperties } = {
     left: 0,
     width: "100%",
     height: "100%",
+    touchAction: "none",
     zIndex: 1, // Above background, below overlay
   },
   signalText: {
