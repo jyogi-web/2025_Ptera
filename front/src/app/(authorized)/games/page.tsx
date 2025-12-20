@@ -29,6 +29,12 @@ export default function GameHub() {
             href="/games/setsuna"
             color="#00dac1"
           />
+          <GameCard
+            title="SHOOTING"
+            description="Training Simulation"
+            href="/games/shooting"
+            color="#ff0055"
+          />
           {/* Placeholder for future games */}
           <GameCard
             title="COMING_SOON"
