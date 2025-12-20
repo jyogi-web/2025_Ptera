@@ -17,7 +17,7 @@ export default function GameHub() {
         <div style={styles.grid}>
           <GameCard
             title="SETSUNA"
-            description="反射神経を研ぎ澄ませ。瞬間勝負のQRバトル。"
+            description=""
             href="/games/setsuna"
             color="#00dac1"
           />

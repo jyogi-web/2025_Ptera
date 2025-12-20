@@ -2,8 +2,16 @@ import type { CSSProperties } from "react";
 
 export const styles: { [key: string]: CSSProperties } = {
   container: {
+    position: "fixed",
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
+    width: "100vw",
+    height: "100dvh",
+    overflowY: "auto",
+    overscrollBehavior: "none",
     padding: "120px 20px 40px", // Clear header
-    minHeight: "100dvh",
     background: "#050505",
     color: "#fff",
     fontFamily: '"Segoe UI", Roboto, Helvetica, Arial, sans-serif',
