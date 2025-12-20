@@ -45,8 +45,14 @@ export const uploadImage = async (
  * @returns 削除完了を示すPromise
  */
 export const deleteImage = async (path: string): Promise<void> => {
-  // Sanitize path - remove path traversal attempts and leading slashes
-  const sanitizedPath = path.replace(/\.\./g, "").replace(/^\/+/, "");
-  const storageRef = ref(storage, sanitizedPath);
+  let storageRef;
+  if (path.startsWith("http") || path.startsWith("gs://")) {
+    // If it's a full URL, use it directly
+    storageRef = ref(storage, path);
+  } else {
+    // Sanitize path - remove path traversal attempts and leading slashes
+    const sanitizedPath = path.replace(/\.\./g, "").replace(/^\/+/, "");
+    storageRef = ref(storage, sanitizedPath);
+  }
   await deleteObject(storageRef);
 };

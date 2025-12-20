@@ -1,3 +1,4 @@
+import Link from "next/link";
 import Card from "@/components/Card";
 import { getCardsFromServer } from "@/lib/server";
 
@@ -50,7 +51,9 @@ export default async function BinderPage() {
         {cards.length > 0 && (
           <div className="grid grid-cols-3 gap-3">
             {cards.map((card, index) => (
-              <Card key={card.id} card={card} label={getLabel(index)} />
+              <Link key={card.id} href={`/binder/${card.id}/edit`}>
+                <Card card={card} label={getLabel(index)} />
+              </Link>
             ))}
           </div>
         )}

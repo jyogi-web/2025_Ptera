@@ -2,11 +2,15 @@ import {
   addDoc,
   collection,
   getDocs,
+  getDoc,
   limit,
   orderBy,
   query,
   serverTimestamp,
   Timestamp,
+  doc,
+  updateDoc,
+  deleteDoc,
 } from "firebase/firestore";
 import { convertCard } from "@/helper/converter";
 import type { Card } from "@/types/app";
@@ -158,4 +162,35 @@ export const getCards = async (): Promise<Card[]> => {
       return null;
     })
     .filter((card): card is Card => card !== null);
+};
+
+export const getCard = async (id: string): Promise<Card | null> => {
+  const docRef = doc(db, CARDS_COLLECTION, id);
+  const docSnap = await getDoc(docRef);
+
+  if (docSnap.exists()) {
+    const data = docSnap.data();
+    if (isValidFirestoreCard(docSnap.id, data)) {
+      return convertCard(docSnap.id, data);
+    }
+  }
+  return null;
+};
+
+export const updateCard = async (
+  id: string,
+  data: Partial<FirestoreCard>,
+): Promise<void> => {
+  const docRef = doc(db, CARDS_COLLECTION, id);
+  // data validation could be added here similar to addCard
+  // For now, we assume partial updates are valid or basic simple fields
+  await updateDoc(docRef, {
+    ...data,
+    // updatedAt: serverTimestamp() // If we had an updatedAt field
+  });
+};
+
+export const deleteCardFirestore = async (id: string): Promise<void> => {
+  const docRef = doc(db, CARDS_COLLECTION, id);
+  await deleteDoc(docRef);
 };

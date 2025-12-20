@@ -21,8 +21,7 @@ export default function Card({ card, label, onClick }: CardProps) {
   const daysElapsed = getDaysElapsed(card.createdAt);
 
   return (
-    <button
-      type="button"
+    <div
       className="relative rounded-xl bg-gradient-to-b from-cyan-500/20 via-fuchsia-500/10 to-transparent p-[2px] cursor-pointer hover:from-cyan-500/30 hover:via-fuchsia-500/20 transition-all hover:scale-105 w-full text-left"
       onClick={() => onClick?.(card)}
     >
@@ -75,6 +74,6 @@ export default function Card({ card, label, onClick }: CardProps) {
           )}
         </div>
       </div>
-    </button>
+    </div>
   );
 }

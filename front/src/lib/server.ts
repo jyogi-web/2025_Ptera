@@ -19,13 +19,22 @@ function getAdminApp() {
   }
 
   try {
-    const credentials = JSON.parse(serviceAccountKey);
+    let credentials;
+    try {
+      credentials = JSON.parse(serviceAccountKey);
+    } catch {
+      // Retry with sanitized string: escape newlines which are often the cause of "Bad control character"
+      // Remove \r just in case, and replace literal \n with escaped \n
+      const sanitized = serviceAccountKey.replace(/\n/g, "\\n").replace(/\r/g, "");
+      credentials = JSON.parse(sanitized);
+    }
+
     return initializeApp({
       credential: cert(credentials),
     });
   } catch (error) {
     throw new Error(
-      `Failed to parse FIREBASE_SERVICE_ACCOUNT_KEY: ${error instanceof Error ? error.message : "Invalid JSON"}`,
+      `Failed to parse FIREBASE_SERVICE_ACCOUNT_KEY: ${error instanceof Error ? error.message : "Invalid JSON"}.`,
     );
   }
 }
@@ -159,10 +168,10 @@ function validateCardData(
   // オプショナルフィールドの安全な取得
   const affiliatedGroup =
     data.affiliatedGroupRef &&
-    typeof data.affiliatedGroupRef === "object" &&
-    data.affiliatedGroupRef !== null &&
-    "id" in data.affiliatedGroupRef &&
-    typeof data.affiliatedGroupRef.id === "string"
+      typeof data.affiliatedGroupRef === "object" &&
+      data.affiliatedGroupRef !== null &&
+      "id" in data.affiliatedGroupRef &&
+      typeof data.affiliatedGroupRef.id === "string"
       ? data.affiliatedGroupRef.id
       : undefined;
 
@@ -219,5 +228,35 @@ export async function getCardsFromServer() {
   } catch (error) {
     console.error("Failed to fetch cards from server:", error);
     throw error;
+  }
+}
+
+/**
+ * サーバー側で単一のカードデータを取得
+ */
+export async function getCardFromServer(
+  cardId: string,
+): Promise<import("@/types/app").Card | null> {
+  try {
+    const docRef = adminDB.collection("cards").doc(cardId);
+    const doc = await docRef.get();
+
+    if (!doc.exists) {
+      return null;
+    }
+
+    const data = doc.data();
+    if (!data) return null;
+
+    const result = validateCardData(doc.id, data);
+
+    if (result.valid && result.card) {
+      return result.card;
+    }
+    console.warn(result.error);
+    return null;
+  } catch (error) {
+    console.error(`Failed to fetch card ${cardId} from server:`, error);
+    return null;
   }
 }
