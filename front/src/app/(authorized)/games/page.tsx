@@ -59,7 +59,7 @@ export default function Games() {
       return updatedRecords;
     });
 
-    alert(`QR消失検知！ 経過時間: ${newRecord.duration} 秒`);
+    alert(` 経過時間: ${newRecord.duration} 秒`);
   }, []);
 
   const handleReset = () => {
