@@ -2,10 +2,10 @@
 
 import { Animator, FrameCorners } from "@arwes/react";
 import { useEffect, useState } from "react";
-import { CharacterDisplay } from "@/components/home/CharacterDisplay";
 import { useAuth } from "@/context/AuthContext";
 import { getFavoriteCards } from "@/lib/firestore";
 import type { Card } from "@/types/app";
+import { CharacterDisplay } from "./_components/CharacterDisplay";
 
 import { styles } from "./_styles/page.styles";
 
