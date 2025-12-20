@@ -233,6 +233,7 @@ export default function CameraPage() {
         description: form.description,
         imageUrl: uploadedImageUrl,
         creatorId: user.id,
+        circleId: user.circleId, // Pass circleId
         expiryDate: Timestamp.fromDate(expiryDate),
       });
 

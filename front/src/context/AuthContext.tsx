@@ -38,9 +38,29 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const [error, setError] = useState<Error | null>(null);
 
   useEffect(() => {
-    const unsubscribe = onAuthStateChanged(auth, (firebaseUser) => {
+    const unsubscribe = onAuthStateChanged(auth, async (firebaseUser) => {
       if (firebaseUser) {
-        setUser(convertUser(firebaseUser));
+        // Basic conversion
+        let appUser = convertUser(firebaseUser);
+
+        try {
+          // Fetch additional data from Firestore
+          const { getUser, createUser } = await import("@/lib/firestore");
+          const firestoreUser = await getUser(appUser.id);
+
+          if (firestoreUser) {
+            // Merge Firestore data (circleId)
+            appUser = convertUser(firebaseUser, firestoreUser);
+          } else {
+            // Create new user document
+            await createUser(appUser);
+            // No extra data to merge yet
+          }
+        } catch (e) {
+          console.error("Failed to sync user with Firestore:", e);
+        }
+
+        setUser(appUser);
       } else {
         setUser(null);
       }
