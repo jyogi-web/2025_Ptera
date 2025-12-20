@@ -2,10 +2,17 @@ import type { CSSProperties } from "react";
 
 export const styles: { [key: string]: CSSProperties } = {
   container: {
-    position: "relative",
+    position: "fixed", // Break out of layout flow (header/footer)
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
+    zIndex: 0, // Behind header/footer if they overlay, or base layer
     width: "100vw",
-    height: "100vh",
+    height: "100dvh", // Mobile viewport fix
     overflow: "hidden",
+    touchAction: "none", // Disable pull-to-refresh & pinch-zoom
+    overscrollBehavior: "none", // Prevent scroll chaining
     fontFamily: '"Segoe UI", Roboto, Helvetica, Arial, sans-serif',
     color: "#fff",
     background: "#111",
