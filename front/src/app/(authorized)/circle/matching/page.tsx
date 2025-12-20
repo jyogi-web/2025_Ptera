@@ -1,7 +1,6 @@
 "use client";
 
 import { Animator, FrameCorners } from "@arwes/react";
-import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import toast from "react-hot-toast";
 import { BattleRequestList } from "@/components/BattleRequestList";
@@ -13,7 +12,6 @@ import { styles } from "./_styles/page.styles";
 
 export default function MatchingPage() {
   const { user } = useAuth();
-  const router = useRouter();
   const [circles, setCircles] = useState<Circle[]>([]);
   const [loading, setLoading] = useState(true);
   const { sendRequest, loading: loadingBattle } = useBattle();
@@ -78,9 +76,6 @@ export default function MatchingPage() {
                   <div>
                     <p style={styles.panelTitle}>TACTICAL OPERATIONS</p>
                     <h1 className="text-2xl md:text-3xl font-bold flex items-center gap-3">
-                      <span className="text-red-400 text-xl md:text-2xl animate-pulse">
-                        ⚔️
-                      </span>
                       <span style={styles.headerGradient}>BATTLE MATCHING</span>
                     </h1>
                   </div>
@@ -132,8 +127,18 @@ export default function MatchingPage() {
                       style={styles.requestsScrollContainer}
                     >
                       {loading ? (
-                        <div className="text-orange-500/50 font-mono text-center py-10 animate-pulse">
-                          SEARCHING NETWORK...
+                        <div className="flex flex-col items-center justify-center h-48 gap-4">
+                          <div style={styles.radarContainer}>
+                            <div
+                              style={styles.radarLine}
+                              className="animate-spin"
+                            />
+                            <div className="absolute inset-0 flex items-center justify-center">
+                              <span className="text-orange-500/50 font-mono text-xs animate-pulse">
+                                SCANNING...
+                              </span>
+                            </div>
+                          </div>
                         </div>
                       ) : opponentCircles.length === 0 ? (
                         <div className="text-center py-10 border border-orange-900/30 bg-orange-900/10 rounded">
@@ -146,9 +151,23 @@ export default function MatchingPage() {
                         </div>
                       ) : (
                         opponentCircles.map((circle) => (
+                          // biome-ignore lint/a11y/noStaticElementInteractions: Visual hover effect only
                           <div
                             key={circle.id}
-                            className="flex justify-between items-center bg-gray-900/60 p-4 border border-orange-900/30 hover:border-orange-500/50 hover:bg-orange-900/10 transition-all group/item"
+                            style={styles.cyberListItem}
+                            className="group/item"
+                            onMouseEnter={(e) => {
+                              Object.assign(
+                                e.currentTarget.style,
+                                styles.cyberListItemHover,
+                              );
+                            }}
+                            onMouseLeave={(e) => {
+                              Object.assign(
+                                e.currentTarget.style,
+                                styles.cyberListItem,
+                              );
+                            }}
                           >
                             <div className="flex flex-col">
                               <span className="text-xs text-gray-500 font-mono mb-1">
@@ -165,7 +184,19 @@ export default function MatchingPage() {
                                 handleSendRequest(circle.id, circle.name)
                               }
                               disabled={loadingBattle}
-                              className="bg-orange-600/20 hover:bg-orange-500/30 text-orange-400 border border-orange-500/50 hover:border-orange-400 px-4 py-2 rounded font-bold text-sm tracking-widest uppercase transition-all disabled:opacity-50 flex items-center gap-2"
+                              style={styles.cyberButton}
+                              onMouseEnter={(e) => {
+                                Object.assign(
+                                  e.currentTarget.style,
+                                  styles.cyberButtonHover,
+                                );
+                              }}
+                              onMouseLeave={(e) => {
+                                Object.assign(
+                                  e.currentTarget.style,
+                                  styles.cyberButton,
+                                );
+                              }}
                             >
                               <span className="w-1.5 h-1.5 bg-orange-400 rounded-full" />
                               CHALLENGE
