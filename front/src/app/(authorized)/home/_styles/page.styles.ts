@@ -43,10 +43,7 @@ export const styles: { [key: string]: CSSProperties } = {
     fontFamily: "'Orbitron', sans-serif",
     letterSpacing: "0.05em",
   },
-  neonTextSecondary: {
-    color: "#f700ff",
-    textShadow: "0 0 10px rgba(247, 0, 255, 0.5)",
-  },
+
   headerGradient: {
     background: "linear-gradient(90deg, #00dac1, #0080ff)",
     WebkitBackgroundClip: "text",

@@ -77,7 +77,7 @@ export default function Home() {
                   />
                 ) : (
                   <div className="text-gray-400 text-center py-20 flex flex-col items-center gap-4">
-                    <p style={styles.neonTextSecondary} className="text-lg">
+                    <p className="text-lg text-[#f700ff] [text-shadow:0_0_10px_rgba(247,0,255,0.5)]">
                       NO DATA FOUND
                     </p>
                     <p className="text-xs text-gray-500 font-mono">
