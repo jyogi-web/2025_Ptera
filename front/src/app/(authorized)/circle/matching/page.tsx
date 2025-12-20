@@ -9,7 +9,7 @@ import { useAuth } from "@/context/AuthContext";
 import { useBattle } from "@/hooks/useBattle";
 import { getCircles } from "@/lib/firestore";
 import type { Circle } from "@/types/app";
-import { styles } from "../_styles/page.styles";
+import { styles } from "./_styles/page.styles";
 
 export default function MatchingPage() {
   const { user } = useAuth();
@@ -68,12 +68,8 @@ export default function MatchingPage() {
                 strokeWidth={2}
                 cornerLength={20}
                 style={{
-                  color: "#00dac1",
-                  backgroundColor: "rgba(3, 15, 25, 0.6)",
-                  backdropFilter: "blur(10px)",
-                  zIndex: 0,
-                  position: "absolute",
-                  inset: 0,
+                  ...styles.frameCornersCommon,
+                  ...styles.frameCornersMain,
                 }}
               />
 
@@ -111,11 +107,8 @@ export default function MatchingPage() {
                     strokeWidth={2}
                     cornerLength={20}
                     style={{
-                      color: "#f97316", // Orange for battle/opponent
-                      backgroundColor: "rgba(249, 115, 22, 0.05)",
-                      zIndex: 0,
-                      position: "absolute",
-                      inset: 0,
+                      ...styles.frameCornersCommon,
+                      ...styles.frameCornersOpponent,
                     }}
                   />
                   <div className="relative z-10 p-6 flex flex-col h-full">
@@ -124,9 +117,7 @@ export default function MatchingPage() {
                         <div className="w-2 h-2 bg-orange-500 rounded-full animate-ping" />
                         <h3
                           className="text-lg md:text-xl font-bold font-mono tracking-wider text-orange-400"
-                          style={{
-                            textShadow: "0 0 10px rgba(249, 115, 22, 0.5)",
-                          }}
+                          style={styles.scanTitle}
                         >
                           SCAN FOR OPPONENTS
                         </h3>
@@ -138,10 +129,7 @@ export default function MatchingPage() {
 
                     <div
                       className="flex-1 overflow-y-auto pr-2 custom-scrollbar space-y-3"
-                      style={{
-                        scrollbarColor: "#7c2d12 transparent",
-                        scrollbarWidth: "thin",
-                      }}
+                      style={styles.requestsScrollContainer}
                     >
                       {loading ? (
                         <div className="text-orange-500/50 font-mono text-center py-10 animate-pulse">
