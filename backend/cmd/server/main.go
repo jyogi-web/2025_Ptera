@@ -74,7 +74,12 @@ func run(logger *slog.Logger) error {
 	enableMockFallback := os.Getenv("ENABLE_MOCK_FALLBACK") == "true"
 	battleService := battle.NewService(logger, battleRepo, cardRepo, enableMockFallback)
 
-	lis, err := net.Listen("tcp", fmt.Sprintf(":%d", defaultPort))
+	port := os.Getenv("PORT")
+	if port == "" {
+		port = fmt.Sprintf("%d", defaultPort)
+	}
+
+	lis, err := net.Listen("tcp", fmt.Sprintf(":%s", port))
 	if err != nil {
 		return fmt.Errorf("failed to listen: %w", err)
 	}
