@@ -15,6 +15,8 @@ const nextConfig: NextConfig = {
         pathname: "/**",
       },
     ],
+    dangerouslyAllowSVG: true,
+    contentDispositionType: "attachment",
   },
 };
 

@@ -69,6 +69,7 @@ describe("converter", () => {
   describe("convertCard", () => {
     it("should convert FirestoreCard to Card correctly", () => {
       const date = new Date("2023-01-01T00:00:00Z");
+      const expiryDate = new Date("2027-01-01T00:00:00Z");
       const mockData: FirestoreCard = {
         name: "Taro Yamada",
         grade: 2,
@@ -79,7 +80,8 @@ describe("converter", () => {
         creatorId: "user-123",
         affiliatedGroupRef: mockDocRef("group-abc"),
         createdAt: mockTimestamp(date),
-        expiryDate: mockTimestamp(date),
+
+        expiryDate: mockTimestamp(expiryDate),
       };
 
       const result = convertCard("card-123", mockData);
@@ -101,6 +103,9 @@ describe("converter", () => {
 
     it("should handle optional affiliatedGroupRef", () => {
       const date = new Date();
+      const expiryDate = new Date(
+        date.getTime() + 4 * 365 * 24 * 60 * 60 * 1000,
+      );
       const mockData: FirestoreCard = {
         name: "Hanako",
         grade: 1,
@@ -111,7 +116,8 @@ describe("converter", () => {
         creatorId: "user-456",
         affiliatedGroupRef: undefined,
         createdAt: mockTimestamp(date),
-        expiryDate: mockTimestamp(date),
+
+        expiryDate: mockTimestamp(expiryDate),
       };
 
       const result = convertCard("card-456", mockData);

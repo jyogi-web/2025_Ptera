@@ -52,9 +52,15 @@ export default function FirestoreTestPage() {
       const expiryDate = new Date();
       expiryDate.setFullYear(expiryDate.getFullYear() + 4);
       await addCard({
-        ...formData,
+        name: formData.name,
+        grade: formData.grade,
+        position: formData.position,
+        hobby: formData.hobby,
+        description: formData.description,
+        imageUrl: formData.imageUrl,
         creatorId: user.id,
-        expiryDate: Timestamp.fromDate(expiryDate),
+
+        expiryDate: expiryDate,
       });
       alert("Added!");
       fetchCards();

@@ -200,7 +200,7 @@ export default function CameraPage() {
         description: form.description,
         imageUrl: uploadedImageUrl,
         creatorId: user.id,
-        expiryDate: Timestamp.fromDate(expiryDate),
+        expiryDate: expiryDate,
       });
 
       console.log("Card created successfully");
