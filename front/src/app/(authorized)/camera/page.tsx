@@ -4,6 +4,7 @@ import Image from "next/image";
 import { useRef, useState, useTransition } from "react";
 import toast from "react-hot-toast";
 import { useAuth } from "@/context/AuthContext";
+import { calculateGraduationDate } from "@/helper/converter";
 import { addCard } from "@/lib/firestore";
 import { deleteImage, uploadImage } from "@/lib/storage";
 import type { Card } from "@/types/app";
@@ -201,7 +202,7 @@ export default function CameraPage() {
   };
 
   const handleMakeCard = async () => {
-    if (!uploadedImageUrl || !user || !user.circleId) {
+    if (!uploadedImageUrl || !user?.circleId) {
       toast.error(
         "画像のアップロードが完了していないか、ログインしていないか、サークルに所属していません。",
       );
@@ -221,8 +222,12 @@ export default function CameraPage() {
 
     setIsSaving(true);
     try {
-      const expiryDate = new Date();
-      expiryDate.setFullYear(expiryDate.getFullYear() + 4);
+      if (form.grade === null) {
+        toast.error("学年が選択されていません。");
+        return;
+      }
+
+      const expiryDate = calculateGraduationDate(form.grade);
 
       await addCard({
         name: form.name,
