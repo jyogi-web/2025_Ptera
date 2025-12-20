@@ -4,9 +4,9 @@ import { Animator, FrameCorners } from "@arwes/react";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import toast from "react-hot-toast";
-import { BattleRequestList } from "@/components/BattleRequestList";
+
 import { useAuth } from "@/context/AuthContext";
-import { useBattle } from "@/hooks/useBattle";
+
 import { createCircle, getCircles, joinCircle } from "@/lib/firestore";
 import type { Circle } from "@/types/app";
 import { styles } from "./_styles/page.styles";
@@ -19,7 +19,6 @@ export default function CirclePage() {
   const [newCircleName, setNewCircleName] = useState("");
   const [isCreating, setIsCreating] = useState(false);
   const [isJoining, setIsJoining] = useState(false);
-  const { sendRequest, loading: loadingBattle } = useBattle();
 
   useEffect(() => {
     const fetchCircles = async () => {
@@ -72,20 +71,6 @@ export default function CirclePage() {
   // User already has a circle -> Dashboard View
   if (user?.circleId) {
     const myCircle = circles.find((c) => c.id === user.circleId);
-
-    // Logic for sending request
-    const handleSendRequest = async (
-      targetCircleId: string,
-      targetCircleName: string,
-    ) => {
-      if (!confirm(`サークル「${targetCircleName}」に対戦を申し込みますか？`))
-        return;
-      if (!user?.circleId) return;
-      await sendRequest(user.circleId, targetCircleId);
-      toast.success(`サークル「${targetCircleName}」に申請を送信しました！`);
-    };
-
-    const opponentCircles = circles.filter((c) => c.id !== user.circleId);
 
     return (
       <div style={styles.container}>
@@ -220,51 +205,71 @@ export default function CirclePage() {
               </div>
             </div>
 
-            {/* Matching Section */}
-            <div className="pt-8 border-t border-gray-700/50">
-              <h2 className="text-2xl font-bold mb-6 flex items-center gap-2">
-                <span className="text-red-400">⚔️</span> マッチング・対戦
-              </h2>
-
-              {/* Requests List */}
-              <div className="mb-8">
-                <BattleRequestList myCircleId={user.circleId} />
-              </div>
-
-              {/* Opponent Selection */}
-              <div className="bg-gray-800 rounded-lg p-6">
-                <h3 className="text-xl font-bold mb-4 text-cyan-300">
-                  対戦相手を探す
-                </h3>
-                <div className="space-y-3 max-h-80 overflow-y-auto pr-2 scrollbar-thin">
-                  {loading ? (
-                    <p>Loading...</p>
-                  ) : opponentCircles.length === 0 ? (
-                    <p className="text-gray-500">
-                      他のサークルが見つかりません
-                    </p>
-                  ) : (
-                    opponentCircles.map((circle) => (
-                      <div
-                        key={circle.id}
-                        className="flex justify-between items-center bg-gray-700/30 p-3 rounded hover:bg-gray-700/50 transition"
-                      >
-                        <span className="font-bold">{circle.name}</span>
-                        <button
-                          type="button"
-                          onClick={() =>
-                            handleSendRequest(circle.id, circle.name)
-                          }
-                          disabled={loadingBattle}
-                          className="px-4 py-2 bg-gradient-to-r from-orange-600 to-red-600 hover:from-orange-500 hover:to-red-500 rounded text-white font-bold text-sm shadow-lg disabled:opacity-50 transition-all"
+            {/* Matching Navigation Button */}
+            <div className="mt-6">
+              <button
+                type="button"
+                className="group relative overflow-hidden w-full"
+                onClick={() => router.push("/circle/matching")}
+                style={{
+                  ...styles.cyberButton,
+                  borderColor: "rgba(249, 115, 22, 0.3)", // Orange tint
+                  background: "rgba(249, 115, 22, 0.05)",
+                }}
+              >
+                <div className="absolute inset-0 bg-orange-500/10 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+                <FrameCorners
+                  cornerLength={10}
+                  strokeWidth={1}
+                  style={{ color: "#f97316", zIndex: 0 }}
+                />
+                <div className="relative z-10 flex flex-row items-center justify-between w-full">
+                  <div className="flex items-center gap-4">
+                    <div className="p-3 bg-orange-900/20 rounded border border-orange-500/30 text-orange-400">
+                      <span className="text-2xl">⚔️</span>
+                    </div>
+                    <div>
+                      <div className="flex items-center gap-2 mb-1">
+                        <span
+                          style={{ ...styles.panelTitle, color: "#fdba74" }}
                         >
-                          対戦を申し込む
-                        </button>
+                          TACTICAL
+                        </span>
                       </div>
-                    ))
-                  )}
+                      <h3
+                        className="text-xl font-bold"
+                        style={{
+                          ...styles.neonText,
+                          color: "#f97316",
+                          textShadow: "0 0 10px rgba(249, 115, 22, 0.5)",
+                        }}
+                      >
+                        BATTLE BULLETIN
+                      </h3>
+                      <p className="text-sm text-gray-400">
+                        View requests and find opponents.
+                      </p>
+                    </div>
+                  </div>
+                  <div className="text-orange-500 opacity-50 group-hover:opacity-100 group-hover:translate-x-2 transition-all">
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      width="24"
+                      height="24"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      stroke="currentColor"
+                      strokeWidth="2"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                    >
+                      <title>Arrow Right</title>
+                      <path d="M5 12h14"></path>
+                      <path d="m12 5 7 7-7 7"></path>
+                    </svg>
+                  </div>
                 </div>
-              </div>
+              </button>
             </div>
 
             <div className="mt-8 pt-8 border-t border-gray-700/50">
