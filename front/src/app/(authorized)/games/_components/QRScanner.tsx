@@ -27,6 +27,7 @@ const QRScanner: React.FC<QRScannerProps> = ({
   const startTimeRef = useRef<number>(0);
   const qrDetectedRef = useRef<boolean>(false);
   const waitingForSignalRef = useRef<boolean>(false);
+  const expectedSignalTimeRef = useRef<number | null>(null);
   const animationFrameRef = useRef<number | null>(null);
   const lostFrameCountRef = useRef<number>(0);
   const timeoutTimerRef = useRef<NodeJS.Timeout | null>(null);
@@ -119,8 +120,7 @@ const QRScanner: React.FC<QRScannerProps> = ({
             }
 
             const randomDelay = Math.floor(Math.random() * 3000) + 2000;
-            (waitingForSignalRef as any).currentExpectedTime =
-              performance.now() + randomDelay;
+            expectedSignalTimeRef.current = performance.now() + randomDelay;
 
             signalTimerRef.current = setTimeout(() => {
               console.log("シグナル発動！計測開始");
@@ -168,8 +168,7 @@ const QRScanner: React.FC<QRScannerProps> = ({
               signalTimerRef.current = null;
             }
 
-            const expectedTime =
-              (waitingForSignalRef as any).currentExpectedTime || 0;
+            const expectedTime = expectedSignalTimeRef.current || 0;
             const timeUntilSignal = expectedTime - performance.now();
 
             if (timeUntilSignal <= 1000 && timeUntilSignal > 0) {
