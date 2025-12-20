@@ -1,7 +1,10 @@
 import { useCallback, useState } from "react";
 import {
+  acceptBattleRequestAction,
   attackAction,
+  rejectBattleRequestAction,
   retreatAction,
+  sendBattleRequestAction,
   startBattleAction,
 } from "@/actions/battle";
 
@@ -70,10 +73,60 @@ export const useBattle = () => {
     [],
   );
 
+  // バトル申請送信
+  const sendRequest = useCallback(
+    async (fromCircleId: string, toCircleId: string) => {
+      setLoading(true);
+      setError(null);
+      try {
+        await sendBattleRequestAction(fromCircleId, toCircleId);
+      } catch (e) {
+        console.error("Failed to send request:", e);
+        setError("申請の送信に失敗しました");
+      } finally {
+        setLoading(false);
+      }
+    },
+    [],
+  );
+
+  // バトル申請承認
+  const acceptRequest = useCallback(async (requestId: string) => {
+    setLoading(true);
+    setError(null);
+    try {
+      const result = await acceptBattleRequestAction(requestId);
+      return result.battleId;
+    } catch (e) {
+      console.error("Failed to accept request:", e);
+      setError("承認に失敗しました");
+      return null;
+    } finally {
+      setLoading(false);
+    }
+  }, []);
+
+  // バトル申請拒否
+  const rejectRequest = useCallback(async (requestId: string) => {
+    setLoading(true);
+    setError(null);
+    try {
+      await rejectBattleRequestAction(requestId);
+    } catch (e) {
+      console.error("Failed to reject request:", e);
+      setError("拒否に失敗しました");
+    } finally {
+      setLoading(false);
+    }
+  }, []);
+
   return {
     startBattle,
     attack,
     retreat,
+    sendRequest,
+    acceptRequest,
+    rejectRequest,
     loading,
     error,
   };

@@ -4,7 +4,9 @@ import { Animator } from "@arwes/react";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import toast from "react-hot-toast";
+import { BattleRequestList } from "@/components/BattleRequestList";
 import { useAuth } from "@/context/AuthContext";
+import { useBattle } from "@/hooks/useBattle";
 import { createCircle, getCircles, joinCircle } from "@/lib/firestore";
 import type { Circle } from "@/types/app";
 
@@ -16,6 +18,7 @@ export default function CirclePage() {
   const [newCircleName, setNewCircleName] = useState("");
   const [isCreating, setIsCreating] = useState(false);
   const [isJoining, setIsJoining] = useState(false);
+  const { sendRequest, loading: loadingBattle } = useBattle();
 
   useEffect(() => {
     const fetchCircles = async () => {
@@ -74,6 +77,21 @@ export default function CirclePage() {
   // User already has a circle -> Dashboard View
   if (user?.circleId) {
     const myCircle = circles.find((c) => c.id === user.circleId);
+
+    // Logic for sending request
+    const handleSendRequest = async (
+      targetCircleId: string,
+      targetCircleName: string,
+    ) => {
+      if (!confirm(`サークル「${targetCircleName}」に対戦を申し込みますか？`))
+        return;
+      if (!user?.circleId) return;
+      await sendRequest(user.circleId, targetCircleId);
+      toast.success(`サークル「${targetCircleName}」に申請を送信しました！`);
+    };
+
+    const opponentCircles = circles.filter((c) => c.id !== user.circleId);
+
     return (
       <div className="min-h-screen bg-gray-900 text-white p-4 pt-20">
         <Animator active={true}>
@@ -150,6 +168,53 @@ export default function CirclePage() {
                   新しいメンバーのカードを作成します。
                 </p>
               </button>
+            </div>
+
+            {/* Matching Section */}
+            <div className="pt-8 border-t border-gray-700/50">
+              <h2 className="text-2xl font-bold mb-6 flex items-center gap-2">
+                <span className="text-red-400">⚔️</span> マッチング・対戦
+              </h2>
+
+              {/* Requests List */}
+              <div className="mb-8">
+                <BattleRequestList myCircleId={user.circleId} />
+              </div>
+
+              {/* Opponent Selection */}
+              <div className="bg-gray-800 rounded-lg p-6">
+                <h3 className="text-xl font-bold mb-4 text-cyan-300">
+                  対戦相手を探す
+                </h3>
+                <div className="space-y-3 max-h-80 overflow-y-auto pr-2 scrollbar-thin">
+                  {loading ? (
+                    <p>Loading...</p>
+                  ) : opponentCircles.length === 0 ? (
+                    <p className="text-gray-500">
+                      他のサークルが見つかりません
+                    </p>
+                  ) : (
+                    opponentCircles.map((circle) => (
+                      <div
+                        key={circle.id}
+                        className="flex justify-between items-center bg-gray-700/30 p-3 rounded hover:bg-gray-700/50 transition"
+                      >
+                        <span className="font-bold">{circle.name}</span>
+                        <button
+                          type="button"
+                          onClick={() =>
+                            handleSendRequest(circle.id, circle.name)
+                          }
+                          disabled={loadingBattle}
+                          className="px-4 py-2 bg-gradient-to-r from-orange-600 to-red-600 hover:from-orange-500 hover:to-red-500 rounded text-white font-bold text-sm shadow-lg disabled:opacity-50 transition-all"
+                        >
+                          対戦を申し込む
+                        </button>
+                      </div>
+                    ))
+                  )}
+                </div>
+              </div>
             </div>
 
             <div className="mt-8 pt-8 border-t border-gray-700/50">

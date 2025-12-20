@@ -10,8 +10,22 @@ import (
 )
 
 const (
-	CollectionCards = "cards"
+	CollectionCards   = "cards"
+	CollectionCircles = "circles"
 )
+
+// GetCircleName retrieves the name of a circle from Firestore
+func (r *CardRepository) GetCircleName(ctx context.Context, circleID string) (string, error) {
+	doc, err := r.client.Collection(CollectionCircles).Doc(circleID).Get(ctx)
+	if err != nil {
+		return "", fmt.Errorf("failed to get circle: %w", err)
+	}
+	name, ok := doc.Data()["name"].(string)
+	if !ok {
+		return "", fmt.Errorf("circle name is not a string")
+	}
+	return name, nil
+}
 
 type CardRepository struct {
 	client *firestore.Client

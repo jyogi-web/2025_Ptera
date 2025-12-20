@@ -3,7 +3,7 @@
 /* eslint-disable */
 // @ts-nocheck
 
-import { AttackRequest, BattleState, CompleteCardRequest, CompleteCardResponse, RetreatRequest, StartBattleRequest } from "./ptera_pb";
+import { AcceptBattleRequestRequest, AttackRequest, BattleRequest, BattleState, CompleteCardRequest, CompleteCardResponse, RejectBattleRequestRequest, RetreatRequest, SendBattleRequestRequest, StartBattleRequest } from "./ptera_pb";
 import { MethodKind } from "@bufbuild/protobuf";
 
 /**
@@ -58,6 +58,35 @@ export const BattleService = {
       name: "Retreat",
       I: RetreatRequest,
       O: BattleState,
+      kind: MethodKind.Unary,
+    },
+    /**
+     * Battle Request (Matching) RPCs
+     *
+     * @generated from rpc ptera.v1.BattleService.SendBattleRequest
+     */
+    sendBattleRequest: {
+      name: "SendBattleRequest",
+      I: SendBattleRequestRequest,
+      O: BattleRequest,
+      kind: MethodKind.Unary,
+    },
+    /**
+     * @generated from rpc ptera.v1.BattleService.AcceptBattleRequest
+     */
+    acceptBattleRequest: {
+      name: "AcceptBattleRequest",
+      I: AcceptBattleRequestRequest,
+      O: BattleState,
+      kind: MethodKind.Unary,
+    },
+    /**
+     * @generated from rpc ptera.v1.BattleService.RejectBattleRequest
+     */
+    rejectBattleRequest: {
+      name: "RejectBattleRequest",
+      I: RejectBattleRequestRequest,
+      O: BattleRequest,
       kind: MethodKind.Unary,
     },
   }

@@ -34,7 +34,7 @@ func GenerateBattleStats(cardID string, grade int32) *ptera.Card {
 		Id:     cardID,
 		MaxHp:  maxHp,
 		Attack: attack,
-		Flavor: "今日も元気にお布団から出られない。", // Fixed flavor for now, can be randomized deterministically too
+		Flavor: "今日も元気にお布団から出られない。", // TODO: 現時点では固定、決定論的にランダム化することも可能
 	}
 }
 

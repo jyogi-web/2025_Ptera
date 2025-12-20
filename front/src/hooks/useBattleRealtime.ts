@@ -1,15 +1,19 @@
 import { doc, onSnapshot } from "firebase/firestore";
 import { useEffect, useState } from "react";
-import type { BattleState } from "@/generated/ptera/v1/ptera_pb";
+import { BattleState } from "@/generated/ptera/v1/ptera_pb";
 import { db } from "@/lib/firebase";
 
 /**
  * Firestore Snapshotsを使用してバトル状態をリアルタイムで監視するフック
  *
  * @param battleId - 監視するバトルID (nullの場合は監視しない)
+ * @param myCircleId - 自分のサークルID (視点の切り替えに使用)
  * @returns バトル状態とエラー情報
  */
-export function useBattleRealtime(battleId: string | null) {
+export function useBattleRealtime(
+  battleId: string | null,
+  myCircleId?: string,
+) {
   const [battleState, setBattleState] = useState<BattleState | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
@@ -32,7 +36,17 @@ export function useBattleRealtime(battleId: string | null) {
       (snapshot) => {
         if (snapshot.exists()) {
           const data = snapshot.data() as BattleState;
-          setBattleState(data);
+
+          // 視点の補正 (自分がPlayerOpponentの場合は入れ替える)
+          if (myCircleId && data.playerOpponent?.circleId === myCircleId) {
+            const swappedState = { ...data };
+            swappedState.playerMe = data.playerOpponent;
+            swappedState.playerOpponent = data.playerMe;
+            setBattleState(new BattleState(swappedState));
+          } else {
+            setBattleState(new BattleState(data));
+          }
+
           setLoading(false);
         } else {
           setError("バトルが見つかりませんでした");
@@ -51,7 +65,7 @@ export function useBattleRealtime(battleId: string | null) {
     return () => {
       unsubscribe();
     };
-  }, [battleId]);
+  }, [battleId, myCircleId]);
 
   return { battleState, error, loading };
 }

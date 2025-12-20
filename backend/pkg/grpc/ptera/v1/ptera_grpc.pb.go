@@ -125,9 +125,12 @@ var PteraService_ServiceDesc = grpc.ServiceDesc{
 }
 
 const (
-	BattleService_StartBattle_FullMethodName = "/ptera.v1.BattleService/StartBattle"
-	BattleService_Attack_FullMethodName      = "/ptera.v1.BattleService/Attack"
-	BattleService_Retreat_FullMethodName     = "/ptera.v1.BattleService/Retreat"
+	BattleService_StartBattle_FullMethodName         = "/ptera.v1.BattleService/StartBattle"
+	BattleService_Attack_FullMethodName              = "/ptera.v1.BattleService/Attack"
+	BattleService_Retreat_FullMethodName             = "/ptera.v1.BattleService/Retreat"
+	BattleService_SendBattleRequest_FullMethodName   = "/ptera.v1.BattleService/SendBattleRequest"
+	BattleService_AcceptBattleRequest_FullMethodName = "/ptera.v1.BattleService/AcceptBattleRequest"
+	BattleService_RejectBattleRequest_FullMethodName = "/ptera.v1.BattleService/RejectBattleRequest"
 )
 
 // BattleServiceClient is the client API for BattleService service.
@@ -137,6 +140,10 @@ type BattleServiceClient interface {
 	StartBattle(ctx context.Context, in *StartBattleRequest, opts ...grpc.CallOption) (*BattleState, error)
 	Attack(ctx context.Context, in *AttackRequest, opts ...grpc.CallOption) (*BattleState, error)
 	Retreat(ctx context.Context, in *RetreatRequest, opts ...grpc.CallOption) (*BattleState, error)
+	// Battle Request (Matching) RPCs
+	SendBattleRequest(ctx context.Context, in *SendBattleRequestRequest, opts ...grpc.CallOption) (*BattleRequest, error)
+	AcceptBattleRequest(ctx context.Context, in *AcceptBattleRequestRequest, opts ...grpc.CallOption) (*BattleState, error)
+	RejectBattleRequest(ctx context.Context, in *RejectBattleRequestRequest, opts ...grpc.CallOption) (*BattleRequest, error)
 }
 
 type battleServiceClient struct {
@@ -177,6 +184,36 @@ func (c *battleServiceClient) Retreat(ctx context.Context, in *RetreatRequest, o
 	return out, nil
 }
 
+func (c *battleServiceClient) SendBattleRequest(ctx context.Context, in *SendBattleRequestRequest, opts ...grpc.CallOption) (*BattleRequest, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(BattleRequest)
+	err := c.cc.Invoke(ctx, BattleService_SendBattleRequest_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *battleServiceClient) AcceptBattleRequest(ctx context.Context, in *AcceptBattleRequestRequest, opts ...grpc.CallOption) (*BattleState, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(BattleState)
+	err := c.cc.Invoke(ctx, BattleService_AcceptBattleRequest_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *battleServiceClient) RejectBattleRequest(ctx context.Context, in *RejectBattleRequestRequest, opts ...grpc.CallOption) (*BattleRequest, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(BattleRequest)
+	err := c.cc.Invoke(ctx, BattleService_RejectBattleRequest_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // BattleServiceServer is the server API for BattleService service.
 // All implementations must embed UnimplementedBattleServiceServer
 // for forward compatibility.
@@ -184,6 +221,10 @@ type BattleServiceServer interface {
 	StartBattle(context.Context, *StartBattleRequest) (*BattleState, error)
 	Attack(context.Context, *AttackRequest) (*BattleState, error)
 	Retreat(context.Context, *RetreatRequest) (*BattleState, error)
+	// Battle Request (Matching) RPCs
+	SendBattleRequest(context.Context, *SendBattleRequestRequest) (*BattleRequest, error)
+	AcceptBattleRequest(context.Context, *AcceptBattleRequestRequest) (*BattleState, error)
+	RejectBattleRequest(context.Context, *RejectBattleRequestRequest) (*BattleRequest, error)
 	mustEmbedUnimplementedBattleServiceServer()
 }
 
@@ -202,6 +243,15 @@ func (UnimplementedBattleServiceServer) Attack(context.Context, *AttackRequest) 
 }
 func (UnimplementedBattleServiceServer) Retreat(context.Context, *RetreatRequest) (*BattleState, error) {
 	return nil, status.Error(codes.Unimplemented, "method Retreat not implemented")
+}
+func (UnimplementedBattleServiceServer) SendBattleRequest(context.Context, *SendBattleRequestRequest) (*BattleRequest, error) {
+	return nil, status.Error(codes.Unimplemented, "method SendBattleRequest not implemented")
+}
+func (UnimplementedBattleServiceServer) AcceptBattleRequest(context.Context, *AcceptBattleRequestRequest) (*BattleState, error) {
+	return nil, status.Error(codes.Unimplemented, "method AcceptBattleRequest not implemented")
+}
+func (UnimplementedBattleServiceServer) RejectBattleRequest(context.Context, *RejectBattleRequestRequest) (*BattleRequest, error) {
+	return nil, status.Error(codes.Unimplemented, "method RejectBattleRequest not implemented")
 }
 func (UnimplementedBattleServiceServer) mustEmbedUnimplementedBattleServiceServer() {}
 func (UnimplementedBattleServiceServer) testEmbeddedByValue()                       {}
@@ -278,6 +328,60 @@ func _BattleService_Retreat_Handler(srv interface{}, ctx context.Context, dec fu
 	return interceptor(ctx, in, info, handler)
 }
 
+func _BattleService_SendBattleRequest_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(SendBattleRequestRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(BattleServiceServer).SendBattleRequest(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: BattleService_SendBattleRequest_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(BattleServiceServer).SendBattleRequest(ctx, req.(*SendBattleRequestRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _BattleService_AcceptBattleRequest_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(AcceptBattleRequestRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(BattleServiceServer).AcceptBattleRequest(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: BattleService_AcceptBattleRequest_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(BattleServiceServer).AcceptBattleRequest(ctx, req.(*AcceptBattleRequestRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _BattleService_RejectBattleRequest_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(RejectBattleRequestRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(BattleServiceServer).RejectBattleRequest(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: BattleService_RejectBattleRequest_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(BattleServiceServer).RejectBattleRequest(ctx, req.(*RejectBattleRequestRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // BattleService_ServiceDesc is the grpc.ServiceDesc for BattleService service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -296,6 +400,18 @@ var BattleService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "Retreat",
 			Handler:    _BattleService_Retreat_Handler,
+		},
+		{
+			MethodName: "SendBattleRequest",
+			Handler:    _BattleService_SendBattleRequest_Handler,
+		},
+		{
+			MethodName: "AcceptBattleRequest",
+			Handler:    _BattleService_AcceptBattleRequest_Handler,
+		},
+		{
+			MethodName: "RejectBattleRequest",
+			Handler:    _BattleService_RejectBattleRequest_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

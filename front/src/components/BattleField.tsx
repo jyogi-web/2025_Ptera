@@ -105,9 +105,9 @@ export default function BattleField({
       {/* --- Log Area (Optional) --- */}
       {state.logs && state.logs.length > 0 && (
         <div className="bg-black/40 p-2 rounded text-xs text-gray-300 h-24 overflow-y-auto font-mono">
-          {state.logs.map((log) => (
+          {state.logs.map((log, i) => (
             <div
-              key={log}
+              key={`${i}-${log}`}
               className="border-b border-gray-700/50 pb-0.5 mb-0.5"
             >
               {log}

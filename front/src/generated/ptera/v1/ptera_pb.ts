@@ -716,3 +716,203 @@ export class RetreatRequest extends Message<RetreatRequest> {
   }
 }
 
+/**
+ * @generated from message ptera.v1.BattleRequest
+ */
+export class BattleRequest extends Message<BattleRequest> {
+  /**
+   * @generated from field: string request_id = 1;
+   */
+  requestId = "";
+
+  /**
+   * @generated from field: string from_circle_id = 2;
+   */
+  fromCircleId = "";
+
+  /**
+   * @generated from field: string to_circle_id = 3;
+   */
+  toCircleId = "";
+
+  /**
+   * @generated from field: string from_circle_name = 4;
+   */
+  fromCircleName = "";
+
+  /**
+   * @generated from field: string to_circle_name = 5;
+   */
+  toCircleName = "";
+
+  /**
+   * "pending", "accepted", "rejected"
+   *
+   * @generated from field: string status = 6;
+   */
+  status = "";
+
+  /**
+   * @generated from field: google.protobuf.Timestamp created_at = 7;
+   */
+  createdAt?: Timestamp;
+
+  /**
+   * Set after acceptance
+   *
+   * @generated from field: optional string battle_id = 8;
+   */
+  battleId?: string;
+
+  constructor(data?: PartialMessage<BattleRequest>) {
+    super();
+    proto3.util.initPartial(data, this);
+  }
+
+  static readonly runtime: typeof proto3 = proto3;
+  static readonly typeName = "ptera.v1.BattleRequest";
+  static readonly fields: FieldList = proto3.util.newFieldList(() => [
+    { no: 1, name: "request_id", kind: "scalar", T: 9 /* ScalarType.STRING */ },
+    { no: 2, name: "from_circle_id", kind: "scalar", T: 9 /* ScalarType.STRING */ },
+    { no: 3, name: "to_circle_id", kind: "scalar", T: 9 /* ScalarType.STRING */ },
+    { no: 4, name: "from_circle_name", kind: "scalar", T: 9 /* ScalarType.STRING */ },
+    { no: 5, name: "to_circle_name", kind: "scalar", T: 9 /* ScalarType.STRING */ },
+    { no: 6, name: "status", kind: "scalar", T: 9 /* ScalarType.STRING */ },
+    { no: 7, name: "created_at", kind: "message", T: Timestamp },
+    { no: 8, name: "battle_id", kind: "scalar", T: 9 /* ScalarType.STRING */, opt: true },
+  ]);
+
+  static fromBinary(bytes: Uint8Array, options?: Partial<BinaryReadOptions>): BattleRequest {
+    return new BattleRequest().fromBinary(bytes, options);
+  }
+
+  static fromJson(jsonValue: JsonValue, options?: Partial<JsonReadOptions>): BattleRequest {
+    return new BattleRequest().fromJson(jsonValue, options);
+  }
+
+  static fromJsonString(jsonString: string, options?: Partial<JsonReadOptions>): BattleRequest {
+    return new BattleRequest().fromJsonString(jsonString, options);
+  }
+
+  static equals(a: BattleRequest | PlainMessage<BattleRequest> | undefined, b: BattleRequest | PlainMessage<BattleRequest> | undefined): boolean {
+    return proto3.util.equals(BattleRequest, a, b);
+  }
+}
+
+/**
+ * @generated from message ptera.v1.SendBattleRequestRequest
+ */
+export class SendBattleRequestRequest extends Message<SendBattleRequestRequest> {
+  /**
+   * @generated from field: string from_circle_id = 1;
+   */
+  fromCircleId = "";
+
+  /**
+   * @generated from field: string to_circle_id = 2;
+   */
+  toCircleId = "";
+
+  constructor(data?: PartialMessage<SendBattleRequestRequest>) {
+    super();
+    proto3.util.initPartial(data, this);
+  }
+
+  static readonly runtime: typeof proto3 = proto3;
+  static readonly typeName = "ptera.v1.SendBattleRequestRequest";
+  static readonly fields: FieldList = proto3.util.newFieldList(() => [
+    { no: 1, name: "from_circle_id", kind: "scalar", T: 9 /* ScalarType.STRING */ },
+    { no: 2, name: "to_circle_id", kind: "scalar", T: 9 /* ScalarType.STRING */ },
+  ]);
+
+  static fromBinary(bytes: Uint8Array, options?: Partial<BinaryReadOptions>): SendBattleRequestRequest {
+    return new SendBattleRequestRequest().fromBinary(bytes, options);
+  }
+
+  static fromJson(jsonValue: JsonValue, options?: Partial<JsonReadOptions>): SendBattleRequestRequest {
+    return new SendBattleRequestRequest().fromJson(jsonValue, options);
+  }
+
+  static fromJsonString(jsonString: string, options?: Partial<JsonReadOptions>): SendBattleRequestRequest {
+    return new SendBattleRequestRequest().fromJsonString(jsonString, options);
+  }
+
+  static equals(a: SendBattleRequestRequest | PlainMessage<SendBattleRequestRequest> | undefined, b: SendBattleRequestRequest | PlainMessage<SendBattleRequestRequest> | undefined): boolean {
+    return proto3.util.equals(SendBattleRequestRequest, a, b);
+  }
+}
+
+/**
+ * @generated from message ptera.v1.AcceptBattleRequestRequest
+ */
+export class AcceptBattleRequestRequest extends Message<AcceptBattleRequestRequest> {
+  /**
+   * @generated from field: string request_id = 1;
+   */
+  requestId = "";
+
+  constructor(data?: PartialMessage<AcceptBattleRequestRequest>) {
+    super();
+    proto3.util.initPartial(data, this);
+  }
+
+  static readonly runtime: typeof proto3 = proto3;
+  static readonly typeName = "ptera.v1.AcceptBattleRequestRequest";
+  static readonly fields: FieldList = proto3.util.newFieldList(() => [
+    { no: 1, name: "request_id", kind: "scalar", T: 9 /* ScalarType.STRING */ },
+  ]);
+
+  static fromBinary(bytes: Uint8Array, options?: Partial<BinaryReadOptions>): AcceptBattleRequestRequest {
+    return new AcceptBattleRequestRequest().fromBinary(bytes, options);
+  }
+
+  static fromJson(jsonValue: JsonValue, options?: Partial<JsonReadOptions>): AcceptBattleRequestRequest {
+    return new AcceptBattleRequestRequest().fromJson(jsonValue, options);
+  }
+
+  static fromJsonString(jsonString: string, options?: Partial<JsonReadOptions>): AcceptBattleRequestRequest {
+    return new AcceptBattleRequestRequest().fromJsonString(jsonString, options);
+  }
+
+  static equals(a: AcceptBattleRequestRequest | PlainMessage<AcceptBattleRequestRequest> | undefined, b: AcceptBattleRequestRequest | PlainMessage<AcceptBattleRequestRequest> | undefined): boolean {
+    return proto3.util.equals(AcceptBattleRequestRequest, a, b);
+  }
+}
+
+/**
+ * @generated from message ptera.v1.RejectBattleRequestRequest
+ */
+export class RejectBattleRequestRequest extends Message<RejectBattleRequestRequest> {
+  /**
+   * @generated from field: string request_id = 1;
+   */
+  requestId = "";
+
+  constructor(data?: PartialMessage<RejectBattleRequestRequest>) {
+    super();
+    proto3.util.initPartial(data, this);
+  }
+
+  static readonly runtime: typeof proto3 = proto3;
+  static readonly typeName = "ptera.v1.RejectBattleRequestRequest";
+  static readonly fields: FieldList = proto3.util.newFieldList(() => [
+    { no: 1, name: "request_id", kind: "scalar", T: 9 /* ScalarType.STRING */ },
+  ]);
+
+  static fromBinary(bytes: Uint8Array, options?: Partial<BinaryReadOptions>): RejectBattleRequestRequest {
+    return new RejectBattleRequestRequest().fromBinary(bytes, options);
+  }
+
+  static fromJson(jsonValue: JsonValue, options?: Partial<JsonReadOptions>): RejectBattleRequestRequest {
+    return new RejectBattleRequestRequest().fromJson(jsonValue, options);
+  }
+
+  static fromJsonString(jsonString: string, options?: Partial<JsonReadOptions>): RejectBattleRequestRequest {
+    return new RejectBattleRequestRequest().fromJsonString(jsonString, options);
+  }
+
+  static equals(a: RejectBattleRequestRequest | PlainMessage<RejectBattleRequestRequest> | undefined, b: RejectBattleRequestRequest | PlainMessage<RejectBattleRequestRequest> | undefined): boolean {
+    return proto3.util.equals(RejectBattleRequestRequest, a, b);
+  }
+}
+

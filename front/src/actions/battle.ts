@@ -66,3 +66,52 @@ export async function retreatAction(
     throw new Error("Failed to retreat");
   }
 }
+
+/**
+ * Send Battle Request
+ */
+export async function sendBattleRequestAction(
+  fromCircleId: string,
+  toCircleId: string,
+) {
+  try {
+    const response = await battleClient.sendBattleRequest({
+      fromCircleId,
+      toCircleId,
+    });
+    return JSON.parse(JSON.stringify(response));
+  } catch (error) {
+    console.error("SendBattleRequest Error:", error);
+    throw new Error("Failed to send battle request");
+  }
+}
+
+/**
+ * Accept Battle Request
+ */
+export async function acceptBattleRequestAction(requestId: string) {
+  try {
+    const response = await battleClient.acceptBattleRequest({
+      requestId,
+    });
+    return JSON.parse(JSON.stringify(response));
+  } catch (error) {
+    console.error("AcceptBattleRequest Error:", error);
+    throw new Error("Failed to accept battle request");
+  }
+}
+
+/**
+ * Reject Battle Request
+ */
+export async function rejectBattleRequestAction(requestId: string) {
+  try {
+    const response = await battleClient.rejectBattleRequest({
+      requestId,
+    });
+    return JSON.parse(JSON.stringify(response));
+  } catch (error) {
+    console.error("RejectBattleRequest Error:", error);
+    throw new Error("Failed to reject battle request");
+  }
+}
