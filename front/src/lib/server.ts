@@ -231,7 +231,26 @@ export async function getCardsFromServer(circleId?: string) {
       const result = validateCardData(doc.id, doc.data());
 
       if (result.valid && result.card) {
-        cards.push(result.card);
+        // Exclude expired cards: treat expiryDate as the graduation/expiration date
+        try {
+          const now = Date.now();
+          const expiryTime = result.card.expiryDate
+            ? new Date(result.card.expiryDate).getTime()
+            : Infinity;
+
+          if (expiryTime > now) {
+            cards.push(result.card);
+          } else {
+            // Skip expired card
+            // Optionally log for debugging in development
+            // console.debug(`Skipping expired card ${doc.id} (expiry: ${result.card.expiryDate})`);
+          }
+        } catch (e) {
+          // If any unexpected parsing error occurs, include the card to avoid data loss,
+          // but log the incident.
+          console.warn(`Failed to evaluate expiry for card ${doc.id}:`, e);
+          cards.push(result.card);
+        }
       } else if (result.error) {
         console.warn(result.error);
         errors.push(result.error);
