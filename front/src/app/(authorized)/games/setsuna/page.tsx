@@ -2,6 +2,7 @@
 
 import dynamic from "next/dynamic";
 import { useCallback, useState } from "react";
+import { toast } from "react-hot-toast";
 import { GameDescription } from "./_components/GameDescription";
 import { styles } from "./_styles/page.styles";
 
@@ -38,13 +39,46 @@ export default function Games() {
       duration: (duration / 1000).toFixed(3),
     };
 
-    alert(` 経過時間: ${newRecord.duration} 秒`);
+    toast.custom(
+      (t) => (
+        <div
+          style={{
+            ...styles.toastBase,
+            ...styles.toastSuccess,
+            opacity: t.visible ? 1 : 0,
+            transform: t.visible ? "translateY(0)" : "translateY(-20px)",
+          }}
+        >
+          <span style={styles.toastIconSuccess}>◈</span>
+          <span>
+            経過時間:{" "}
+            <span style={styles.toastTimeValue}>{newRecord.duration}</span> 秒
+          </span>
+        </div>
+      ),
+      { duration: 5000 },
+    );
   }, []);
 
   const handleTimeout = useCallback(() => {
     setIsRunning(false);
     setShowSignal(false);
-    alert("QRコードが見つかりませんでした。スタート画面に戻ります。");
+    toast.custom(
+      (t) => (
+        <div
+          style={{
+            ...styles.toastBase,
+            ...styles.toastError,
+            opacity: t.visible ? 1 : 0,
+            transform: t.visible ? "translateY(0)" : "translateY(-20px)",
+          }}
+        >
+          <span style={styles.toastIconError}>⚠</span>
+          QRコードが見つかりませんでした。
+        </div>
+      ),
+      { duration: 4000 },
+    );
   }, []);
 
   return (

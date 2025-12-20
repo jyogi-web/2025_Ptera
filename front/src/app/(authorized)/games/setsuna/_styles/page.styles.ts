@@ -161,4 +161,37 @@ export const styles: { [key: string]: CSSProperties } = {
     letterSpacing: "-5px",
     fontStyle: "italic", // Speed feel
   },
+  toastBase: {
+    background: "rgba(10, 10, 10, 0.95)",
+    borderRadius: "4px",
+    padding: "16px 24px",
+    color: "#fff",
+    fontFamily: "var(--font-orbitron), sans-serif",
+    transition: "all 0.3s ease",
+    display: "flex",
+    alignItems: "center",
+    gap: "10px",
+  },
+  toastSuccess: {
+    border: "1px solid #00dac1",
+    boxShadow: "0 0 20px rgba(0, 218, 193, 0.4)",
+  },
+  toastError: {
+    border: "1px solid #ff4444",
+    boxShadow: "0 0 20px rgba(255, 68, 68, 0.4)",
+  },
+  toastIconSuccess: {
+    color: "#00dac1",
+    fontSize: "1.2em",
+  },
+  toastIconError: {
+    color: "#ff4444",
+    fontSize: "1.2em",
+  },
+  toastTimeValue: {
+    color: "#00dac1",
+    fontWeight: "bold",
+    fontSize: "1.2em",
+    textShadow: "0 0 10px rgba(0, 218, 193, 0.5)",
+  },
 };
