@@ -1,4 +1,4 @@
-import Card from "@/components/Card";
+import BattleCard from "@/components/BattleCard";
 import type {
   BattleState,
   Card as ProtoCard,
@@ -33,28 +33,6 @@ export default function BattleField({
 
   // Turn Logic
   const isMyTurn = currentPlayerId === playerMe?.playerId;
-  // 仮説: ターン1は先行プレイヤーから始まる。
-  // 自分が先行の場合: Turn 1, 3, 5... が自分のターン
-  // 自分が後攻の場合: Turn 2, 4, 6... が自分のターン
-  // 現在が自分のターン(Odd) -> 先行プレイヤー
-  // 現在が自分のターン(Even) -> 後攻プレイヤー
-  // 現在が相手のターン(Odd) -> 自分は後攻プレイヤー
-  // 現在が相手のターン(Even) -> 自分は先行プレイヤー
-  // ...これは「現在のターン」が「誰のターンか」に依存せず、「自分が先行か後攻か」は固定であるべき。
-  // しかし、ここには「Am I First Player?」というフラグはない。
-  // Backend logic:
-  // state.CurrentPlayerId starts as myCircleID (Challenger/Applicant usually? or Host?)
-  // `createBattle` uses `req.MyCircleId` as `CurrentPlayerId` (Turn 1).
-  // So whoever started the battle is Player 1 (First).
-  // Can we infer it?
-  // If (currentTurn % 2 !== 0 && isMyTurn) => I must be First.
-  // If (currentTurn % 2 === 0 && !isMyTurn) => I must be First.
-  // ... Wait. If currentTurn is 1 (Odd) and it IS my turn, I am First.
-  // If currentTurn is 1 (Odd) and it is NOT my turn, I am Second.
-  // This logic holds if checks are consistent throughout the game.
-  // Let's rely on Turn 1 logic or simpler parity check.
-
-  // 自分が「先行」である条件: (現在のターンが奇数 AND 自分のターン) OR (現在のターンが偶数 AND 相手のターン)
   const isFirstPlayer =
     (currentTurn % 2 !== 0 && isMyTurn) || (currentTurn % 2 === 0 && !isMyTurn);
 
@@ -114,7 +92,11 @@ export default function BattleField({
         <div className="flex gap-2 justify-center mb-4 min-h-[80px]">
           {opponentBench.map((card) => (
             <div key={card.id} className="w-16 transform scale-75 origin-top">
-              <Card card={adaptCard(card)} variant="battle" />
+              <BattleCard
+                card={adaptCard(card)}
+                variant="enemy"
+                className="opacity-80"
+              />
             </div>
           ))}
         </div>
@@ -124,13 +106,11 @@ export default function BattleField({
           {opponentActive ? (
             <div
               className={`w-32 transition-transform duration-500 ${
-                !isMyTurn ? "scale-105" : ""
+                !isMyTurn ? "scale-110 z-10" : ""
               }`}
             >
-              <Card card={adaptCard(opponentActive)} variant="battle" />
-              <div className="text-center text-xs text-red-300 mt-1">
-                HP: {opponentActive.currentHp}/{opponentActive.maxHp}
-              </div>
+              <BattleCard card={adaptCard(opponentActive)} variant="enemy" />
+              {/* Removed separate HP text, handled in BattleCard */}
             </div>
           ) : (
             <div className="w-32 h-40 border-2 border-dashed border-red-500/30 flex items-center justify-center text-red-500/50">
@@ -147,7 +127,7 @@ export default function BattleField({
         </div>
       </div>
 
-      {/* --- Log Area (Optional) --- */}
+      {/* --- Log Area --- */}
       {state.logs && state.logs.length > 0 && (
         <div className="bg-black/40 p-2 rounded text-xs text-gray-300 h-24 overflow-y-auto font-mono border border-gray-800">
           {state.logs.map((log, i) => (
@@ -175,13 +155,10 @@ export default function BattleField({
           {myActive ? (
             <div
               className={`w-32 transition-transform duration-500 ${
-                isMyTurn ? "scale-105" : ""
+                isMyTurn ? "scale-110 z-10" : ""
               }`}
             >
-              <Card card={adaptCard(myActive)} variant="battle" />
-              <div className="text-center text-xs text-blue-300 mt-1">
-                HP: {myActive.currentHp}/{myActive.maxHp}
-              </div>
+              <BattleCard card={adaptCard(myActive)} variant="friend" />
             </div>
           ) : (
             <div className="w-32 h-40 border-2 border-dashed border-blue-500/30 flex items-center justify-center text-blue-500/50">
@@ -224,9 +201,9 @@ export default function BattleField({
         <div className="flex gap-2 justify-center min-h-[80px]">
           {myBench.map((card, i) => (
             <div key={card.id} className="w-16">
-              <Card
+              <BattleCard
                 card={adaptCard(card)}
-                variant="battle"
+                variant="friend"
                 onClick={() => isMyTurn && !winnerId && onRetreat(i)}
               />
             </div>
