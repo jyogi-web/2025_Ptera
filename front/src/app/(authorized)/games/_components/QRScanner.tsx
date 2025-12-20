@@ -4,6 +4,7 @@ import jsQR from "jsqr";
 import type React from "react";
 import { useEffect, useRef } from "react";
 import { styles } from "../_styles/QRScanner.styles";
+
 interface QRScannerProps {
   onQRLost: (duration: number) => void;
   onTimeout?: () => void;
@@ -188,15 +189,9 @@ const QRScanner: React.FC<QRScannerProps> = ({
 
   return (
     <div style={styles.container}>
-      <video
-        ref={videoRef}
-        style={styles.video}
-        playsInline
-      />
-      <canvas
-        ref={canvasRef}
-        style={styles.canvas}
-      />
+      {/* biome-ignore lint/a11y/useMediaCaption: Camera feed does not have captions */}
+      <video ref={videoRef} style={styles.video} playsInline />
+      <canvas ref={canvasRef} style={styles.canvas} />
     </div>
   );
 };
