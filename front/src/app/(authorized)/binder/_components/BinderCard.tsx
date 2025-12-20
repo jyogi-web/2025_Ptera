@@ -1,3 +1,5 @@
+"use client";
+
 import Image from "next/image";
 import type { Card } from "@/types/app";
 import { styles } from "../_styles/BinderCard.styles";

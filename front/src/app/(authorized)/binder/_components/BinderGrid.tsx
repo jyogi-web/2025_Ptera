@@ -1,5 +1,9 @@
-import { useEffect, useState } from "react";
+"use client";
+
+import Image from "next/image";
+import { useCallback, useEffect, useState } from "react";
 import toast from "react-hot-toast";
+import Modal from "@/components/ui/Modal";
 import { useAuth } from "@/context/AuthContext";
 import { addFavoriteCard, getFavoriteCards } from "@/lib/firestore";
 import type { Card as CardType } from "@/types/app";
@@ -36,6 +40,30 @@ export function BinderGrid({
     loadFavorites();
   }, [user]);
 
+  // modal state
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [selectedCard, setSelectedCard] = useState<CardType | null>(null);
+
+  const renderExpiry = () => {
+    if (!selectedCard || !selectedCard.expiryDate) return null;
+    const expiry = new Date(selectedCard.expiryDate);
+    const now = new Date();
+    const diffMs = expiry.getTime() - now.getTime();
+    const daysLeft = Math.ceil(diffMs / (1000 * 60 * 60 * 24));
+
+    return (
+      <div className="mt-2 text-sm text-slate-300">
+        卒業: {expiry.toLocaleDateString()}{" "}
+        {daysLeft > 0 ? `（あと ${daysLeft}日）` : "（卒業済み）"}
+      </div>
+    );
+  };
+
+  const closeModal = useCallback(() => {
+    setIsModalOpen(false);
+    setSelectedCard(null);
+  }, []);
+
   const handleCardClick = async (card: CardType) => {
     if (!user || processing) return;
 
@@ -61,7 +89,7 @@ export function BinderGrid({
           duration: 3000,
           style: {
             ...cyberToastStyle,
-            border: "1px solid #facc15", // Yellow border for success
+            border: "1px solid #facc15",
             color: "#fef08a",
             boxShadow: "0 0 15px rgba(250, 204, 21, 0.3)",
           },
@@ -72,7 +100,7 @@ export function BinderGrid({
         toast.error("操作に失敗しました", {
           style: {
             ...cyberToastStyle,
-            border: "1px solid #ef4444", // Red border for error
+            border: "1px solid #ef4444",
             color: "#fecaca",
             boxShadow: "0 0 15px rgba(239, 68, 68, 0.3)",
           },
@@ -84,11 +112,9 @@ export function BinderGrid({
       return;
     }
 
-    toast("カード詳細ページは未実装です", {
-      icon: "",
-      duration: 2000,
-      style: cyberToastStyle,
-    });
+    // open detail modal
+    setSelectedCard(card);
+    setIsModalOpen(true);
   };
 
   return (
@@ -113,31 +139,75 @@ export function BinderGrid({
           </div>
         ))}
       </div>
-    </div>
-  );
-}
 
-export function FavoriteButton({
-  isSelectingFavorite,
-  onToggle,
-  disabled,
-}: {
-  isSelectingFavorite: boolean;
-  onToggle: () => void;
-  disabled: boolean;
-}) {
-  return (
-    <button
-      type="button"
-      onClick={onToggle}
-      disabled={disabled}
-      className={`px-4 py-2 rounded-lg font-bold transition-all text-sm ${
-        isSelectingFavorite
-          ? "bg-yellow-500 text-white shadow-lg"
-          : "bg-blue-500 text-white hover:bg-blue-600"
-      } ${disabled ? "opacity-50 cursor-not-allowed" : ""}`}
-    >
-      {isSelectingFavorite ? " 選択中" : "推しメン登録"}
-    </button>
+      <Modal isOpen={isModalOpen} onClose={closeModal} title="カード詳細">
+        {selectedCard ? (
+          <div>
+            {selectedCard.imageUrl ? (
+              <div className="mb-4 relative w-full h-64 rounded-md overflow-hidden">
+                <Image
+                  src={selectedCard.imageUrl}
+                  alt={selectedCard.name}
+                  fill
+                  className="object-cover"
+                  sizes="(max-width: 640px) 100vw, 640px"
+                />
+              </div>
+            ) : (
+              <div
+                className="mb-4 w-full max-h-64 bg-slate-800 rounded-md"
+                aria-hidden
+              />
+            )}
+
+            <div className="mb-2 text-lg font-bold text-slate-100">
+              {selectedCard.name}
+            </div>
+            <div className="mb-1 text-sm text-slate-300">
+              {typeof selectedCard.grade === "number"
+                ? `${selectedCard.grade}年`
+                : selectedCard.grade}
+            </div>
+            {selectedCard.position && (
+              <div className="mb-2 text-sm text-slate-300">
+                役職: {selectedCard.position}
+              </div>
+            )}
+            {selectedCard.faculty && (
+              <div className="mb-2 text-sm text-slate-300">
+                学部: {selectedCard.faculty}
+              </div>
+            )}
+            {selectedCard.department && (
+              <div className="mb-2 text-sm text-slate-300">
+                学科: {selectedCard.department}
+              </div>
+            )}
+            {/* memo field removed — using `description` for comments */}
+            {selectedCard.description && (
+              <div className="mt-3 text-sm whitespace-pre-wrap text-slate-200">
+                <div className="text-xs text-slate-400 mb-1">作成コメント</div>
+                <div>{selectedCard.description}</div>
+              </div>
+            )}
+            {renderExpiry()}
+            {selectedCard.createdAt && (
+              <div className="mt-3 text-xs text-slate-400">
+                作成: {new Date(selectedCard.createdAt).toLocaleString()}
+              </div>
+            )}
+            <div className="mt-4 flex justify-end">
+              <button
+                type="button"
+                onClick={closeModal}
+                className="px-3 py-1 rounded bg-white/5 hover:bg-white/10 text-slate-100"
+              >
+                閉じる
+              </button>
+            </div>
+          </div>
+        ) : null}
+      </Modal>
+    </div>
   );
 }

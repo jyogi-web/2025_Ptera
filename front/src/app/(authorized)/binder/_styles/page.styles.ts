@@ -13,7 +13,7 @@ export const styles: { [key: string]: CSSProperties } = {
     overflow: "hidden", // Prevent scrolling on the body/container
     touchAction: "pan-y", // Allow vertical pan, prevent bounce scroll where supported/needed
     fontFamily: '"Segoe UI", Roboto, Helvetica, Arial, sans-serif',
-    color: "#a4b5c9",
+    color: "#e6fdf9",
     background: "#050b14",
     display: "flex",
     flexDirection: "column",
@@ -56,14 +56,14 @@ export const styles: { [key: string]: CSSProperties } = {
     boxShadow: "0 0 10px rgba(6, 182, 212, 0.1)", // Subtle cyan glow
   },
   totalCardsLabel: {
-    color: "#64748b", // slate-500
+    color: "#94a3b8", // slightly brighter slate
     fontSize: "0.75rem",
     textTransform: "uppercase",
     letterSpacing: "0.05em",
     fontFamily: "monospace",
   },
   totalCardsValue: {
-    color: "#22d3ee", // cyan-400
+    color: "#7ef9f1", // brighter cyan for contrast
     fontSize: "1rem",
     fontWeight: "bold",
     fontFamily: "monospace",
