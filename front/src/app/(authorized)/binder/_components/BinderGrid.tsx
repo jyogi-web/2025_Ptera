@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import toast from "react-hot-toast";
 import Modal from "@/components/ui/Modal";
 import { useAuth } from "@/context/AuthContext";
@@ -58,10 +58,10 @@ export function BinderGrid({
     );
   };
 
-  const closeModal = () => {
+  const closeModal = useCallback(() => {
     setIsModalOpen(false);
     setSelectedCard(null);
-  };
+  }, []);
 
   const handleCardClick = async (card: CardType) => {
     if (!user || processing) return;
