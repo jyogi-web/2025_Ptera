@@ -3,6 +3,7 @@
 import dynamic from "next/dynamic";
 import { useCallback, useEffect, useState } from "react";
 import { Button } from "./_components/Button";
+import { GameDescription } from "./_components/GameDescription";
 import { styles } from "./_styles/page.styles";
 
 const QRScanner = dynamic(
@@ -79,55 +80,39 @@ export default function Games() {
     <div style={styles.container}>
       <div style={styles.overlay}>
         <div style={styles.controls}>
-          {!isRunning ? (
-            <Button onClick={handleStart} palette="secondary">
-              刹那のメンコ
-            </Button>
-          ) : (
-            <div style={styles.measuringBatch}>
-              計測中... QRコードを外してください
+          {!isRunning ? <GameDescription onStart={handleStart} /> : null}
+
+          {records.length > 0 && (
+            <div style={styles.recordsContainer}>
+              <div style={styles.recordsHeader}>
+                <h3 style={styles.historyTitle}>記録履歴</h3>
+                <Button onClick={handleReset} palette="error">
+                  リセット
+                </Button>
+              </div>
+              {records.map((record, index) => (
+                <div key={`${record.time}-${index}`} style={styles.recordItem}>
+                  <span style={styles.recordTime}>{record.time}</span>
+                  <span style={styles.recordDuration}>{record.duration}秒</span>
+                </div>
+              ))}
             </div>
           )}
         </div>
 
-        {records.length > 0 && (
-          <div style={styles.recordsContainer}>
-            <div style={styles.recordsHeader}>
-              <h3 style={styles.historyTitle}>記録履歴</h3>
-              <Button onClick={handleReset} palette="error">
-                リセット
-              </Button>
-            </div>
-            {records.map((record, index) => (
-              <div key={`${record.time}-${index}`} style={styles.recordItem}>
-                <span style={styles.recordTime}>{record.time}</span>
-                <span style={styles.recordDuration}>{record.duration}秒</span>
-              </div>
-            ))}
-          </div>
-        )}
+        {showSignal && <div style={styles.signalText}>!</div>}
+
+        <div style={styles.scannerWrapper}>
+          {isRunning && (
+            <QRScanner
+              isRunning={isRunning}
+              onQRLost={handleQRLost}
+              onTimeout={handleTimeout}
+              onSignal={handleSignal}
+            />
+          )}
+        </div>
       </div>
-
-      {showSignal && <div style={styles.signalText}>!</div>}
-
-      <div style={styles.scannerWrapper}>
-        {isRunning && (
-          <QRScanner
-            isRunning={isRunning}
-            onQRLost={handleQRLost}
-            onTimeout={handleTimeout}
-            onSignal={handleSignal}
-          />
-        )}
-      </div>
-
-      <style jsx>{`
-        @keyframes pulse {
-          0% { opacity: 1; transform: scale(1); box-shadow: 0 0 0 0 rgba(255, 0, 0, 0.7); }
-          50% { opacity: 0.8; transform: scale(1.05); box-shadow: 0 0 0 10px rgba(255, 0, 0, 0); }
-          100% { opacity: 1; transform: scale(1); box-shadow: 0 0 0 0 rgba(255, 0, 0, 0); }
-        }
-      `}</style>
     </div>
   );
 }

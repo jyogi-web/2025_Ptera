@@ -42,7 +42,7 @@ export const Button = ({
         display: "inline-flex",
         alignItems: "center",
         justifyContent: "center",
-        padding: "10px 30px",
+        padding: "0",
         cursor: "pointer",
         userSelect: "none",
         transition: "opacity 0.2s",
