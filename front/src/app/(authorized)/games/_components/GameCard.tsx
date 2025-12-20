@@ -23,6 +23,7 @@ export const GameCard = ({
   return (
     <Link
       href={href}
+      aria-disabled={disabled}
       style={{
         ...styles.cardLink,
         pointerEvents: disabled ? "none" : "auto",
@@ -30,6 +31,8 @@ export const GameCard = ({
       }}
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
+      onFocus={() => setIsHovered(true)}
+      onBlur={() => setIsHovered(false)}
     >
       <div style={styles.card}>
         <FrameCorners
