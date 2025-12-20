@@ -1,10 +1,11 @@
 "use client";
 
 import { Animator, AnimatorGeneralProvider } from "@arwes/react";
-import { Book, Camera, Home, Rocket, Users } from "lucide-react";
+import { Book, Home, Rocket, Users } from "lucide-react";
 import { usePathname, useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { useAuth } from "@/context/AuthContext";
+import { CameraFAB } from "./CameraFAB";
 
 const FOOTER_ITEMS = [
   {
@@ -50,22 +51,7 @@ export const Footer = () => {
     <AnimatorGeneralProvider duration={{ enter: 200, exit: 200 }}>
       <div className="h-24 md:h-28" /> {/* Spacer */}
       {/* Camera FAB */}
-      <div className="fixed bottom-24 right-5 z-50">
-        <Animator active={activate}>
-          <button
-            type="button"
-            onClick={() => router.push("/camera")}
-            className="w-14 h-14 rounded-full bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-400 hover:to-blue-500 text-white shadow-[0_0_15px_rgba(6,182,212,0.5)] flex items-center justify-center transition-all duration-300 hover:scale-110 active:scale-95 group"
-            aria-label="カメラ"
-          >
-            <Camera
-              size={28}
-              strokeWidth={2}
-              className="group-hover:rotate-12 transition-transform duration-300"
-            />
-          </button>
-        </Animator>
-      </div>
+      <CameraFAB activate={activate} />
       <footer className="fixed bottom-0 left-0 w-full h-20 z-50 pointer-events-none">
         <div className="absolute inset-0 bg-black/90 backdrop-blur-md border-t border-cyan-500/50 shadow-[0_0_15px_rgba(6,182,212,0.3)] pointer-events-auto">
           <div className="w-full max-w-md mx-auto h-20 flex items-center justify-between px-6 md:px-8">
