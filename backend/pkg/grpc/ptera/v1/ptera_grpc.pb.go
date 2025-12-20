@@ -7,7 +7,10 @@
 package ptera
 
 import (
+	context "context"
 	grpc "google.golang.org/grpc"
+	codes "google.golang.org/grpc/codes"
+	status "google.golang.org/grpc/status"
 )
 
 // This is a compile-time assertion to ensure that this generated file
@@ -15,10 +18,17 @@ import (
 // Requires gRPC-Go v1.64.0 or later.
 const _ = grpc.SupportPackageIsVersion9
 
+const (
+	PteraService_CompleteCard_FullMethodName = "/ptera.v1.PteraService/CompleteCard"
+)
+
 // PteraServiceClient is the client API for PteraService service.
 //
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
 type PteraServiceClient interface {
+	// CompleteCard は画像URLと任意の部分情報を受け取り、
+	// AIを使用してカード情報を自動補完します。
+	CompleteCard(ctx context.Context, in *CompleteCardRequest, opts ...grpc.CallOption) (*CompleteCardResponse, error)
 }
 
 type pteraServiceClient struct {
@@ -29,10 +39,23 @@ func NewPteraServiceClient(cc grpc.ClientConnInterface) PteraServiceClient {
 	return &pteraServiceClient{cc}
 }
 
+func (c *pteraServiceClient) CompleteCard(ctx context.Context, in *CompleteCardRequest, opts ...grpc.CallOption) (*CompleteCardResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(CompleteCardResponse)
+	err := c.cc.Invoke(ctx, PteraService_CompleteCard_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // PteraServiceServer is the server API for PteraService service.
 // All implementations must embed UnimplementedPteraServiceServer
 // for forward compatibility.
 type PteraServiceServer interface {
+	// CompleteCard は画像URLと任意の部分情報を受け取り、
+	// AIを使用してカード情報を自動補完します。
+	CompleteCard(context.Context, *CompleteCardRequest) (*CompleteCardResponse, error)
 	mustEmbedUnimplementedPteraServiceServer()
 }
 
@@ -43,6 +66,9 @@ type PteraServiceServer interface {
 // pointer dereference when methods are called.
 type UnimplementedPteraServiceServer struct{}
 
+func (UnimplementedPteraServiceServer) CompleteCard(context.Context, *CompleteCardRequest) (*CompleteCardResponse, error) {
+	return nil, status.Error(codes.Unimplemented, "method CompleteCard not implemented")
+}
 func (UnimplementedPteraServiceServer) mustEmbedUnimplementedPteraServiceServer() {}
 func (UnimplementedPteraServiceServer) testEmbeddedByValue()                      {}
 
@@ -64,13 +90,36 @@ func RegisterPteraServiceServer(s grpc.ServiceRegistrar, srv PteraServiceServer)
 	s.RegisterService(&PteraService_ServiceDesc, srv)
 }
 
+func _PteraService_CompleteCard_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(CompleteCardRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(PteraServiceServer).CompleteCard(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: PteraService_CompleteCard_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(PteraServiceServer).CompleteCard(ctx, req.(*CompleteCardRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // PteraService_ServiceDesc is the grpc.ServiceDesc for PteraService service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
 var PteraService_ServiceDesc = grpc.ServiceDesc{
 	ServiceName: "ptera.v1.PteraService",
 	HandlerType: (*PteraServiceServer)(nil),
-	Methods:     []grpc.MethodDesc{},
-	Streams:     []grpc.StreamDesc{},
-	Metadata:    "ptera/v1/ptera.proto",
+	Methods: []grpc.MethodDesc{
+		{
+			MethodName: "CompleteCard",
+			Handler:    _PteraService_CompleteCard_Handler,
+		},
+	},
+	Streams:  []grpc.StreamDesc{},
+	Metadata: "ptera/v1/ptera.proto",
 }

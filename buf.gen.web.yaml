@@ -1,0 +1,8 @@
+version: v1
+plugins:
+  - plugin: es
+    out: front/src/generated
+    opt: target=ts
+  - plugin: connect-es
+    out: front/src/generated
+    opt: target=ts

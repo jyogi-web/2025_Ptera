@@ -1,11 +1,13 @@
 "use client";
 
 import Image from "next/image";
-import { useRef, useState } from "react";
+import { useRef, useState, useTransition } from "react";
+import toast from "react-hot-toast";
 import { useAuth } from "@/context/AuthContext";
 import { addCard } from "@/lib/firestore";
 import { deleteImage, uploadImage } from "@/lib/storage";
 import type { Card } from "@/types/app";
+import { completeCardAction } from "./actions";
 import CameraPreview, { type CameraPreviewHandle } from "./CameraPreview";
 
 type Faculty =
@@ -76,7 +78,6 @@ export default function CameraPage() {
   const cameraRef = useRef<CameraPreviewHandle>(null);
   const [capturedImage, setCapturedImage] = useState<string | null>(null);
   const [cameraReady, setCameraReady] = useState(false);
-  const [captureError, setCaptureError] = useState<string | null>(null);
   const [uploadedImageUrl, setUploadedImageUrl] = useState<string | null>(null);
   const [uploadedImagePath, setUploadedImagePath] = useState<string | null>(
     null,
@@ -84,6 +85,7 @@ export default function CameraPage() {
   const [isUploading, setIsUploading] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
   const { user } = useAuth();
+  const [isPending, startTransition] = useTransition();
 
   const [form, setForm] = useState<CameraForm>({
     name: "",
@@ -103,7 +105,7 @@ export default function CameraPage() {
   const handleCapture = () => {
     if (!cameraRef.current) {
       console.error("Camera is not ready or reference is missing.");
-      setCaptureError("カメラの準備ができていません。もう一度お試しください。");
+      toast.error("カメラの準備ができていません。もう一度お試しください。");
       return;
     }
 
@@ -115,16 +117,15 @@ export default function CameraPage() {
           "Failed to capture image. getScreenshot returned null or undefined.",
         );
         setCapturedImage(null);
-        setCaptureError("撮影に失敗しました。もう一度お試しください。");
+        toast.error("撮影に失敗しました。もう一度お試しください。");
         return;
       }
 
       setCapturedImage(imageSrc);
-      setCaptureError(null);
     } catch (error) {
       console.error("Unexpected error during capture.", error);
       setCapturedImage(null);
-      setCaptureError(
+      toast.error(
         "撮影中にエラーが発生しました。時間をおいてからもう一度お試しください。",
       );
     }
@@ -133,14 +134,13 @@ export default function CameraPage() {
   const handleConfirm = async () => {
     if (!capturedImage) {
       console.error("Image is not captured.");
-      setCaptureError(
+      toast.error(
         "撮影が完了していません。撮影を完了してからもう一度お試しください。",
       );
       return;
     }
 
     setIsUploading(true);
-    setCaptureError(null);
 
     try {
       if (!user) {
@@ -157,7 +157,7 @@ export default function CameraPage() {
       console.log("Image uploaded:", url);
     } catch (e) {
       console.error("Failed to upload image:", e);
-      setCaptureError(
+      toast.error(
         e instanceof Error
           ? e.message
           : "画像のアップロードに失敗しました。もう一度お試しください。",
@@ -167,9 +167,42 @@ export default function CameraPage() {
     }
   };
 
+  const handleAIComplete = () => {
+    if (!uploadedImageUrl) return;
+
+    startTransition(async () => {
+      const result = await completeCardAction(uploadedImageUrl, {
+        name: form.name,
+        position: form.position,
+        hobby: form.hobby,
+        description: form.description,
+        faculty: form.faculty,
+        department: form.department,
+        grade: form.grade ? form.grade.toString() : undefined,
+      });
+
+      if (result.success && result.data) {
+        setForm((prev) => ({
+          ...prev,
+          name: result.data?.name || prev.name,
+          faculty: (result.data?.faculty as Faculty) || prev.faculty,
+          department:
+            (result.data?.department as Department) || prev.department,
+          grade: result.data?.grade ? Number(result.data.grade) : prev.grade,
+          position: result.data?.position || prev.position,
+          hobby: result.data?.hobby || prev.hobby,
+          description: result.data?.description || prev.description,
+        }));
+        toast.success("AI補完が完了しました！");
+      } else {
+        toast.error(result.error || "AI補完に失敗しました。");
+      }
+    });
+  };
+
   const handleMakeCard = async () => {
     if (!uploadedImageUrl || !user) {
-      setCaptureError(
+      toast.error(
         "画像のアップロードが完了していないか、ログインしていません。",
       );
       return;
@@ -182,7 +215,7 @@ export default function CameraPage() {
       !form.faculty ||
       !form.department
     ) {
-      setCaptureError("必須項目をすべて入力してください。");
+      toast.error("必須項目をすべて入力してください。");
       return;
     }
 
@@ -216,10 +249,10 @@ export default function CameraPage() {
         faculty: "",
         department: "",
       });
-      alert("カードを作成しました！");
+      toast.success("カードを作成しました！");
     } catch (e) {
       console.error("Failed to create card:", e);
-      setCaptureError("カードの作成に失敗しました。");
+      toast.error("カードの作成に失敗しました。");
 
       // クリーンアップ: アップロードした画像を削除
       if (uploadedImagePath) {
@@ -273,7 +306,6 @@ export default function CameraPage() {
                         setCapturedImage(null);
                         setUploadedImageUrl(null);
                         setUploadedImagePath(null);
-                        setCaptureError(null);
                       }}
                       className="px-6 py-3 bg-gray-600 hover:bg-gray-700 rounded-lg font-semibold transition-colors"
                     >
@@ -317,11 +349,6 @@ export default function CameraPage() {
                     </svg>
                   </button>
                   <p className="text-sm text-gray-400">撮影ボタン</p>
-                  {captureError && (
-                    <p className="mt-1 text-sm text-red-400 text-center">
-                      {captureError}
-                    </p>
-                  )}
                 </div>
               )}
             </div>
@@ -329,7 +356,64 @@ export default function CameraPage() {
 
           {/* 部員情報入力フォーム */}
           <div className="bg-gray-800 rounded-lg p-6 mb-6">
-            <h2 className="text-xl font-semibold mb-4">部員情報</h2>
+            <div className="flex justify-between items-center mb-4">
+              <h2 className="text-xl font-semibold">部員情報</h2>
+              <button
+                type="button"
+                onClick={handleAIComplete}
+                disabled={!uploadedImageUrl || isPending}
+                className="px-4 py-2 bg-purple-600 hover:bg-purple-700 disabled:bg-gray-600 disabled:cursor-not-allowed rounded-lg text-sm font-semibold transition-colors flex items-center gap-2"
+              >
+                {isPending ? (
+                  <>
+                    <svg
+                      className="animate-spin h-4 w-4 text-white"
+                      xmlns="http://www.w3.org/2000/svg"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                    >
+                      <title>AI解析中</title>
+                      <circle
+                        className="opacity-25"
+                        cx="12"
+                        cy="12"
+                        r="10"
+                        stroke="currentColor"
+                        strokeWidth="4"
+                      />
+                      <path
+                        className="opacity-75"
+                        fill="currentColor"
+                        d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                      />
+                    </svg>
+                    AI解析中...
+                  </>
+                ) : (
+                  <>
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      width="16"
+                      height="16"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      stroke="currentColor"
+                      strokeWidth="2"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                    >
+                      <title>AI補完</title>
+                      <path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h7" />
+                      <line x1="16" x2="22" y1="5" y2="5" />
+                      <line x1="19" x2="19" y1="2" y2="8" />
+                      <circle cx="12" cy="12" r="3" />
+                      <path d="M12 16v.01" />
+                    </svg>
+                    AI補完
+                  </>
+                )}
+              </button>
+            </div>
 
             <div className="space-y-4">
               <div>
@@ -396,6 +480,7 @@ export default function CameraPage() {
                       : "先に学部を選択してください"}
                   </option>
                   {form.faculty &&
+                    DEPARTMENTS[form.faculty] &&
                     DEPARTMENTS[form.faculty].map((dept) => (
                       <option key={dept} value={dept}>
                         {dept}
