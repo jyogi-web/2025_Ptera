@@ -131,7 +131,7 @@ describe("converter", () => {
       it("should calculate correct graduation date for grade 1 (December academic year)", () => {
         const currentDate = new Date(2025, 11, 20); // December 20, 2025
         const result = calculateGraduationDate(1, currentDate);
-        
+
         expect(result.getFullYear()).toBe(2029); // 2025 + (5-1) = 2029
         expect(result.getMonth()).toBe(2); // March (0-indexed)
         expect(result.getDate()).toBe(31);
@@ -140,7 +140,7 @@ describe("converter", () => {
       it("should calculate correct graduation date for grade 2 (December academic year)", () => {
         const currentDate = new Date(2025, 11, 20); // December 20, 2025
         const result = calculateGraduationDate(2, currentDate);
-        
+
         expect(result.getFullYear()).toBe(2028); // 2025 + (5-2) = 2028
         expect(result.getMonth()).toBe(2); // March (0-indexed)
         expect(result.getDate()).toBe(31);
@@ -149,7 +149,7 @@ describe("converter", () => {
       it("should calculate correct graduation date for grade 3 (December academic year)", () => {
         const currentDate = new Date(2025, 11, 20); // December 20, 2025
         const result = calculateGraduationDate(3, currentDate);
-        
+
         expect(result.getFullYear()).toBe(2027); // 2025 + (5-3) = 2027
         expect(result.getMonth()).toBe(2); // March (0-indexed)
         expect(result.getDate()).toBe(31);
@@ -158,7 +158,7 @@ describe("converter", () => {
       it("should calculate correct graduation date for grade 4 (December academic year)", () => {
         const currentDate = new Date(2025, 11, 20); // December 20, 2025
         const result = calculateGraduationDate(4, currentDate);
-        
+
         expect(result.getFullYear()).toBe(2026); // 2025 + (5-4) = 2026
         expect(result.getMonth()).toBe(2); // March (0-indexed)
         expect(result.getDate()).toBe(31);
@@ -169,7 +169,7 @@ describe("converter", () => {
       it("should use current year as academic year when date is in April or later", () => {
         const aprilDate = new Date(2025, 3, 1); // April 1, 2025
         const result = calculateGraduationDate(4, aprilDate);
-        
+
         // Academic year = 2025, graduation year = 2025 + 1 = 2026
         expect(result.getFullYear()).toBe(2026);
         expect(result.getMonth()).toBe(2); // March
@@ -179,7 +179,7 @@ describe("converter", () => {
       it("should use previous year as academic year when date is in March or earlier", () => {
         const marchDate = new Date(2025, 2, 31); // March 31, 2025
         const result = calculateGraduationDate(4, marchDate);
-        
+
         // Academic year = 2024, graduation year = 2024 + 1 = 2025
         expect(result.getFullYear()).toBe(2025);
         expect(result.getMonth()).toBe(2); // March
@@ -189,7 +189,7 @@ describe("converter", () => {
       it("should handle January boundary correctly", () => {
         const januaryDate = new Date(2025, 0, 15); // January 15, 2025
         const result = calculateGraduationDate(2, januaryDate);
-        
+
         // Academic year = 2024, graduation year = 2024 + 3 = 2027
         expect(result.getFullYear()).toBe(2027);
         expect(result.getMonth()).toBe(2); // March
@@ -199,7 +199,7 @@ describe("converter", () => {
       it("should handle September boundary correctly", () => {
         const septemberDate = new Date(2025, 8, 15); // September 15, 2025
         const result = calculateGraduationDate(3, septemberDate);
-        
+
         // Academic year = 2025, graduation year = 2025 + 2 = 2027
         expect(result.getFullYear()).toBe(2027);
         expect(result.getMonth()).toBe(2); // March
@@ -210,44 +210,50 @@ describe("converter", () => {
     describe("invalid grade inputs", () => {
       it("should throw error for grade 0", () => {
         const currentDate = new Date(2025, 11, 20);
-        
-        expect(() => calculateGraduationDate(0, currentDate))
-          .toThrow("Grade must be an integer between 1 and 4");
+
+        expect(() => calculateGraduationDate(0, currentDate)).toThrow(
+          "Grade must be an integer between 1 and 4",
+        );
       });
 
       it("should throw error for grade 5", () => {
         const currentDate = new Date(2025, 11, 20);
-        
-        expect(() => calculateGraduationDate(5, currentDate))
-          .toThrow("Grade must be an integer between 1 and 4");
+
+        expect(() => calculateGraduationDate(5, currentDate)).toThrow(
+          "Grade must be an integer between 1 and 4",
+        );
       });
 
       it("should throw error for negative grade", () => {
         const currentDate = new Date(2025, 11, 20);
-        
-        expect(() => calculateGraduationDate(-1, currentDate))
-          .toThrow("Grade must be an integer between 1 and 4");
+
+        expect(() => calculateGraduationDate(-1, currentDate)).toThrow(
+          "Grade must be an integer between 1 and 4",
+        );
       });
 
       it("should throw error for non-integer grade", () => {
         const currentDate = new Date(2025, 11, 20);
-        
-        expect(() => calculateGraduationDate(2.5, currentDate))
-          .toThrow("Grade must be an integer between 1 and 4");
+
+        expect(() => calculateGraduationDate(2.5, currentDate)).toThrow(
+          "Grade must be an integer between 1 and 4",
+        );
       });
 
       it("should throw error for NaN grade", () => {
         const currentDate = new Date(2025, 11, 20);
-        
-        expect(() => calculateGraduationDate(NaN, currentDate))
-          .toThrow("Grade must be an integer between 1 and 4");
+
+        expect(() => calculateGraduationDate(NaN, currentDate)).toThrow(
+          "Grade must be an integer between 1 and 4",
+        );
       });
 
       it("should throw error for Infinity grade", () => {
         const currentDate = new Date(2025, 11, 20);
-        
-        expect(() => calculateGraduationDate(Infinity, currentDate))
-          .toThrow("Grade must be an integer between 1 and 4");
+
+        expect(() => calculateGraduationDate(Infinity, currentDate)).toThrow(
+          "Grade must be an integer between 1 and 4",
+        );
       });
     });
 
@@ -255,7 +261,7 @@ describe("converter", () => {
       it("should handle leap year correctly", () => {
         const leapYearDate = new Date(2024, 1, 29); // February 29, 2024 (leap year)
         const result = calculateGraduationDate(1, leapYearDate);
-        
+
         // Academic year = 2023, graduation year = 2023 + 4 = 2027
         expect(result.getFullYear()).toBe(2027);
         expect(result.getMonth()).toBe(2); // March
@@ -264,11 +270,8 @@ describe("converter", () => {
 
       it("should use current date as default when no date provided", () => {
         // This test verifies that the function works with default parameter
-        // Note: This test might be flaky due to timing, but it's important for coverage
-        const before = Date.now();
         const result = calculateGraduationDate(4);
-        const after = Date.now();
-        
+
         expect(result.getMonth()).toBe(2); // March
         expect(result.getDate()).toBe(31);
         expect(result.getFullYear()).toBeGreaterThan(2025); // Should be in the future
