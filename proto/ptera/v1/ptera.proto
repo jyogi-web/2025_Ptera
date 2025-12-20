@@ -6,7 +6,11 @@ import "google/protobuf/timestamp.proto";
 
 option go_package = "github.com/jyogi-web/2025_Ptera/backend/pkg/grpc/ptera/v1;ptera";
 
-service PteraService {}
+service PteraService {
+  // CompleteCard は画像URLと任意の部分情報を受け取り、
+  // AIを使用してカード情報を自動補完します。
+  rpc CompleteCard(CompleteCardRequest) returns (CompleteCardResponse);
+}
 
 message User {
   string id = 1;
@@ -26,4 +30,28 @@ message Card {
   string description = 8;
   string image_url = 9;
   google.protobuf.Timestamp created_at = 10;
+}
+
+message CompleteCardRequest {
+  string image_url = 1; // 画像URL
+  optional string name = 2; // 既存の名前
+  optional string faculty = 3; // 既存の学部
+  optional string department = 4; // 既存の学科
+  optional string grade = 5; // 既存の学年
+  optional string position = 6; // 既存の職位
+  optional string hobby = 7; // 既存の趣味
+  optional string description = 8; // 既存の説明文
+}
+
+message CompleteCardResponse {
+  optional string name = 1; // 補完された名前
+  optional string faculty = 2; // 補完された学部
+  optional string department = 3; // 補完された学科
+  optional string grade = 4; // 補完された学年
+  optional string position = 5; // 補完された職位
+  optional string hobby = 6; // 補完された趣味
+  optional string description = 7; // 補完された説明文
+  bool success = 8; // 補完が成功したかどうかを示すフラグ
+  optional string error_message = 9; // エラーメッセージ（存在する場合）
+  optional float confidence_score = 10; // 各フィールドの信頼度スコア（0.0～1.0）
 }
