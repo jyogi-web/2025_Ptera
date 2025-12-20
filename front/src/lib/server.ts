@@ -191,13 +191,38 @@ function validateCardData(
 /**
  * サーバー側でカードデータを取得
  */
-export async function getCardsFromServer() {
+/**
+ * サーバー側でユーザーデータを取得
+ */
+export async function getUserFromServer(userId: string) {
+  try {
+    const userDoc = await adminDB.collection("users").doc(userId).get();
+    if (userDoc.exists) {
+      return userDoc.data() as import("@/types/firestore").FirestoreUser;
+    }
+    return null;
+  } catch (error) {
+    console.error("Failed to fetch user from server:", error);
+    return null;
+  }
+}
+
+/**
+ * サーバー側でカードデータを取得
+ */
+export async function getCardsFromServer(circleId?: string) {
   try {
     const cardsRef = adminDB.collection("cards");
-    const snapshot = await cardsRef
-      .orderBy("createdAt", "desc")
-      .limit(100)
-      .get();
+    let query = cardsRef.orderBy("createdAt", "desc").limit(100);
+
+    if (circleId) {
+      query = cardsRef
+        .where("circleId", "==", circleId)
+        .orderBy("createdAt", "desc")
+        .limit(100);
+    }
+
+    const snapshot = await query.get();
 
     const cards: import("@/types/app").Card[] = [];
     const errors: string[] = [];
