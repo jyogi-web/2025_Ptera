@@ -3,6 +3,7 @@
 import { Animator, FrameCorners } from "@arwes/react";
 import type { CSSProperties, ReactNode } from "react";
 import { useMemo, useState } from "react";
+import { styles } from "../_styles/Button.styles";
 
 interface ArwesButtonProps {
   children: ReactNode;
@@ -38,20 +39,8 @@ export const Button = ({
       onMouseLeave={() => setIsHovered(false)}
       type="button"
       style={{
-        position: "relative",
-        display: "inline-flex",
-        alignItems: "center",
-        justifyContent: "center",
-        padding: "0",
-        cursor: "pointer",
-        userSelect: "none",
-        transition: "opacity 0.2s",
+        ...styles.button,
         opacity: isHovered ? 1 : 0.8,
-        background: "transparent",
-        border: "none",
-        outline: "none",
-        color: "inherit",
-        font: "inherit",
         ...style,
       }}
     >
@@ -60,24 +49,16 @@ export const Button = ({
           strokeWidth={2}
           cornerLength={10}
           style={{
-            position: "absolute",
-            inset: 0,
-            zIndex: 0,
+            ...styles.frame,
             color: color,
-            backgroundColor: "transparent",
           }}
         />
       </Animator>
 
       <span
         style={{
-          position: "relative",
-          zIndex: 1,
+          ...styles.content,
           color: color,
-          fontFamily: "monospace",
-          fontWeight: "bold",
-          textTransform: "uppercase",
-          letterSpacing: "2px",
           textShadow: `0 0 5px ${color}`,
         }}
       >
