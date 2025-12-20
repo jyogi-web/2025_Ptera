@@ -7,6 +7,10 @@ export const styles: { [key: string]: CSSProperties } = {
     aspectRatio: "3/4",
     // Removed margin: "16px auto" to fit better in grid
     cursor: "pointer",
+    padding: 0,
+    border: "none",
+    background: "transparent",
+    textAlign: "left",
   },
   mainGlow: {
     position: "absolute",
