@@ -24,7 +24,7 @@ const QRScanner: React.FC<QRScannerProps> = ({
   const animationFrameRef = useRef<number | null>(null);
   const lostFrameCountRef = useRef<number>(0);
   const timeoutTimerRef = useRef<NodeJS.Timeout | null>(null);
-  const zoomLevelRef = useRef<number>(1.0); // ズームレベル追加
+
   const LOST_THRESHOLD = 10;
   const INITIAL_TIMEOUT_MS = 10000;
 
@@ -54,21 +54,6 @@ const QRScanner: React.FC<QRScannerProps> = ({
           });
           return;
         }
-
-        const videoTrack = stream.getVideoTracks()[0];
-        const capabilities = videoTrack.getCapabilities() as MediaTrackCapabilities & {
-          zoom?: {
-            max: number;
-            min: number;
-            step: number;
-          };
-        };
-
-        // ズーム機能をサポートしているか確認
-        if (capabilities.zoom) {
-          console.log('ズーム範囲:', capabilities.zoom);
-        }
-
         video.srcObject = stream;
         video.setAttribute("playsinline", "true");
         video.play().catch((e) => {
@@ -102,18 +87,7 @@ const QRScanner: React.FC<QRScannerProps> = ({
         canvas.height = video.videoHeight;
         canvas.width = video.videoWidth;
 
-        // デジタルズームを適用（中央部分を拡大）
-        const zoom = zoomLevelRef.current;
-        const sx = (video.videoWidth * (1 - 1 / zoom)) / 2;
-        const sy = (video.videoHeight * (1 - 1 / zoom)) / 2;
-        const sWidth = video.videoWidth / zoom;
-        const sHeight = video.videoHeight / zoom;
-
-        canvasContext.drawImage(
-          video,
-          sx, sy, sWidth, sHeight,  // ソース領域（切り取り）
-          0, 0, canvas.width, canvas.height  // 描画先
-        );
+        canvasContext.drawImage(video, 0, 0, canvas.width, canvas.height);
 
         const imageData = canvasContext.getImageData(
           0,
@@ -212,13 +186,6 @@ const QRScanner: React.FC<QRScannerProps> = ({
     };
   }, [onQRLost, isRunning, targetQRData, onTimeout]);
 
-
-
-  // ズームコントロール用の関数
-  const handleZoom = (newZoom: number) => {
-    zoomLevelRef.current = Math.max(1.0, Math.min(3.0, newZoom));
-  };
-
   return (
     <div
       style={{
@@ -228,30 +195,6 @@ const QRScanner: React.FC<QRScannerProps> = ({
         overflow: "hidden",
       }}
     >
-      {/* ズームコントロール */}
-      <div style={{
-        position: "absolute",
-        bottom: 20,
-        left: "50%",
-        transform: "translateX(-50%)",
-        zIndex: 20,
-        display: "flex",
-        gap: "10px",
-        background: "rgba(0,0,0,0.5)",
-        padding: "10px",
-        borderRadius: "10px"
-      }}>
-        <button onClick={() => handleZoom(1.0)} style={{ padding: "10px 20px", background: "white" }}>
-          1x
-        </button>
-        <button onClick={() => handleZoom(1.5)} style={{ padding: "10px 20px", background: "white" }}>
-          1.5x
-        </button>
-        <button onClick={() => handleZoom(2.0)} style={{ padding: "10px 20px", background: "white" }}>
-          2x
-        </button>
-      </div>
-
       <video
         ref={videoRef}
         style={{ display: "none" }}
