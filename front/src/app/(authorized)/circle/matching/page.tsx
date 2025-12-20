@@ -107,7 +107,7 @@ export default function MatchingPage() {
                     }}
                   />
                   <div className="relative z-10 p-6 flex flex-col h-full">
-                    <div className="flex-none flex items-center justify-between mb-4 border-b border-orange-900/50 pb-2">
+                    <div style={styles.panelHeader}>
                       <div className="flex items-center gap-2">
                         <div className="w-2 h-2 bg-orange-500 rounded-full animate-ping" />
                         <h3
@@ -129,6 +129,7 @@ export default function MatchingPage() {
                       {loading ? (
                         <div className="flex flex-col items-center justify-center h-48 gap-4">
                           <div style={styles.radarContainer}>
+                            <div style={styles.radarCircle} />
                             <div
                               style={styles.radarLine}
                               className="animate-spin"
