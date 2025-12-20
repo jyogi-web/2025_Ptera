@@ -1,3 +1,4 @@
+import { useState } from "react";
 import BattleCard from "@/components/BattleCard";
 import type {
   BattleState,
@@ -21,6 +22,9 @@ export default function BattleField({
     state;
   const myHp = playerMe?.hp || 0;
   const opponentHp = playerOpponent?.hp || 0;
+
+  // UI State
+  const [isLogMinimized, setIsLogMinimized] = useState(false);
 
   // Deck unpacking
   const myDeck = playerMe?.deck || [];
@@ -127,18 +131,57 @@ export default function BattleField({
         </div>
       </div>
 
-      {/* --- Log Area --- */}
+      {/* --- Log Area (Fixed Top-Right) --- */}
       {state.logs && state.logs.length > 0 && (
-        <div className="bg-black/40 p-2 rounded text-xs text-gray-300 h-24 overflow-y-auto font-mono border border-gray-800">
-          {state.logs.map((log, i) => (
-            <div
-              key={`${i}-${log}`}
-              className="border-b border-gray-700/50 pb-0.5 mb-0.5 last:border-0"
-            >
-              <span className="text-green-500 mr-2">&gt;</span>
-              {log}
+        <div
+          className={`fixed top-16 right-4 z-40 w-64 font-mono text-xs rounded-lg border border-cyan-500/30 bg-black/80 shadow-[0_0_15px_rgba(6,182,212,0.15)] backdrop-blur-sm transition-all duration-300 ${
+            isLogMinimized ? "h-auto" : "max-h-48"
+          }`}
+        >
+          {/* Cyber Decorative Header */}
+          <div className="sticky top-0 bg-cyan-900/40 border-b border-cyan-500/30 px-2 py-1 flex items-center justify-between">
+            <span className="text-cyan-300 font-bold tracking-wider">
+              BATTLE LOG
+            </span>
+            <div className="flex gap-1">
+              <div className="w-2 h-2 rounded-full bg-red-500/50 animate-pulse" />
+              {/* Yellow Button: Toggle Minimize */}
+              <button
+                type="button"
+                onClick={() => setIsLogMinimized(!isLogMinimized)}
+                className={`w-2 h-2 rounded-full cursor-pointer hover:bg-yellow-400 transition-colors ${
+                  isLogMinimized
+                    ? "bg-yellow-500 shadow-[0_0_5px_#eab308]"
+                    : "bg-yellow-500/50"
+                }`}
+                aria-label={isLogMinimized ? "Expand Log" : "Minimize Log"}
+              />
+              <div className="w-2 h-2 rounded-full bg-green-500/50 animate-pulse delay-150" />
             </div>
-          ))}
+          </div>
+          {/* Logs Content */}
+          {!isLogMinimized && (
+            <div className="p-2 space-y-1 overflow-y-auto max-h-[calc(12rem-2rem)]">
+              {state.logs.map((log, i) => (
+                <div
+                  key={`${i}-${log}`} // biome-ignore lint/suspicious/noArrayIndexKey: logs are simple strings
+                  className="border-b border-cyan-500/10 pb-1 mb-1 last:border-0 last:mb-0"
+                >
+                  <div className="flex gap-2">
+                    <span className="text-cyan-500 shrink-0">&gt;</span>
+                    <span className="text-cyan-100/90 break-words leading-tight">
+                      {log}
+                    </span>
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
+          {/* Cyber Corner Accents */}
+          <div className="absolute top-0 left-0 w-2 h-2 border-t border-l border-cyan-400" />
+          <div className="absolute top-0 right-0 w-2 h-2 border-t border-r border-cyan-400" />
+          <div className="absolute bottom-0 left-0 w-2 h-2 border-b border-l border-cyan-400" />
+          <div className="absolute bottom-0 right-0 w-2 h-2 border-b border-r border-cyan-400" />
         </div>
       )}
 
