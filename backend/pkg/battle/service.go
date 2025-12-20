@@ -141,6 +141,7 @@ func (s *Service) SendBattleRequest(ctx context.Context, req *ptera.SendBattleRe
 	}
 
 	if err := s.repo.SaveBattleRequest(ctx, battleReq); err != nil {
+		fmt.Printf("Service: Failed to save battle request: %v\n", err)
 		return nil, status.Errorf(codes.Internal, "failed to save request: %v", err)
 	}
 

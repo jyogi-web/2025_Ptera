@@ -27,6 +27,7 @@ func (r *Repository) SaveBattleRequest(ctx context.Context, req *ptera.BattleReq
 
 	_, err = r.client.Collection(CollectionBattleRequests).Doc(req.RequestId).Set(ctx, reqMap)
 	if err != nil {
+		fmt.Printf("Failed to save battle request to Firestore: %v\n", err)
 		return fmt.Errorf("failed to save battle request: %w", err)
 	}
 	return nil
