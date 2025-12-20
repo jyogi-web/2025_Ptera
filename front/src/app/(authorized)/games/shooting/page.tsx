@@ -201,8 +201,7 @@ export default function ShootingGame() {
 
         // SCENE
         const scene = new THREE.Scene();
-        // Transparent background to see video feed
-        // scene.background = null; 
+        scene.fog = new THREE.FogExp2(0x000000, 0.15); // Cyber fog
 
         // CAMERA
         const width = containerRef.current.clientWidth;
@@ -214,11 +213,23 @@ export default function ShootingGame() {
         // RENDERER
         const renderer = new THREE.WebGLRenderer({
             canvas: canvasRef.current,
-            alpha: true, // IMPORTANT for AR
-            antialias: true
+            alpha: false, // Opaque for black background
+            antialias: true,
+            powerPreference: "high-performance"
         });
         renderer.setSize(width, height);
         renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+
+        // VISUALS: Cyber Grid
+        const gridHelper = new THREE.GridHelper(30, 30, 0x00ffff, 0x222222);
+        gridHelper.rotation.x = Math.PI / 2; // Flat grid facing camera? No, floor.
+        // Let's make a "tunnel" or floor/ceiling
+        gridHelper.position.y = -4;
+        scene.add(gridHelper);
+
+        const gridTop = new THREE.GridHelper(30, 30, 0xff00ff, 0x222222);
+        gridTop.position.y = 4;
+        scene.add(gridTop);
 
         // LIGHTING
         const ambientLight = new THREE.AmbientLight(0xffffff, 0.6);
@@ -250,8 +261,15 @@ export default function ShootingGame() {
         // AUDIO
         gameRef.current.audioCtx = new (window.AudioContext || (window as any).webkitAudioContext)();
 
+        // CLOCK
+        const clock = new THREE.Clock();
+
         // START LOOP
-        requestAnimationFrame(gameLoop);
+        const loop = () => {
+            gameLoop(clock);
+            requestAnimationFrame(loop);
+        };
+        requestAnimationFrame(loop);
     };
 
     const playSound = (type: "shoot" | "hit") => {
@@ -291,29 +309,38 @@ export default function ShootingGame() {
         gameRef.current.renderer?.dispose();
     };
 
-    const gameLoop = (time: number) => {
+    const gameLoop = (clock: THREE.Clock) => {
         if (!gameRef.current.renderer || !gameRef.current.scene || !gameRef.current.camera) return;
+
+        // Delta Time for smooth movement
+        const delta = clock.getDelta();
 
         // 1. AI Throttling
         const now = performance.now();
         if (gameRef.current.handLandmarker && videoRef.current && videoRef.current.readyState >= 2) {
             if (now - gameRef.current.lastAITime >= AI_INTERVAL_MS) {
                 gameRef.current.lastAITime = now;
+                // AI reads from hidden video element
                 gameRef.current.handLandmarker.send({ image: videoRef.current });
             }
         }
 
         // 2. Game Logic
-        updateGameLogic(time);
+        updateGameLogic(delta);
 
         // 3. Render
         gameRef.current.renderer.render(gameRef.current.scene, gameRef.current.camera);
-        requestAnimationFrame(gameLoop);
     };
 
-    const updateGameLogic = (time: number) => {
+    const updateGameLogic = (delta: number) => {
         const { camera, scene, enemies, gesture, reticle } = gameRef.current;
         if (!camera || !scene || !reticle) return;
+
+        // Normalize speed: delta is seconds. 
+        // Targeted 60fps (16ms). If delta is 0.016, factor is 1.
+        // Base speeds were tuned for ~1 frame. 
+        // Let's treat existing velocity values as "per frame at 60fps" -> multiply by (delta * 60)
+        const timeScale = delta * 60;
 
         // --- Aim Update ---
         // Project 2D normalized aim to 3D plane at a certain depth (e.g. z=0 where enemies are?)
@@ -348,7 +375,7 @@ export default function ShootingGame() {
 
         if (targetEnemy) {
             // Linear Interpolate for smooth snap
-            finalAimPos.lerp((targetEnemy as Enemy).mesh.position, 0.2);
+            finalAimPos.lerp((targetEnemy as Enemy).mesh.position, 0.2 * timeScale);
             (reticle.material as THREE.MeshBasicMaterial).color.setHex(0xff0000); // Red when locked
         } else {
             (reticle.material as THREE.MeshBasicMaterial).color.setHex(0x00ff00); // Green normally
@@ -374,18 +401,22 @@ export default function ShootingGame() {
 
         gameRef.current.enemies.forEach(enemy => {
             if (!enemy.active) return;
-            // Move in X/Y plane
-            enemy.mesh.position.add(enemy.velocity);
-            enemy.mesh.rotation.z += 0.05; // Spin
+            // Move in X/Y plane with TimeScale
+            const moveStep = enemy.velocity.clone().multiplyScalar(timeScale);
+            enemy.mesh.position.add(moveStep);
+            enemy.mesh.rotation.z += 0.05 * timeScale; // Spin
 
             // Bounce off edges (Approximate view bounds at z=0)
             // Visible width ~12, Height ~8 at z=0 with current camera setup?
             // Let's constrain to x: -5 to 5, y: -3 to 3
             if (enemy.mesh.position.x > 5 || enemy.mesh.position.x < -5) {
                 enemy.velocity.x *= -1;
+                // Push back to avoid stickiness
+                enemy.mesh.position.x = Math.sign(enemy.mesh.position.x) * 4.9;
             }
             if (enemy.mesh.position.y > 3 || enemy.mesh.position.y < -3) {
                 enemy.velocity.y *= -1;
+                enemy.mesh.position.y = Math.sign(enemy.mesh.position.y) * 2.9;
             }
         });
     };
@@ -492,10 +523,10 @@ export default function ShootingGame() {
                 strategy="afterInteractive"
             />
 
-            {/* Camera Feed (Background) */}
+            {/* Camera Feed (Background) - HIDDEN */}
             <video
                 ref={videoRef}
-                className="absolute top-0 left-0 w-full h-full object-cover transform -scale-x-100" // Mirror effect
+                className="absolute top-0 left-0 w-full h-full object-cover transform -scale-x-100 opacity-0 pointer-events-none"
                 playsInline
                 muted
             />
