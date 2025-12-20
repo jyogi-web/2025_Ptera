@@ -1,5 +1,5 @@
-import { describe, it, expect } from "vitest";
-import { isExpired, daysUntil } from "./expiry";
+import { describe, expect, it } from "vitest";
+import { daysUntil, isExpired } from "./expiry";
 
 describe("expiry utilities", () => {
   it("returns true for past dates", () => {
