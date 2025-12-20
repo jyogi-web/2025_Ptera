@@ -6,7 +6,7 @@ import type {
 } from "firebase/firestore";
 import { describe, expect, it } from "vitest";
 import type { FirestoreCard } from "@/types/firestore";
-import { convertCard, convertUser } from "./converter";
+import { calculateGraduationDate, convertCard, convertUser } from "./converter";
 
 // FirestoreのTimestampのモック
 const mockTimestamp = (date: Date) =>
@@ -123,6 +123,167 @@ describe("converter", () => {
       const result = convertCard("card-456", mockData);
 
       expect(result.affiliatedGroup).toBeUndefined();
+    });
+  });
+
+  describe("calculateGraduationDate", () => {
+    describe("valid grade inputs", () => {
+      it("should calculate correct graduation date for grade 1 (December academic year)", () => {
+        const currentDate = new Date(2025, 11, 20); // December 20, 2025
+        const result = calculateGraduationDate(1, currentDate);
+
+        expect(result.getFullYear()).toBe(2029); // 2025 + (5-1) = 2029
+        expect(result.getMonth()).toBe(2); // March (0-indexed)
+        expect(result.getDate()).toBe(31);
+      });
+
+      it("should calculate correct graduation date for grade 2 (December academic year)", () => {
+        const currentDate = new Date(2025, 11, 20); // December 20, 2025
+        const result = calculateGraduationDate(2, currentDate);
+
+        expect(result.getFullYear()).toBe(2028); // 2025 + (5-2) = 2028
+        expect(result.getMonth()).toBe(2); // March (0-indexed)
+        expect(result.getDate()).toBe(31);
+      });
+
+      it("should calculate correct graduation date for grade 3 (December academic year)", () => {
+        const currentDate = new Date(2025, 11, 20); // December 20, 2025
+        const result = calculateGraduationDate(3, currentDate);
+
+        expect(result.getFullYear()).toBe(2027); // 2025 + (5-3) = 2027
+        expect(result.getMonth()).toBe(2); // March (0-indexed)
+        expect(result.getDate()).toBe(31);
+      });
+
+      it("should calculate correct graduation date for grade 4 (December academic year)", () => {
+        const currentDate = new Date(2025, 11, 20); // December 20, 2025
+        const result = calculateGraduationDate(4, currentDate);
+
+        expect(result.getFullYear()).toBe(2026); // 2025 + (5-4) = 2026
+        expect(result.getMonth()).toBe(2); // March (0-indexed)
+        expect(result.getDate()).toBe(31);
+      });
+    });
+
+    describe("academic year boundary behavior", () => {
+      it("should use current year as academic year when date is in April or later", () => {
+        const aprilDate = new Date(2025, 3, 1); // April 1, 2025
+        const result = calculateGraduationDate(4, aprilDate);
+
+        // Academic year = 2025, graduation year = 2025 + 1 = 2026
+        expect(result.getFullYear()).toBe(2026);
+        expect(result.getMonth()).toBe(2); // March
+        expect(result.getDate()).toBe(31);
+      });
+
+      it("should use previous year as academic year when date is in March or earlier", () => {
+        const marchDate = new Date(2025, 2, 31); // March 31, 2025
+        const result = calculateGraduationDate(4, marchDate);
+
+        // Academic year = 2024, graduation year = 2024 + 1 = 2025
+        expect(result.getFullYear()).toBe(2025);
+        expect(result.getMonth()).toBe(2); // March
+        expect(result.getDate()).toBe(31);
+      });
+
+      it("should handle January boundary correctly", () => {
+        const januaryDate = new Date(2025, 0, 15); // January 15, 2025
+        const result = calculateGraduationDate(2, januaryDate);
+
+        // Academic year = 2024, graduation year = 2024 + 3 = 2027
+        expect(result.getFullYear()).toBe(2027);
+        expect(result.getMonth()).toBe(2); // March
+        expect(result.getDate()).toBe(31);
+      });
+
+      it("should handle September boundary correctly", () => {
+        const septemberDate = new Date(2025, 8, 15); // September 15, 2025
+        const result = calculateGraduationDate(3, septemberDate);
+
+        // Academic year = 2025, graduation year = 2025 + 2 = 2027
+        expect(result.getFullYear()).toBe(2027);
+        expect(result.getMonth()).toBe(2); // March
+        expect(result.getDate()).toBe(31);
+      });
+    });
+
+    describe("invalid grade inputs", () => {
+      it("should throw error for grade 0", () => {
+        const currentDate = new Date(2025, 11, 20);
+
+        expect(() => calculateGraduationDate(0, currentDate)).toThrow(
+          "Grade must be an integer between 1 and 4",
+        );
+      });
+
+      it("should throw error for grade 5", () => {
+        const currentDate = new Date(2025, 11, 20);
+
+        expect(() => calculateGraduationDate(5, currentDate)).toThrow(
+          "Grade must be an integer between 1 and 4",
+        );
+      });
+
+      it("should throw error for negative grade", () => {
+        const currentDate = new Date(2025, 11, 20);
+
+        expect(() => calculateGraduationDate(-1, currentDate)).toThrow(
+          "Grade must be an integer between 1 and 4",
+        );
+      });
+
+      it("should throw error for non-integer grade", () => {
+        const currentDate = new Date(2025, 11, 20);
+
+        expect(() => calculateGraduationDate(2.5, currentDate)).toThrow(
+          "Grade must be an integer between 1 and 4",
+        );
+      });
+
+      it("should throw error for NaN grade", () => {
+        const currentDate = new Date(2025, 11, 20);
+
+        expect(() => calculateGraduationDate(NaN, currentDate)).toThrow(
+          "Grade must be an integer between 1 and 4",
+        );
+      });
+
+      it("should throw error for Infinity grade", () => {
+        const currentDate = new Date(2025, 11, 20);
+
+        expect(() => calculateGraduationDate(Infinity, currentDate)).toThrow(
+          "Grade must be an integer between 1 and 4",
+        );
+      });
+    });
+
+    describe("edge cases", () => {
+      it("should handle leap year correctly", () => {
+        const leapYearDate = new Date(2024, 1, 29); // February 29, 2024 (leap year)
+        const result = calculateGraduationDate(1, leapYearDate);
+
+        // Academic year = 2023, graduation year = 2023 + 4 = 2027
+        expect(result.getFullYear()).toBe(2027);
+        expect(result.getMonth()).toBe(2); // March
+        expect(result.getDate()).toBe(31);
+      });
+
+      it("should use current date as default when no date provided", () => {
+        // This test verifies that the function works with default parameter
+        const now = new Date();
+        const result = calculateGraduationDate(4);
+
+        // Calculate expected graduation date based on current date
+        const currentYear = now.getFullYear();
+        const currentMonth = now.getMonth();
+        const academicYear = currentMonth >= 3 ? currentYear : currentYear - 1;
+        const expectedGraduationYear = academicYear + (5 - 4); // +1 for grade 4
+
+        expect(result.getMonth()).toBe(2); // March
+        expect(result.getDate()).toBe(31);
+        expect(result.getFullYear()).toBe(expectedGraduationYear);
+        expect(result.getTime()).toBeGreaterThanOrEqual(now.getTime()); // Should be in future
+      });
     });
   });
 });

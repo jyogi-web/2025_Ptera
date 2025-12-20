@@ -1,6 +1,7 @@
 "use client";
 
 import Image from "next/image";
+import { calculateGraduationDate } from "@/helper/converter";
 import type { Card as CardType } from "@/types/app";
 
 interface CardProps {
@@ -10,20 +11,20 @@ interface CardProps {
 }
 
 export default function Card({ card, label, onClick }: CardProps) {
-  const getDaysElapsed = (createdAt: Date | string): number => {
-    const date =
-      typeof createdAt === "string" ? new Date(createdAt) : createdAt;
-    if (Number.isNaN(date.getTime())) {
-      console.warn("Invalid date encountered in Card:", createdAt);
-      return 0;
+  const getDaysUntilGraduation = (grade: number): number => {
+    try {
+      const graduationDate = calculateGraduationDate(grade);
+      const now = new Date();
+      const diffTime = graduationDate.getTime() - now.getTime();
+      const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+      return Math.max(0, diffDays); // 負の値は0にする（既に卒業済み）
+    } catch (error) {
+      console.error("Invalid grade for graduation calculation:", error);
+      return 0; // エラーの場合は0を返す（卒業済み扱い）
     }
-    const now = new Date();
-    const diffTime = Math.abs(now.getTime() - date.getTime());
-    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
-    return diffDays;
   };
 
-  const daysElapsed = getDaysElapsed(card.createdAt);
+  const daysUntilGraduation = getDaysUntilGraduation(card.grade);
 
   return (
     <button
@@ -66,7 +67,11 @@ export default function Card({ card, label, onClick }: CardProps) {
           <p className="text-sm font-bold truncate text-white">{card.name}</p>
           <div className="flex items-center justify-between text-[10px]">
             <span className="text-cyan-400 font-mono">{card.position}</span>
-            <span className="text-gray-400">{daysElapsed}日前</span>
+            <span className="text-gray-400">
+              {daysUntilGraduation > 0
+                ? `卒業まで${daysUntilGraduation}日`
+                : "卒業済み"}
+            </span>
           </div>
           {card.hobby && (
             <p className="text-[10px] text-gray-400 truncate">
