@@ -1,5 +1,5 @@
 import { getCardsFromServer } from "@/lib/server";
-import { BinderContent } from "./BinderContent";
+import { BinderContent } from "./_components/BinderContent";
 
 export default async function BinderPage() {
   // サーバー側でデータをフェッチ
