@@ -3,7 +3,7 @@
 import jsQR from "jsqr";
 import type React from "react";
 import { useEffect, useRef } from "react";
-
+import { styles } from "../_styles/QRScanner.styles";
 interface QRScannerProps {
   onQRLost: (duration: number) => void;
   onTimeout?: () => void;
@@ -187,26 +187,15 @@ const QRScanner: React.FC<QRScannerProps> = ({
   }, [onQRLost, isRunning, targetQRData, onTimeout]);
 
   return (
-    <div
-      style={{
-        width: "100%",
-        height: "100vh",
-        position: "relative",
-        overflow: "hidden",
-      }}
-    >
+    <div style={styles.container}>
       <video
         ref={videoRef}
-        style={{ display: "none" }}
+        style={styles.video}
         playsInline
       />
       <canvas
         ref={canvasRef}
-        style={{
-          width: "100%",
-          height: "100%",
-          objectFit: "cover",
-        }}
+        style={styles.canvas}
       />
     </div>
   );

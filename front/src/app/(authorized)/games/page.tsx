@@ -3,8 +3,8 @@
 import dynamic from "next/dynamic";
 import Link from "next/link";
 import { useCallback, useEffect, useState } from "react";
-
-const QRScanner = dynamic(() => import("@/components/QRScanner"), {
+import { styles } from "./_styles/page.styles";
+const QRScanner = dynamic(() => import("@/app/(authorized)/games/_components/QRScanner"), {
     ssr: false,
 });
 
@@ -38,7 +38,7 @@ export default function Gacha() {
         setIsRunning(false);
         const newRecord: GameRecord = {
             time: new Date().toLocaleString(),
-            duration: (duration / 1000).toFixed(3), // 秒単位に変換
+            duration: (duration / 1000).toFixed(3),
         };
 
         // localStorageへの保存
@@ -64,29 +64,15 @@ export default function Gacha() {
     }, []);
 
     return (
-        <div style={{ position: "relative" }}>
+        <div style={styles.container}>
             <div
-                style={{
-                    position: "absolute",
-                    zIndex: 10,
-                    top: 20,
-                    left: 20,
-                    right: 20,
-                }}
+                style={styles.overlay}
             >
-                <div style={{ display: "flex", gap: "10px", marginBottom: "10px" }}>
+                <div style={styles.controls}>
                     <Link href="/generate-qr">
                         <button
                             type="button"
-                            style={{
-                                padding: "10px 20px",
-                                fontSize: "16px",
-                                background: "#4CAF50",
-                                color: "white",
-                                border: "none",
-                                borderRadius: "5px",
-                                cursor: "pointer",
-                            }}
+                            style={styles.qrButton}
                         >
                             QRコード生成
                         </button>
@@ -95,27 +81,13 @@ export default function Gacha() {
                         <button
                             type="button"
                             onClick={handleStart}
-                            style={{
-                                padding: "10px 20px",
-                                fontSize: "18px",
-                                background: "#2196F3",
-                                color: "white",
-                                border: "none",
-                                borderRadius: "5px",
-                                cursor: "pointer",
-                            }}
+                            style={styles.startButton}
                         >
                             スタート
                         </button>
                     ) : (
                         <div
-                            style={{
-                                background: "red",
-                                color: "white",
-                                padding: "10px",
-                                borderRadius: "5px",
-                                fontWeight: "bold",
-                            }}
+                            style={styles.measuringBatch}
                         >
                             計測中... QRコードを外してください
                         </div>
@@ -124,49 +96,24 @@ export default function Gacha() {
 
                 {records.length > 0 && (
                     <div
-                        style={{
-                            background: "rgba(255,255,255,0.9)",
-                            padding: "10px",
-                            borderRadius: "5px",
-                            maxHeight: "200px",
-                            overflow: "auto",
-                            border: "1px solid #ccc",
-                        }}
+                        style={styles.recordsContainer}
                     >
                         <div
-                            style={{
-                                display: "flex",
-                                justifyContent: "space-between",
-                                alignItems: "center",
-                                marginBottom: "10px",
-                            }}
+                            style={styles.recordsHeader}
                         >
-                            <h3 style={{ margin: 0, color: "#333" }}>記録履歴</h3>
+                            <h3 style={styles.historyTitle}>記録履歴</h3>
                             <button
                                 type="button"
                                 onClick={handleReset}
-                                style={{
-                                    padding: "5px 10px",
-                                    fontSize: "12px",
-                                    cursor: "pointer",
-                                    background: "#f44336",
-                                    color: "white",
-                                    border: "none",
-                                    borderRadius: "3px",
-                                }}
+                                style={styles.resetButton}
                             >
                                 リセット
                             </button>
                         </div>
                         {records.map((record, index) => (
                             <div
-                                // biome-ignore lint/suspicious/noArrayIndexKey: Simple list, no stable ID available
                                 key={index}
-                                style={{
-                                    borderBottom: "1px solid #ccc",
-                                    padding: "5px 0",
-                                    color: "#333",
-                                }}
+                                style={styles.recordItem}
                             >
                                 <span>{record.time}</span> -{" "}
                                 <strong>{record.duration}秒</strong>
@@ -177,11 +124,7 @@ export default function Gacha() {
             </div>
 
             <div
-                style={{
-                    width: "100%",
-                    height: "calc(100vh - 80px)",
-                    background: "#000",
-                }}
+                style={styles.scannerWrapper}
             >
                 {isRunning && (
                     <QRScanner
