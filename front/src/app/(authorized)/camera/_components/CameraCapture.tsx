@@ -1,3 +1,4 @@
+"use client";
 import Image from "next/image";
 import type { RefObject } from "react";
 import { styles } from "../_styles/page.styles";

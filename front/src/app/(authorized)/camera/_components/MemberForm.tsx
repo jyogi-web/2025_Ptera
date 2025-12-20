@@ -1,3 +1,4 @@
+"use client";
 import type { Card } from "@/types/app";
 import { styles } from "../_styles/page.styles";
 
