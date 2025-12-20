@@ -13,6 +13,7 @@
     "test": "vitest run"
   },
   "dependencies": {
+    "@arwes/core": "^1.0.0-next.24051001",
     "@arwes/react": "^1.0.0-next.25020502",
     "@bufbuild/protobuf": "^2.10.2",
     "@connectrpc/connect": "^2.1.1",
