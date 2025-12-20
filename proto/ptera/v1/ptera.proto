@@ -25,11 +25,12 @@ message Card {
   string name = 3;
   int32 grade = 4;
   string position = 5;
-  optional string affiliated_group = 6;
-  string hobby = 7;
-  string description = 8;
-  string image_url = 9;
-  google.protobuf.Timestamp created_at = 10;
+  string faculty = 6;
+  string department = 7;
+  string hobby = 8;
+  string description = 9;
+  string image_url = 10;
+  google.protobuf.Timestamp created_at = 11;
 }
 
 message CompleteCardRequest {
@@ -44,14 +45,13 @@ message CompleteCardRequest {
 }
 
 message CompleteCardResponse {
-  optional string name = 1; // 補完された名前
-  optional string faculty = 2; // 補完された学部
-  optional string department = 3; // 補完された学科
-  optional string grade = 4; // 補完された学年
-  optional string position = 5; // 補完された職位
-  optional string hobby = 6; // 補完された趣味
-  optional string description = 7; // 補完された説明文
+  string name = 1; // 補完された名前
+  string faculty = 2; // 補完された学部
+  string department = 3; // 補完された学科
+  int32 grade = 4; // 補完された学年
+  string position = 5; // 補完された職位
+  string hobby = 6; // 補完された趣味
+  string description = 7; // 補完された説明文
   bool success = 8; // 補完が成功したかどうかを示すフラグ
   optional string error_message = 9; // エラーメッセージ（存在する場合）
-  optional float confidence_score = 10; // 各フィールドの信頼度スコア（0.0～1.0）
 }

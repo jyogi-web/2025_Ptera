@@ -86,7 +86,8 @@ func (s *server) CompleteCard(ctx context.Context, req *ptera.CompleteCardReques
 		return nil, status.Error(codes.InvalidArgument, "image_url is required")
 	}
 
-	// Use Get getters to safely handle optional fields (returns "" if nil)
+	// Use getters to safely handle optional fields (returns "" if nil)
+
 	suggestions, err := s.aiService.AnalyzeCardImage(
 		ctx,
 		req.GetImageUrl(),

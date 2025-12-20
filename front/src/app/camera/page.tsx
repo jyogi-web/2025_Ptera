@@ -11,8 +11,6 @@ import type { Card } from "@/types/app";
 import { completeCardAction } from "./actions";
 import CameraPreview, { type CameraPreviewHandle } from "./CameraPreview";
 
-// ... (Type definitions remain same)
-
 type Faculty =
   | "information-engineering"
   | "engineering"
@@ -309,7 +307,6 @@ export default function CameraPage() {
                         setCapturedImage(null);
                         setUploadedImageUrl(null);
                         setUploadedImagePath(null);
-                        // setCaptureError(null); // 不要
                       }}
                       className="px-6 py-3 bg-gray-600 hover:bg-gray-700 rounded-lg font-semibold transition-colors"
                     >

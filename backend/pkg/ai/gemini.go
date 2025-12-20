@@ -7,9 +7,9 @@ import (
 	"io"
 	"net/http"
 	"strings"
+	"time"
 
-	"github.com/google/generative-ai-go/genai"
-	"google.golang.org/api/option"
+	"google.golang.org/genai"
 )
 
 type CardSuggestions struct {
@@ -24,31 +24,40 @@ type CardSuggestions struct {
 
 type GeminiService struct {
 	client *genai.Client
-	model  *genai.GenerativeModel
 }
 
+const (
+	imageDownloadTimeout = 30 * time.Second
+	maxImageSize         = 10 * 1024 * 1024 // 10MB
+	// TODO: 日本語で出力するようにさせる
+	systemInstruction = `You are an AI assistant that analyzes photos of people to create a profile card. You will be provided with an image and potentially some existing information (Name, Faculty, Department, Grade, Position, Hobby, Description). Your task is to generate values for these fields. If a field is already provided, you can either use it as is, or refine it to be more interesting/funny if appropriate, but prefer keeping the core meaning. If a field is missing, generate a creative, slightly biased or opinionated, and interesting value based on the person's appearance in the photo. The 'Description' should be a short, witty bio. Return ONLY a JSON object with keys: name, faculty, department, grade, position, hobby, description.`
+)
+
 func NewGeminiService(ctx context.Context, apiKey string) (*GeminiService, error) {
-	client, err := genai.NewClient(ctx, option.WithAPIKey(apiKey))
+	client, err := genai.NewClient(ctx, &genai.ClientConfig{
+		APIKey: apiKey,
+	})
 	if err != nil {
 		return nil, fmt.Errorf("failed to create gemini client: %w", err)
 	}
 
-	// modelはgemini-2.5-flashを使用する
-	model := client.GenerativeModel("gemini-2.5-flash")
-	model.ResponseMIMEType = "application/json"
-	model.SystemInstruction = genai.NewUserContent(genai.Text("You are an AI assistant that analyzes photos of people to create a profile card. You will be provided with an image and potentially some existing information (Name, Faculty, Department, Grade, Position, Hobby, Description). Your task is to generate values for these fields. If a field is already provided, you can either use it as is, or refine it to be more interesting/funny if appropriate, but prefer keeping the core meaning. If a field is missing, generate a creative, slightly biased or opinionated, and interesting value based on the person's appearance in the photo. The 'Description' should be a short, witty bio. Return ONLY a JSON object with keys: name, faculty, department, grade, position, hobby, description."))
-
 	return &GeminiService{
 		client: client,
-		model:  model,
 	}, nil
 }
 
 func (s *GeminiService) AnalyzeCardImage(ctx context.Context, imageURL string, currentName, currentFaculty, currentDepartment, currentGrade, currentPosition, currentHobby, currentDescription string) (*CardSuggestions, error) {
 	// 画像をダウンロード
-	resp, err := http.Get(imageURL)
+	client := &http.Client{
+		Timeout: imageDownloadTimeout,
+	}
+	req, err := http.NewRequestWithContext(ctx, http.MethodGet, imageURL, nil)
 	if err != nil {
-		return nil, fmt.Errorf("failed to fetching image: %w", err)
+		return nil, fmt.Errorf("failed to create request: %w", err)
+	}
+	resp, err := client.Do(req)
+	if err != nil {
+		return nil, fmt.Errorf("failed to fetch image: %w", err)
 	}
 	defer resp.Body.Close()
 
@@ -56,39 +65,64 @@ func (s *GeminiService) AnalyzeCardImage(ctx context.Context, imageURL string, c
 		return nil, fmt.Errorf("failed to fetch image: status code %d", resp.StatusCode)
 	}
 
-	imageData, err := io.ReadAll(resp.Body)
+	limitedReader := io.LimitReader(resp.Body, maxImageSize)
+	imageData, err := io.ReadAll(limitedReader)
 	if err != nil {
 		return nil, fmt.Errorf("failed to read image data: %w", err)
 	}
+	if len(imageData) == maxImageSize {
+		return nil, fmt.Errorf("image size exceeds maximum allowed size of %d bytes", maxImageSize)
+	}
 
 	// MIMEタイプを特定
-	// 1. コンテンツから検出を試みる（JPEG/PNGなどの標準的な形式に最も信頼性が高い）
-	// http.DetectContentType はデータの最初の512バイトを検査する。
 	detectedMime := http.DetectContentType(imageData)
-
 	var mimeType string
 	if strings.HasPrefix(detectedMime, "image/") {
 		mimeType = detectedMime
 	} else {
-		// 検出に失敗した場合（例：HEICはGoの標準ライブラリで検出されない可能性がある）、ヘッダーにフォールバックする
 		headerMime := resp.Header.Get("Content-Type")
 		headerMime = strings.TrimSpace(headerMime)
 		mimeType = headerMime
 	}
-	// 最終的な安全策としてのフォールバック
 	if mimeType == "" || !strings.HasPrefix(mimeType, "image/") {
 		mimeType = "image/jpeg"
 	}
 
-	promptParts := []genai.Part{
-		genai.Blob{
+	promptText := fmt.Sprintf(`
+				Name: %s
+				Faculty: %s
+				Department: %s
+				Grade: %s
+				Position: %s
+				Hobby: %s
+				Description: %s
+			`, currentName, currentFaculty, currentDepartment, currentGrade, currentPosition, currentHobby, currentDescription)
+
+	parts := []*genai.Part{
+		{InlineData: &genai.Blob{
 			MIMEType: mimeType,
 			Data:     imageData,
-		},
-		genai.Text(fmt.Sprintf("Current Data:\nName: %s\nFaculty: %s\nDepartment: %s\nGrade: %s\nPosition: %s\nHobby: %s\nDescription: %s\n\nPlease generate/complete the profile.", currentName, currentFaculty, currentDepartment, currentGrade, currentPosition, currentHobby, currentDescription)),
+		}},
+		{Text: promptText},
 	}
 
-	genResp, err := s.model.GenerateContent(ctx, promptParts...)
+	contents := []*genai.Content{
+		{
+			Parts: parts,
+		},
+	}
+
+	config := &genai.GenerateContentConfig{
+		SystemInstruction: &genai.Content{
+			Parts: []*genai.Part{
+				{Text: systemInstruction},
+			},
+		},
+		ResponseMIMEType: "application/json",
+	}
+
+	// modelはgemini-2.5-flashを使用する
+	genResp, err := s.client.Models.GenerateContent(ctx, "gemini-2.5-flash", contents, config)
 	if err != nil {
 		return nil, fmt.Errorf("failed to generate content: %w", err)
 	}
@@ -99,17 +133,16 @@ func (s *GeminiService) AnalyzeCardImage(ctx context.Context, imageURL string, c
 
 	var suggestions CardSuggestions
 	for _, part := range genResp.Candidates[0].Content.Parts {
-		if txt, ok := part.(genai.Text); ok {
-			// もしあれば、潜在的なMarkdownコードブロックをクリーンアップする（ResponseMIMEType jsonで処理されるはずだが）
-			jsonStr := string(txt)
+		if part.Text != "" {
+			jsonStr := part.Text
 			jsonStr = strings.TrimPrefix(jsonStr, "```json")
 			jsonStr = strings.TrimPrefix(jsonStr, "```")
-			jsonStr = strings.TrimSuffix(jsonStr, "```") // 堅牢ではないが、通常はJSONモードで処理される
+			jsonStr = strings.TrimSuffix(jsonStr, "```")
 
 			if err := json.Unmarshal([]byte(jsonStr), &suggestions); err != nil {
 				// 純粋なJSONの場合に備えて、標準的なアンマーシャルを試みる
-				if err2 := json.Unmarshal([]byte(string(txt)), &suggestions); err2 != nil {
-					return nil, fmt.Errorf("failed to unmarshal response: %w, text: %s", err, string(txt))
+				if err2 := json.Unmarshal([]byte(part.Text), &suggestions); err2 != nil {
+					return nil, fmt.Errorf("failed to unmarshal response: %w, text: %s", err, part.Text)
 				}
 			}
 			return &suggestions, nil
@@ -119,6 +152,8 @@ func (s *GeminiService) AnalyzeCardImage(ctx context.Context, imageURL string, c
 	return nil, fmt.Errorf("no text part in response")
 }
 
-func (s *GeminiService) Close() {
-	s.client.Close()
+func (s *GeminiService) Close() error {
+	// 新しいSDKのClientにはCloseメソッドがないか、http.Clientを共有しているため明示的なCloseが不要な場合があります。
+	// 必要に応じて実装を確認しますが、現状はnilを返します。
+	return nil
 }
