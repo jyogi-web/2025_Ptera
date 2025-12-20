@@ -101,11 +101,11 @@ export const styles: { [key: string]: CSSProperties } = {
     alignItems: "center",
     gap: "4px",
   },
-  // Simplified label badge for smaller cards
+  // Favorite Badge (Moved to Top-Left)
   labelBadgeContent: {
     position: "absolute",
     top: "4px",
-    right: "4px",
+    left: "4px", // Changed from right to left
     zIndex: 30,
     backgroundColor: "rgba(0, 0, 0, 0.8)",
     border: "1px solid rgba(250, 204, 21, 0.8)", // Yellow for Favorite
@@ -119,6 +119,31 @@ export const styles: { [key: string]: CSSProperties } = {
     letterSpacing: "0.1em",
     textTransform: "uppercase",
     fontFamily: "monospace",
+  },
+  // Grade Badge (Top-Right)
+  gradeBadge: {
+    position: "absolute",
+    top: "4px",
+    right: "4px",
+    zIndex: 30,
+    backgroundColor: "rgba(0, 0, 0, 0.8)",
+    border: "1px solid rgba(6, 182, 212, 0.8)", // Cyan border
+    padding: "2px 6px",
+    borderRadius: "4px",
+  },
+  gradeText: {
+    color: "#22d3ee", // cyan-400
+    fontWeight: "bold",
+    fontSize: "0.7rem",
+    fontFamily: "monospace",
+  },
+  // Position Text (Below Name)
+  positionText: {
+    color: "rgba(165, 243, 252, 0.7)", // cyan-200/70
+    fontSize: "0.6rem",
+    fontFamily: "monospace",
+    marginTop: "2px",
+    letterSpacing: "0.05em",
   },
   partnerNameBox: {
     width: "100%",

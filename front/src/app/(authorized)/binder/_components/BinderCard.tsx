@@ -39,7 +39,14 @@ export const BinderCard = ({ card, onClick, isFavorite }: BinderCardProps) => {
         <div style={styles.scanline} />
       </div>
 
-      {/* Favorite Indicator */}
+      {/* Grade Indicator (Top-Right) */}
+      <div style={styles.gradeBadge}>
+        <span style={styles.gradeText}>
+          {typeof card.grade === "number" ? `${card.grade}年` : card.grade}
+        </span>
+      </div>
+
+      {/* Favorite Indicator (Top-Left) */}
       {isFavorite && (
         <div style={styles.labelBadgeContent}>
           <span style={styles.labelText}>★</span>
@@ -56,6 +63,8 @@ export const BinderCard = ({ card, onClick, isFavorite }: BinderCardProps) => {
             <p style={styles.partnerNameText}>{card.name}</p>
           </div>
         </div>
+        {/* Position Text (Below Name) */}
+        {card.position && <p style={styles.positionText}>{card.position}</p>}
       </div>
     </button>
   );
