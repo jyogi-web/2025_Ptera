@@ -1,11 +1,9 @@
-"use client";
-
 import { useEffect, useState } from "react";
 import toast from "react-hot-toast";
-import Card from "@/components/Card";
 import { useAuth } from "@/context/AuthContext";
 import { addFavoriteCard, getFavoriteCards } from "@/lib/firestore";
 import type { Card as CardType } from "@/types/app";
+import { BinderCard } from "./BinderCard";
 
 interface BinderGridProps {
   cards: CardType[];
@@ -36,10 +34,6 @@ export function BinderGrid({
 
     loadFavorites();
   }, [user]);
-
-  const getLabel = (index: number): string | undefined => {
-    return index < 3 ? "1st" : undefined;
-  };
 
   const handleCardClick = async (card: CardType) => {
     if (!user || processing) return;
@@ -84,7 +78,7 @@ export function BinderGrid({
   return (
     <div>
       <div className="grid grid-cols-3 gap-3">
-        {cards.map((card, index) => (
+        {cards.map((card) => (
           <div
             key={card.id}
             className={`transition-all ${
@@ -95,16 +89,11 @@ export function BinderGrid({
                 : ""
             }`}
           >
-            <Card
+            <BinderCard
               card={card}
-              label={getLabel(index)}
               onClick={() => handleCardClick(card)}
+              isFavorite={favoriteCardIds.includes(card.id)}
             />
-            {favoriteCardIds.includes(card.id) && (
-              <div className="text-center text-yellow-400 text-xs mt-1">
-                ⭐ 推しメン
-              </div>
-            )}
           </div>
         ))}
       </div>
