@@ -3,6 +3,7 @@ import { cert, getApps, initializeApp } from "firebase-admin/app";
 import { getAuth } from "firebase-admin/auth";
 import { getFirestore } from "firebase-admin/firestore";
 import { cookies } from "next/headers";
+import { isExpired, parseToDate } from "./expiry";
 
 function getAdminApp() {
   const apps = getApps();
@@ -231,7 +232,21 @@ export async function getCardsFromServer(circleId?: string) {
       const result = validateCardData(doc.id, doc.data());
 
       if (result.valid && result.card) {
-        cards.push(result.card);
+        // Exclude expired cards: treat expiryDate as the graduation/expiration date
+        const parsedExpiry = parseToDate(
+          result.card.expiryDate as Date | string | undefined,
+        );
+        if (!parsedExpiry) {
+          // If expiry can't be parsed, warn and include the card to avoid accidental loss
+          console.warn(
+            `Card ${doc.id}: expiryDate is invalid or missing, including by default`,
+          );
+          cards.push(result.card);
+        } else if (!isExpired(parsedExpiry)) {
+          cards.push(result.card);
+        } else {
+          // expired -> skip
+        }
       } else if (result.error) {
         console.warn(result.error);
         errors.push(result.error);
