@@ -206,6 +206,222 @@ func (x *Card) GetCreatedAt() *timestamppb.Timestamp {
 	return nil
 }
 
+type CompleteCardRequest struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	ImageUrl      string                 `protobuf:"bytes,1,opt,name=image_url,json=imageUrl,proto3" json:"image_url,omitempty"` // 画像URL
+	Name          *string                `protobuf:"bytes,2,opt,name=name,proto3,oneof" json:"name,omitempty"`                   // 既存の名前
+	Faculty       *string                `protobuf:"bytes,3,opt,name=faculty,proto3,oneof" json:"faculty,omitempty"`             // 既存の学部
+	Department    *string                `protobuf:"bytes,4,opt,name=department,proto3,oneof" json:"department,omitempty"`       // 既存の学科
+	Grade         *string                `protobuf:"bytes,5,opt,name=grade,proto3,oneof" json:"grade,omitempty"`                 // 既存の学年
+	Position      *string                `protobuf:"bytes,6,opt,name=position,proto3,oneof" json:"position,omitempty"`           // 既存の職位
+	Hobby         *string                `protobuf:"bytes,7,opt,name=hobby,proto3,oneof" json:"hobby,omitempty"`                 // 既存の趣味
+	Description   *string                `protobuf:"bytes,8,opt,name=description,proto3,oneof" json:"description,omitempty"`     // 既存の説明文
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *CompleteCardRequest) Reset() {
+	*x = CompleteCardRequest{}
+	mi := &file_ptera_v1_ptera_proto_msgTypes[2]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *CompleteCardRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*CompleteCardRequest) ProtoMessage() {}
+
+func (x *CompleteCardRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_ptera_v1_ptera_proto_msgTypes[2]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use CompleteCardRequest.ProtoReflect.Descriptor instead.
+func (*CompleteCardRequest) Descriptor() ([]byte, []int) {
+	return file_ptera_v1_ptera_proto_rawDescGZIP(), []int{2}
+}
+
+func (x *CompleteCardRequest) GetImageUrl() string {
+	if x != nil {
+		return x.ImageUrl
+	}
+	return ""
+}
+
+func (x *CompleteCardRequest) GetName() string {
+	if x != nil && x.Name != nil {
+		return *x.Name
+	}
+	return ""
+}
+
+func (x *CompleteCardRequest) GetFaculty() string {
+	if x != nil && x.Faculty != nil {
+		return *x.Faculty
+	}
+	return ""
+}
+
+func (x *CompleteCardRequest) GetDepartment() string {
+	if x != nil && x.Department != nil {
+		return *x.Department
+	}
+	return ""
+}
+
+func (x *CompleteCardRequest) GetGrade() string {
+	if x != nil && x.Grade != nil {
+		return *x.Grade
+	}
+	return ""
+}
+
+func (x *CompleteCardRequest) GetPosition() string {
+	if x != nil && x.Position != nil {
+		return *x.Position
+	}
+	return ""
+}
+
+func (x *CompleteCardRequest) GetHobby() string {
+	if x != nil && x.Hobby != nil {
+		return *x.Hobby
+	}
+	return ""
+}
+
+func (x *CompleteCardRequest) GetDescription() string {
+	if x != nil && x.Description != nil {
+		return *x.Description
+	}
+	return ""
+}
+
+type CompleteCardResponse struct {
+	state           protoimpl.MessageState `protogen:"open.v1"`
+	Name            *string                `protobuf:"bytes,1,opt,name=name,proto3,oneof" json:"name,omitempty"`                                                 // 補完された名前
+	Faculty         *string                `protobuf:"bytes,2,opt,name=faculty,proto3,oneof" json:"faculty,omitempty"`                                           // 補完された学部
+	Department      *string                `protobuf:"bytes,3,opt,name=department,proto3,oneof" json:"department,omitempty"`                                     // 補完された学科
+	Grade           *string                `protobuf:"bytes,4,opt,name=grade,proto3,oneof" json:"grade,omitempty"`                                               // 補完された学年
+	Position        *string                `protobuf:"bytes,5,opt,name=position,proto3,oneof" json:"position,omitempty"`                                         // 補完された職位
+	Hobby           *string                `protobuf:"bytes,6,opt,name=hobby,proto3,oneof" json:"hobby,omitempty"`                                               // 補完された趣味
+	Description     *string                `protobuf:"bytes,7,opt,name=description,proto3,oneof" json:"description,omitempty"`                                   // 補完された説明文
+	Success         bool                   `protobuf:"varint,8,opt,name=success,proto3" json:"success,omitempty"`                                                // 補完が成功したかどうかを示すフラグ
+	ErrorMessage    *string                `protobuf:"bytes,9,opt,name=error_message,json=errorMessage,proto3,oneof" json:"error_message,omitempty"`             // エラーメッセージ（存在する場合）
+	ConfidenceScore *float32               `protobuf:"fixed32,10,opt,name=confidence_score,json=confidenceScore,proto3,oneof" json:"confidence_score,omitempty"` // 各フィールドの信頼度スコア（0.0～1.0）
+	unknownFields   protoimpl.UnknownFields
+	sizeCache       protoimpl.SizeCache
+}
+
+func (x *CompleteCardResponse) Reset() {
+	*x = CompleteCardResponse{}
+	mi := &file_ptera_v1_ptera_proto_msgTypes[3]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *CompleteCardResponse) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*CompleteCardResponse) ProtoMessage() {}
+
+func (x *CompleteCardResponse) ProtoReflect() protoreflect.Message {
+	mi := &file_ptera_v1_ptera_proto_msgTypes[3]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use CompleteCardResponse.ProtoReflect.Descriptor instead.
+func (*CompleteCardResponse) Descriptor() ([]byte, []int) {
+	return file_ptera_v1_ptera_proto_rawDescGZIP(), []int{3}
+}
+
+func (x *CompleteCardResponse) GetName() string {
+	if x != nil && x.Name != nil {
+		return *x.Name
+	}
+	return ""
+}
+
+func (x *CompleteCardResponse) GetFaculty() string {
+	if x != nil && x.Faculty != nil {
+		return *x.Faculty
+	}
+	return ""
+}
+
+func (x *CompleteCardResponse) GetDepartment() string {
+	if x != nil && x.Department != nil {
+		return *x.Department
+	}
+	return ""
+}
+
+func (x *CompleteCardResponse) GetGrade() string {
+	if x != nil && x.Grade != nil {
+		return *x.Grade
+	}
+	return ""
+}
+
+func (x *CompleteCardResponse) GetPosition() string {
+	if x != nil && x.Position != nil {
+		return *x.Position
+	}
+	return ""
+}
+
+func (x *CompleteCardResponse) GetHobby() string {
+	if x != nil && x.Hobby != nil {
+		return *x.Hobby
+	}
+	return ""
+}
+
+func (x *CompleteCardResponse) GetDescription() string {
+	if x != nil && x.Description != nil {
+		return *x.Description
+	}
+	return ""
+}
+
+func (x *CompleteCardResponse) GetSuccess() bool {
+	if x != nil {
+		return x.Success
+	}
+	return false
+}
+
+func (x *CompleteCardResponse) GetErrorMessage() string {
+	if x != nil && x.ErrorMessage != nil {
+		return *x.ErrorMessage
+	}
+	return ""
+}
+
+func (x *CompleteCardResponse) GetConfidenceScore() float32 {
+	if x != nil && x.ConfidenceScore != nil {
+		return *x.ConfidenceScore
+	}
+	return 0
+}
+
 var File_ptera_v1_ptera_proto protoreflect.FileDescriptor
 
 const file_ptera_v1_ptera_proto_rawDesc = "" +
@@ -231,8 +447,52 @@ const file_ptera_v1_ptera_proto_rawDesc = "" +
 	"\n" +
 	"created_at\x18\n" +
 	" \x01(\v2\x1a.google.protobuf.TimestampR\tcreatedAtB\x13\n" +
-	"\x11_affiliated_group2\x0e\n" +
-	"\fPteraServiceBAZ?github.com/jyogi-web/2025_Ptera/backend/pkg/grpc/ptera/v1;pterab\x06proto3"
+	"\x11_affiliated_group\"\xe2\x02\n" +
+	"\x13CompleteCardRequest\x12\x1b\n" +
+	"\timage_url\x18\x01 \x01(\tR\bimageUrl\x12\x17\n" +
+	"\x04name\x18\x02 \x01(\tH\x00R\x04name\x88\x01\x01\x12\x1d\n" +
+	"\afaculty\x18\x03 \x01(\tH\x01R\afaculty\x88\x01\x01\x12#\n" +
+	"\n" +
+	"department\x18\x04 \x01(\tH\x02R\n" +
+	"department\x88\x01\x01\x12\x19\n" +
+	"\x05grade\x18\x05 \x01(\tH\x03R\x05grade\x88\x01\x01\x12\x1f\n" +
+	"\bposition\x18\x06 \x01(\tH\x04R\bposition\x88\x01\x01\x12\x19\n" +
+	"\x05hobby\x18\a \x01(\tH\x05R\x05hobby\x88\x01\x01\x12%\n" +
+	"\vdescription\x18\b \x01(\tH\x06R\vdescription\x88\x01\x01B\a\n" +
+	"\x05_nameB\n" +
+	"\n" +
+	"\b_facultyB\r\n" +
+	"\v_departmentB\b\n" +
+	"\x06_gradeB\v\n" +
+	"\t_positionB\b\n" +
+	"\x06_hobbyB\x0e\n" +
+	"\f_description\"\xe1\x03\n" +
+	"\x14CompleteCardResponse\x12\x17\n" +
+	"\x04name\x18\x01 \x01(\tH\x00R\x04name\x88\x01\x01\x12\x1d\n" +
+	"\afaculty\x18\x02 \x01(\tH\x01R\afaculty\x88\x01\x01\x12#\n" +
+	"\n" +
+	"department\x18\x03 \x01(\tH\x02R\n" +
+	"department\x88\x01\x01\x12\x19\n" +
+	"\x05grade\x18\x04 \x01(\tH\x03R\x05grade\x88\x01\x01\x12\x1f\n" +
+	"\bposition\x18\x05 \x01(\tH\x04R\bposition\x88\x01\x01\x12\x19\n" +
+	"\x05hobby\x18\x06 \x01(\tH\x05R\x05hobby\x88\x01\x01\x12%\n" +
+	"\vdescription\x18\a \x01(\tH\x06R\vdescription\x88\x01\x01\x12\x18\n" +
+	"\asuccess\x18\b \x01(\bR\asuccess\x12(\n" +
+	"\rerror_message\x18\t \x01(\tH\aR\ferrorMessage\x88\x01\x01\x12.\n" +
+	"\x10confidence_score\x18\n" +
+	" \x01(\x02H\bR\x0fconfidenceScore\x88\x01\x01B\a\n" +
+	"\x05_nameB\n" +
+	"\n" +
+	"\b_facultyB\r\n" +
+	"\v_departmentB\b\n" +
+	"\x06_gradeB\v\n" +
+	"\t_positionB\b\n" +
+	"\x06_hobbyB\x0e\n" +
+	"\f_descriptionB\x10\n" +
+	"\x0e_error_messageB\x13\n" +
+	"\x11_confidence_score2]\n" +
+	"\fPteraService\x12M\n" +
+	"\fCompleteCard\x12\x1d.ptera.v1.CompleteCardRequest\x1a\x1e.ptera.v1.CompleteCardResponseBAZ?github.com/jyogi-web/2025_Ptera/backend/pkg/grpc/ptera/v1;pterab\x06proto3"
 
 var (
 	file_ptera_v1_ptera_proto_rawDescOnce sync.Once
@@ -246,16 +506,20 @@ func file_ptera_v1_ptera_proto_rawDescGZIP() []byte {
 	return file_ptera_v1_ptera_proto_rawDescData
 }
 
-var file_ptera_v1_ptera_proto_msgTypes = make([]protoimpl.MessageInfo, 2)
+var file_ptera_v1_ptera_proto_msgTypes = make([]protoimpl.MessageInfo, 4)
 var file_ptera_v1_ptera_proto_goTypes = []any{
 	(*User)(nil),                  // 0: ptera.v1.User
 	(*Card)(nil),                  // 1: ptera.v1.Card
-	(*timestamppb.Timestamp)(nil), // 2: google.protobuf.Timestamp
+	(*CompleteCardRequest)(nil),   // 2: ptera.v1.CompleteCardRequest
+	(*CompleteCardResponse)(nil),  // 3: ptera.v1.CompleteCardResponse
+	(*timestamppb.Timestamp)(nil), // 4: google.protobuf.Timestamp
 }
 var file_ptera_v1_ptera_proto_depIdxs = []int32{
-	2, // 0: ptera.v1.Card.created_at:type_name -> google.protobuf.Timestamp
-	1, // [1:1] is the sub-list for method output_type
-	1, // [1:1] is the sub-list for method input_type
+	4, // 0: ptera.v1.Card.created_at:type_name -> google.protobuf.Timestamp
+	2, // 1: ptera.v1.PteraService.CompleteCard:input_type -> ptera.v1.CompleteCardRequest
+	3, // 2: ptera.v1.PteraService.CompleteCard:output_type -> ptera.v1.CompleteCardResponse
+	2, // [2:3] is the sub-list for method output_type
+	1, // [1:2] is the sub-list for method input_type
 	1, // [1:1] is the sub-list for extension type_name
 	1, // [1:1] is the sub-list for extension extendee
 	0, // [0:1] is the sub-list for field type_name
@@ -268,13 +532,15 @@ func file_ptera_v1_ptera_proto_init() {
 	}
 	file_ptera_v1_ptera_proto_msgTypes[0].OneofWrappers = []any{}
 	file_ptera_v1_ptera_proto_msgTypes[1].OneofWrappers = []any{}
+	file_ptera_v1_ptera_proto_msgTypes[2].OneofWrappers = []any{}
+	file_ptera_v1_ptera_proto_msgTypes[3].OneofWrappers = []any{}
 	type x struct{}
 	out := protoimpl.TypeBuilder{
 		File: protoimpl.DescBuilder{
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: unsafe.Slice(unsafe.StringData(file_ptera_v1_ptera_proto_rawDesc), len(file_ptera_v1_ptera_proto_rawDesc)),
 			NumEnums:      0,
-			NumMessages:   2,
+			NumMessages:   4,
 			NumExtensions: 0,
 			NumServices:   1,
 		},
