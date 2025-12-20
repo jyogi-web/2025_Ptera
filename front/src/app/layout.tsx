@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { Geist_Mono, Orbitron } from "next/font/google";
+import { Toaster } from "react-hot-toast";
 import "./globals.css";
 import { Footer } from "@/components/layouts/footer";
 import { Header } from "@/components/layouts/header";
@@ -34,6 +35,7 @@ export default function RootLayout({
           <Header />
           {children}
           <Footer />
+          <Toaster position="top-center" />
         </AuthProvider>
       </body>
     </html>

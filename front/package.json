@@ -14,12 +14,16 @@
   },
   "dependencies": {
     "@arwes/react": "^1.0.0-next.25020502",
+    "@bufbuild/protobuf": "^2.10.2",
+    "@connectrpc/connect": "^2.1.1",
+    "@connectrpc/connect-node": "^2.1.1",
     "firebase": "^12.6.0",
     "lucide-react": "^0.561.0",
     "motion": "^10.18.0",
     "next": "16.0.10",
     "react": "19.2.1",
     "react-dom": "19.2.1",
+    "react-hot-toast": "^2.6.0",
     "react-webcam": "^7.2.0"
   },
   "overrides": {
