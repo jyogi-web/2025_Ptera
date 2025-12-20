@@ -81,8 +81,10 @@ export async function sendBattleRequestAction(
     });
     return JSON.parse(JSON.stringify(response));
   } catch (error) {
-    console.error("SendBattleRequest Error:", error);
-    throw new Error("Failed to send battle request");
+    console.error("SendBattleRequest Error Details:", error);
+    // Extract detailed error message if possible
+    const errorMessage = error instanceof Error ? error.message : String(error);
+    throw new Error(`Failed to send battle request: ${errorMessage}`);
   }
 }
 
