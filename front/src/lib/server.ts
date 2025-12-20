@@ -3,6 +3,7 @@ import { cert, getApps, initializeApp } from "firebase-admin/app";
 import { getAuth } from "firebase-admin/auth";
 import { getFirestore } from "firebase-admin/firestore";
 import { cookies } from "next/headers";
+import { isExpired, parseToDate } from "./expiry";
 
 function getAdminApp() {
   const apps = getApps();
@@ -232,24 +233,19 @@ export async function getCardsFromServer(circleId?: string) {
 
       if (result.valid && result.card) {
         // Exclude expired cards: treat expiryDate as the graduation/expiration date
-        try {
-          const now = Date.now();
-          const expiryTime = result.card.expiryDate
-            ? new Date(result.card.expiryDate).getTime()
-            : Infinity;
-
-          if (expiryTime > now) {
-            cards.push(result.card);
-          } else {
-            // Skip expired card
-            // Optionally log for debugging in development
-            // console.debug(`Skipping expired card ${doc.id} (expiry: ${result.card.expiryDate})`);
-          }
-        } catch (e) {
-          // If any unexpected parsing error occurs, include the card to avoid data loss,
-          // but log the incident.
-          console.warn(`Failed to evaluate expiry for card ${doc.id}:`, e);
+        const parsedExpiry = parseToDate(
+          result.card.expiryDate as Date | string | undefined,
+        );
+        if (!parsedExpiry) {
+          // If expiry can't be parsed, warn and include the card to avoid accidental loss
+          console.warn(
+            `Card ${doc.id}: expiryDate is invalid or missing, including by default`,
+          );
           cards.push(result.card);
+        } else if (!isExpired(parsedExpiry)) {
+          cards.push(result.card);
+        } else {
+          // expired -> skip
         }
       } else if (result.error) {
         console.warn(result.error);
