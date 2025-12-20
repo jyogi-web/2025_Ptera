@@ -62,16 +62,6 @@ export default function MatchingPage() {
       <div style={styles.dashboardContent}>
         <Animator active={true}>
           <div className="w-full max-w-4xl relative flex flex-col h-full">
-            <div className="mb-4 flex-none">
-              <button
-                type="button"
-                onClick={() => router.push("/circle")}
-                className="flex items-center gap-2 text-cyan-400 hover:text-cyan-300 transition-colors font-mono"
-              >
-                <span>«</span> BACK TO DASHBOARD
-              </button>
-            </div>
-
             {/* Main Frame Wrapper - using absolute positioning to stretch */}
             <div className="flex-1 relative min-h-0">
               <FrameCorners
