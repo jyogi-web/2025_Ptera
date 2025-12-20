@@ -9,6 +9,7 @@ interface QRScannerProps {
   onQRLost: (duration: number) => void;
   onTimeout?: () => void;
   onSignal?: () => void;
+  onFalseStart?: () => void;
   isRunning: boolean;
   targetQRData?: string;
 }
@@ -17,6 +18,7 @@ const QRScanner: React.FC<QRScannerProps> = ({
   onQRLost,
   onTimeout,
   onSignal,
+  onFalseStart,
   isRunning,
   targetQRData = "AR-GAME-MARKER-001",
 }) => {
@@ -117,6 +119,8 @@ const QRScanner: React.FC<QRScannerProps> = ({
             }
 
             const randomDelay = Math.floor(Math.random() * 3000) + 2000;
+            (waitingForSignalRef as any).currentExpectedTime =
+              performance.now() + randomDelay;
 
             signalTimerRef.current = setTimeout(() => {
               console.log("シグナル発動！計測開始");
@@ -154,13 +158,27 @@ const QRScanner: React.FC<QRScannerProps> = ({
             );
           }
         } else {
-          // If we lost QR while waiting for signal (False Start)
+          // If we lost QR while waiting for signal
           if (waitingForSignalRef.current) {
-            console.log("お手つき！シグナル前にQRが外れました");
+            console.log("QR消失 (シグナル待機中)");
             waitingForSignalRef.current = false;
+
             if (signalTimerRef.current) {
               clearTimeout(signalTimerRef.current);
               signalTimerRef.current = null;
+            }
+
+            const expectedTime =
+              (waitingForSignalRef as any).currentExpectedTime || 0;
+            const timeUntilSignal = expectedTime - performance.now();
+
+            if (timeUntilSignal <= 1000 && timeUntilSignal > 0) {
+              console.log("お手つき判定！ 残り時間: ", timeUntilSignal);
+              if (onFalseStart) onFalseStart();
+            } else {
+              console.log("セーフ（判定期間外の消失）- リセットします");
+              // Just silent reset, meaning the user can try again immediately
+              qrDetectedRef.current = false;
             }
           }
 
@@ -212,7 +230,7 @@ const QRScanner: React.FC<QRScannerProps> = ({
         });
       }
     };
-  }, [onQRLost, isRunning, targetQRData, onTimeout, onSignal]);
+  }, [onQRLost, isRunning, targetQRData, onTimeout, onSignal, onFalseStart]);
 
   return (
     <div style={styles.container}>
