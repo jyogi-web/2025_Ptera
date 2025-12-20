@@ -72,7 +72,7 @@ export const styles: { [key: string]: CSSProperties } = {
     alignItems: "center",
     justifyContent: "center",
     color: "rgba(14, 116, 144, 0.5)", // text-cyan-700/50
-    backgroundImage: "url('/grid.svg')",
+    backgroundImage: "url('/assets/hex_grid.png')",
     backgroundPosition: "center",
     backgroundSize: "cover",
     opacity: 0.8, // Adjusted for visibility
