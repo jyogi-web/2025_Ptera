@@ -64,6 +64,7 @@ export const Button = ({
             inset: 0,
             zIndex: 0,
             color: color,
+            backgroundColor: "transparent",
           }}
         />
       </Animator>

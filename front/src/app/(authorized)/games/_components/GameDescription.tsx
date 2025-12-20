@@ -27,6 +27,7 @@ export const GameDescription = ({ onStart }: GameDescriptionProps) => {
             inset: 0,
             zIndex: 0,
             color: "rgba(0, 218, 193, 0.3)",
+            backgroundColor: "transparent",
           }}
           strokeWidth={2}
           cornerLength={20}
