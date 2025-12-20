@@ -85,7 +85,7 @@ export default function Games() {
               onClick={handleStart}
               style={styles.startButton}
             >
-              スタート
+              刹那のメンコ
             </button>
           ) : (
             <div style={styles.measuringBatch}>
