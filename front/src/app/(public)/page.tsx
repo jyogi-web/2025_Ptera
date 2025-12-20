@@ -3,7 +3,7 @@
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
-import { useAuth } from "../context/AuthContext";
+import { useAuth } from "../../context/AuthContext";
 
 interface FloatingCard {
   id: number;
@@ -156,7 +156,7 @@ export default function Home() {
   };
 
   return (
-    <div className="relative flex min-h-screen w-full flex-col items-center justify-center overflow-hidden bg-[#050510] text-white">
+    <div className="relative flex h-screen w-full flex-col items-center justify-center overflow-hidden overscroll-none bg-[#050510] text-white">
       {/* Background Layers */}
       <div className="absolute inset-0 z-0 bg-[#050510]">
         {/* Base Nebula Texture */}
