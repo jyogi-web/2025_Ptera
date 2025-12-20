@@ -25,7 +25,7 @@ export const CharacterDisplay = ({
       <div className="absolute bottom-0 right-0 w-8 h-8 border-b-2 border-r-2 border-cyan-400 rounded-br-xl z-20" />
 
       {/* キャラクター画像エリア */}
-      <div className="absolute inset-2 top-2 bottom-16 rounded-lg overflow-hidden bg-slate-900/50 z-10 border border-white/10">
+      <div className="absolute inset-2 top-2 bottom-24 rounded-lg overflow-hidden bg-slate-900/50 z-10 border border-white/10">
         {imageUrl ? (
           <Image
             src={imageUrl}
@@ -46,18 +46,18 @@ export const CharacterDisplay = ({
       </div>
 
       {/* 情報パネル */}
-      <div className="absolute bottom-4 left-0 right-0 z-20 flex flex-col items-center">
+      <div className="absolute bottom-2 left-0 right-0 z-20 flex flex-col items-center gap-2 px-2">
         {/* 推しメンラベル */}
-        <div className="mb-2">
-          <span className="text-white font-bold text-lg drop-shadow-[0_0_5px_rgba(255,255,255,0.8)]">
-            推しメン
+        <div className="bg-gradient-to-r from-yellow-500 to-orange-500 px-4 py-1.5 rounded-full shadow-lg">
+          <span className="text-white font-bold text-base drop-shadow-md">
+            ⭐ 推しメン
           </span>
         </div>
 
         {/* パートナー名 */}
-        <div className="w-[90%] bg-black/60 border-t border-b border-cyan-500/50 py-1 text-center backdrop-blur-md">
+        <div className="w-full bg-black/70 border border-cyan-500/50 rounded-lg py-2 px-3 text-center backdrop-blur-md shadow-lg">
           <p className="text-cyan-100 text-sm font-medium tracking-wide">
-            パートナー：{partnerName}
+            {partnerName}
           </p>
         </div>
       </div>

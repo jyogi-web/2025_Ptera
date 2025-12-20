@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Geist_Mono, Orbitron } from "next/font/google";
+import { JetBrains_Mono, Orbitron } from "next/font/google";
 import { Toaster } from "react-hot-toast";
 import "./globals.css";
 import { Footer } from "@/components/layouts/footer";
@@ -11,7 +11,7 @@ const orbitron = Orbitron({
   subsets: ["latin"],
 });
 
-const geistMono = Geist_Mono({
+const jetbrainsMono = JetBrains_Mono({
   variable: "--font-geist-mono",
   subsets: ["latin"],
 });
@@ -29,7 +29,7 @@ export default function RootLayout({
   return (
     <html lang="ja">
       <body
-        className={`${orbitron.variable} ${geistMono.variable} antialiased`}
+        className={`${orbitron.variable} ${jetbrainsMono.variable} antialiased`}
       >
         <AuthProvider>
           <Header />

@@ -298,3 +298,96 @@ export const getCircles = async (): Promise<Circle[]> => {
     };
   });
 };
+
+/**
+ * ユーザーの推しメンを設定（1人まで）
+ * 既存の推しメンは自動的に解除される
+ */
+export const addFavoriteCard = async (
+  userId: string,
+  cardId: string,
+): Promise<void> => {
+  const userRef = doc(db, USERS_COLLECTION, userId);
+
+  await runTransaction(db, async (transaction) => {
+    const userDoc = await transaction.get(userRef);
+
+    if (!userDoc.exists()) {
+      throw new Error("User not found");
+    }
+
+    const currentFavorites = userDoc.data().favoriteCardIds || [];
+
+    // 既に同じカードが登録されている場合は何もしない
+    if (currentFavorites.includes(cardId)) {
+      return;
+    }
+
+    // 新しい推しメン（1人のみ）
+    transaction.update(userRef, {
+      favoriteCardIds: [cardId],
+      updatedAt: serverTimestamp(),
+    });
+  });
+};
+
+/**
+ * ユーザーの推しメンリストから削除
+ */
+export const removeFavoriteCard = async (
+  userId: string,
+  cardId: string,
+): Promise<void> => {
+  const userRef = doc(db, USERS_COLLECTION, userId);
+
+  await runTransaction(db, async (transaction) => {
+    const userDoc = await transaction.get(userRef);
+
+    if (!userDoc.exists()) {
+      throw new Error("User not found");
+    }
+
+    const favoriteCardIds = userDoc.data().favoriteCardIds || [];
+    const updatedFavorites = favoriteCardIds.filter(
+      (id: string) => id !== cardId,
+    );
+
+    transaction.update(userRef, {
+      favoriteCardIds: updatedFavorites,
+      updatedAt: serverTimestamp(),
+    });
+  });
+};
+
+/**
+ * ユーザーの推しメンカードを取得
+ */
+export const getFavoriteCards = async (userId: string): Promise<Card[]> => {
+  const userRef = doc(db, USERS_COLLECTION, userId);
+  const userDoc = await getDoc(userRef);
+
+  if (!userDoc.exists()) {
+    return [];
+  }
+
+  const favoriteCardIds = userDoc.data().favoriteCardIds || [];
+
+  if (favoriteCardIds.length === 0) {
+    return [];
+  }
+
+  // 推しメンカードを取得
+  const cards: Card[] = [];
+
+  for (const cardId of favoriteCardIds) {
+    const cardRef = doc(db, CARDS_COLLECTION, cardId);
+    const cardDoc = await getDoc(cardRef);
+
+    if (cardDoc.exists()) {
+      const card = convertCard(cardDoc.id, cardDoc.data() as FirestoreCard);
+      cards.push(card);
+    }
+  }
+
+  return cards;
+};
