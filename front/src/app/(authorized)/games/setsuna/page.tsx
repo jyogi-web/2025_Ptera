@@ -24,7 +24,6 @@ export default function Games() {
   const handleStart = () => {
     setIsRunning(true);
     setShowSignal(false);
-    console.log("計測開始準備");
   };
 
   const handleSignal = useCallback(() => {
