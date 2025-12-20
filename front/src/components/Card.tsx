@@ -6,10 +6,9 @@ import type { Card as CardType } from "@/types/app";
 interface CardProps {
   card: CardType;
   label?: string;
-  onClick?: (card: CardType) => void;
 }
 
-export default function Card({ card, label, onClick }: CardProps) {
+export default function Card({ card, label }: CardProps) {
   // カード作成からの経過日数を計算
   const getDaysElapsed = (createdAt: Date): number => {
     const now = new Date();
@@ -21,10 +20,7 @@ export default function Card({ card, label, onClick }: CardProps) {
   const daysElapsed = getDaysElapsed(card.createdAt);
 
   return (
-    <div
-      className="relative rounded-xl bg-gradient-to-b from-cyan-500/20 via-fuchsia-500/10 to-transparent p-[2px] cursor-pointer hover:from-cyan-500/30 hover:via-fuchsia-500/20 transition-all hover:scale-105 w-full text-left"
-      onClick={() => onClick?.(card)}
-    >
+    <div className="relative rounded-xl bg-gradient-to-b from-cyan-500/20 via-fuchsia-500/10 to-transparent p-[2px] cursor-pointer hover:from-cyan-500/30 hover:via-fuchsia-500/20 transition-all hover:scale-105 w-full text-left">
       <div className="rounded-xl bg-gray-900/80 p-2">
         {/* Badge */}
         {label && (

@@ -1,4 +1,5 @@
 import "server-only";
+import type { ServiceAccount } from "firebase-admin";
 import { cert, getApps, initializeApp } from "firebase-admin/app";
 import { getAuth } from "firebase-admin/auth";
 import { getFirestore } from "firebase-admin/firestore";
@@ -19,13 +20,15 @@ function getAdminApp() {
   }
 
   try {
-    let credentials;
+    let credentials: ServiceAccount;
     try {
       credentials = JSON.parse(serviceAccountKey);
     } catch {
       // Retry with sanitized string: escape newlines which are often the cause of "Bad control character"
       // Remove \r just in case, and replace literal \n with escaped \n
-      const sanitized = serviceAccountKey.replace(/\n/g, "\\n").replace(/\r/g, "");
+      const sanitized = serviceAccountKey
+        .replace(/\n/g, "\\n")
+        .replace(/\r/g, "");
       credentials = JSON.parse(sanitized);
     }
 
@@ -168,10 +171,10 @@ function validateCardData(
   // オプショナルフィールドの安全な取得
   const affiliatedGroup =
     data.affiliatedGroupRef &&
-      typeof data.affiliatedGroupRef === "object" &&
-      data.affiliatedGroupRef !== null &&
-      "id" in data.affiliatedGroupRef &&
-      typeof data.affiliatedGroupRef.id === "string"
+    typeof data.affiliatedGroupRef === "object" &&
+    data.affiliatedGroupRef !== null &&
+    "id" in data.affiliatedGroupRef &&
+    typeof data.affiliatedGroupRef.id === "string"
       ? data.affiliatedGroupRef.id
       : undefined;
 

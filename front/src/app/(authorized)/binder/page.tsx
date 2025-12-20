@@ -51,7 +51,7 @@ export default async function BinderPage() {
         {cards.length > 0 && (
           <div className="grid grid-cols-3 gap-3">
             {cards.map((card, index) => (
-              <Link key={card.id} href={`/binder/${card.id}/edit`}>
+              <Link key={card.id} href={`/binder/${card.id}`}>
                 <Card card={card} label={getLabel(index)} />
               </Link>
             ))}

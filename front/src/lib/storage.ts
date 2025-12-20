@@ -2,6 +2,7 @@ import {
   deleteObject,
   getDownloadURL,
   ref,
+  type StorageReference,
   uploadBytes,
 } from "firebase/storage";
 import { storage } from "./firebase";
@@ -45,7 +46,7 @@ export const uploadImage = async (
  * @returns 削除完了を示すPromise
  */
 export const deleteImage = async (path: string): Promise<void> => {
-  let storageRef;
+  let storageRef: StorageReference;
   if (path.startsWith("http") || path.startsWith("gs://")) {
     // If it's a full URL, use it directly
     storageRef = ref(storage, path);
