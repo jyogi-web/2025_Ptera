@@ -3,7 +3,7 @@
 import { useState } from "react";
 import type { Card } from "@/types/app";
 import { styles } from "../_styles/page.styles";
-import { BinderGrid, FavoriteButton } from "./BinderGrid";
+import { BinderGrid } from "./BinderGrid";
 
 interface BinderContentProps {
   cards: Card[];
@@ -15,16 +15,27 @@ export function BinderContent({ cards }: BinderContentProps) {
   return (
     <div style={styles.contentWrapper}>
       {/* Header */}
-      <div style={styles.header} className="flex items-center justify-between">
-        <div>
-          <p className="text-sm text-gray-400">Total Cards: {cards.length}</p>
+      {/* Header */}
+      <div style={styles.header}>
+        <div style={styles.totalCardsBox}>
+          <span style={styles.totalCardsLabel}>Total Cards:</span>
+          <span style={styles.totalCardsValue}>
+            {cards.length.toString().padStart(2, "0")}
+          </span>
         </div>
         {cards.length > 0 && (
-          <FavoriteButton
-            isSelectingFavorite={isSelectingFavorite}
-            onToggle={() => setIsSelectingFavorite(!isSelectingFavorite)}
-            disabled={false}
-          />
+          <button
+            type="button"
+            onClick={() => setIsSelectingFavorite(!isSelectingFavorite)}
+            style={{
+              ...styles.actionButton,
+              ...(isSelectingFavorite ? styles.actionButtonActive : {}),
+            }}
+          >
+            <span style={styles.actionButtonText}>
+              {isSelectingFavorite ? "完了" : "推しメン登録"}
+            </span>
+          </button>
         )}
       </div>
 
