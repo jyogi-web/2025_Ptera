@@ -272,13 +272,13 @@ describe("converter", () => {
         // This test verifies that the function works with default parameter
         const now = new Date();
         const result = calculateGraduationDate(4);
-        
+
         // Calculate expected graduation date based on current date
         const currentYear = now.getFullYear();
         const currentMonth = now.getMonth();
         const academicYear = currentMonth >= 3 ? currentYear : currentYear - 1;
         const expectedGraduationYear = academicYear + (5 - 4); // +1 for grade 4
-        
+
         expect(result.getMonth()).toBe(2); // March
         expect(result.getDate()).toBe(31);
         expect(result.getFullYear()).toBe(expectedGraduationYear);
