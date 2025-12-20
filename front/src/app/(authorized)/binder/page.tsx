@@ -8,7 +8,7 @@ export default function BinderPage() {
   const cards: CardType[] = Array.from({ length: 12 }).map((_, i) => {
     const createdAt = new Date();
     createdAt.setDate(createdAt.getDate() - (i + 1) * 10); // 作成日を過去に設定
-    
+
     const expiryDate = new Date();
     expiryDate.setDate(expiryDate.getDate() + 1450); // 有効期限を未来に設定
 
