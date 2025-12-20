@@ -1,9 +1,26 @@
-import { styles } from "./_styles/page.styles";
-
 export default function Loading() {
   return (
-    <div style={styles.container}>
-      {/* Background Overlay (Optional if page.styles already has it, but ensuring hex grid) */}
+    <div
+      style={{
+        position: "fixed",
+        top: 0,
+        left: 0,
+        right: 0,
+        bottom: 0,
+        zIndex: 50, // High z-index to cover content
+        width: "100vw",
+        height: "100dvh",
+        overflow: "hidden",
+        touchAction: "none",
+        fontFamily: '"Segoe UI", Roboto, Helvetica, Arial, sans-serif',
+        color: "#a4b5c9",
+        background: "#050b14",
+        display: "flex",
+        flexDirection: "column",
+        paddingTop: "80px", // Header height compensation
+      }}
+    >
+      {/* Background Overlay */}
       <div
         style={{
           position: "absolute",
@@ -44,10 +61,10 @@ export default function Loading() {
             className="text-cyan-400 text-lg font-bold tracking-[0.2em] font-mono animate-pulse"
             style={{ textShadow: "0 0 10px rgba(34, 211, 238, 0.5)" }}
           >
-            INITIALIZING BINDER SYSTEM
+            INITIALIZING SYSTEM
           </h2>
           <p className="text-cyan-600/70 text-xs font-mono mt-2 tracking-widest">
-            ACCESSING ARCHIVE DATA...
+            ACCESSING DATA...
           </p>
         </div>
       </div>
