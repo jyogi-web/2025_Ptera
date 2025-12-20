@@ -21,6 +21,9 @@ export interface Card {
   name: string; // 名前
   grade: number; // 学年
   position: string; // 役割
+  faculty?: string; // 学部
+  department?: string; // 学科
+  memo?: string; // メモや補足
   affiliatedGroup?: string; // サークル名 (Legacy/Display purpose)
   circleId?: string; // Circle ID (System)
   hobby: string; // 趣味
