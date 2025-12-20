@@ -28,7 +28,7 @@ export const styles: { [key: string]: CSSProperties } = {
     display: "flex",
     flexDirection: "column",
     justifyContent: "space-between",
-    padding: "20px",
+    padding: "100px 20px 20px 20px",
     boxSizing: "border-box",
     background:
       "linear-gradient(180deg, rgba(0,0,0,0.4) 0%, rgba(0,0,0,0) 50%, rgba(0,0,0,0.4) 100%)",
