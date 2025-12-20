@@ -4,16 +4,31 @@ import { useEffect, useState } from "react";
 import BattleField from "@/components/BattleField";
 import { useAuth } from "@/context/AuthContext";
 import { useBattle } from "@/hooks/useBattle";
-import { getCards, getCircles, getUser } from "@/lib/firestore";
+import { useBattleRealtime } from "@/hooks/useBattleRealtime";
+import { getCircles, getUser } from "@/lib/firestore";
 import type { Circle } from "@/types/app";
 
 export default function BattlePage() {
   const { user } = useAuth();
-  const { battleState, startBattle, attack, retreat } = useBattle();
+  const {
+    startBattle,
+    attack,
+    retreat,
+    loading: actionLoading,
+    error: actionError,
+  } = useBattle();
 
   const [circles, setCircles] = useState<Circle[]>([]);
   const [loading, setLoading] = useState(true);
   const [myCircle, setMyCircle] = useState<Circle | null>(null);
+  const [battleId, setBattleId] = useState<string | null>(null);
+
+  // リアルタイムでバトル状態を監視
+  const {
+    battleState,
+    error: realtimeError,
+    loading: realtimeLoading,
+  } = useBattleRealtime(battleId);
 
   // Load Opponents
   useEffect(() => {
@@ -23,7 +38,7 @@ export default function BattlePage() {
       try {
         const [allCircles, userProfile] = await Promise.all([
           getCircles(),
-          getUser(user.id), // Need to fetch FirestoreUser to get circleId securely if not in auth context
+          getUser(user.id),
         ]);
 
         const myCircleId = userProfile?.circleId;
@@ -48,18 +63,18 @@ export default function BattlePage() {
 
   const handleSelectOpponent = async (opponent: Circle) => {
     if (!user || !myCircle) {
-      alert("サークルに所属していないとバトルできません！");
+      alert("サークルに所属していないとバトルできません!");
       return;
     }
 
     setLoading(true);
     try {
-      const [myCards, opponentCards] = await Promise.all([
-        getCards(myCircle.id),
-        getCards(opponent.id),
-      ]);
-
-      startBattle(myCircle.name, myCards, opponent.name, opponentCards);
+      const newBattleId = await startBattle(myCircle.id, opponent.id);
+      if (newBattleId) {
+        setBattleId(newBattleId); // リアルタイム監視を開始
+      } else {
+        alert("バトルの開始に失敗しました。");
+      }
     } catch (error) {
       console.error("Failed to start battle:", error);
       alert("バトルの開始に失敗しました。");
@@ -68,7 +83,37 @@ export default function BattlePage() {
     }
   };
 
-  if (loading) {
+  // 攻撃ハンドラー
+  const handleAttack = async () => {
+    if (!battleId || !user) return;
+    await attack(battleId, user.id);
+  };
+
+  // 交代ハンドラー
+  const handleRetreat = async (benchIndex: number) => {
+    if (!battleId || !user) return;
+    await retreat(battleId, user.id, benchIndex);
+  };
+
+  // エラー表示
+  if (actionError || realtimeError) {
+    return (
+      <div className="flex h-screen items-center justify-center text-white">
+        <div className="bg-red-900/20 border border-red-500/50 p-4 rounded-lg">
+          <p className="text-red-400">エラー: {actionError || realtimeError}</p>
+          <button
+            type="button"
+            onClick={() => window.location.reload()}
+            className="mt-4 bg-red-600 hover:bg-red-500 text-white px-4 py-2 rounded"
+          >
+            再読み込み
+          </button>
+        </div>
+      </div>
+    );
+  }
+
+  if (loading || realtimeLoading) {
     return (
       <div className="flex h-screen items-center justify-center text-white">
         Loading Arena...
@@ -76,13 +121,17 @@ export default function BattlePage() {
     );
   }
 
+  // バトル画面
   if (battleState) {
     return (
       <div className="min-h-screen bg-gradient-to-b from-gray-900 via-gray-800 to-black pb-20 pt-4">
         <div className="absolute top-2 right-2 z-50">
           <button
             type="button"
-            onClick={() => window.location.reload()}
+            onClick={() => {
+              setBattleId(null); // リアルタイム監視を停止
+              window.location.reload();
+            }}
             className="text-xs text-gray-400 border border-gray-600 px-2 py-1 rounded hover:bg-gray-800"
           >
             Quit Fight
@@ -90,9 +139,14 @@ export default function BattlePage() {
         </div>
         <BattleField
           state={battleState}
-          onAttack={attack}
-          onRetreat={retreat}
+          onAttack={handleAttack}
+          onRetreat={handleRetreat}
         />
+        {actionLoading && (
+          <div className="fixed bottom-4 right-4 bg-blue-600 text-white px-4 py-2 rounded-lg shadow-lg">
+            処理中...
+          </div>
+        )}
       </div>
     );
   }

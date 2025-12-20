@@ -111,8 +111,13 @@ type Card struct {
 	ImageUrl        string                 `protobuf:"bytes,9,opt,name=image_url,json=imageUrl,proto3" json:"image_url,omitempty"`
 	CreatedAt       *timestamppb.Timestamp `protobuf:"bytes,10,opt,name=created_at,json=createdAt,proto3" json:"created_at,omitempty"`
 	CircleId        *string                `protobuf:"bytes,11,opt,name=circle_id,json=circleId,proto3,oneof" json:"circle_id,omitempty"`
-	unknownFields   protoimpl.UnknownFields
-	sizeCache       protoimpl.SizeCache
+	// Battle Stats
+	MaxHp         int32  `protobuf:"varint,12,opt,name=max_hp,json=maxHp,proto3" json:"max_hp,omitempty"`
+	Attack        int32  `protobuf:"varint,13,opt,name=attack,proto3" json:"attack,omitempty"`
+	Flavor        string `protobuf:"bytes,14,opt,name=flavor,proto3" json:"flavor,omitempty"`
+	CurrentHp     int32  `protobuf:"varint,15,opt,name=current_hp,json=currentHp,proto3" json:"current_hp,omitempty"` // バトル中の現在HP
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
 }
 
 func (x *Card) Reset() {
@@ -220,6 +225,34 @@ func (x *Card) GetCircleId() string {
 		return *x.CircleId
 	}
 	return ""
+}
+
+func (x *Card) GetMaxHp() int32 {
+	if x != nil {
+		return x.MaxHp
+	}
+	return 0
+}
+
+func (x *Card) GetAttack() int32 {
+	if x != nil {
+		return x.Attack
+	}
+	return 0
+}
+
+func (x *Card) GetFlavor() string {
+	if x != nil {
+		return x.Flavor
+	}
+	return ""
+}
+
+func (x *Card) GetCurrentHp() int32 {
+	if x != nil {
+		return x.CurrentHp
+	}
+	return 0
 }
 
 type Circle struct {
@@ -482,6 +515,338 @@ func (x *CompleteCardResponse) GetErrorMessage() string {
 	return ""
 }
 
+type BattleState struct {
+	state           protoimpl.MessageState `protogen:"open.v1"`
+	BattleId        string                 `protobuf:"bytes,1,opt,name=battle_id,json=battleId,proto3" json:"battle_id,omitempty"`
+	PlayerMe        *Player                `protobuf:"bytes,2,opt,name=player_me,json=playerMe,proto3" json:"player_me,omitempty"`                   // リクエストしたプレイヤー（自分）
+	PlayerOpponent  *Player                `protobuf:"bytes,3,opt,name=player_opponent,json=playerOpponent,proto3" json:"player_opponent,omitempty"` // 対戦相手
+	CurrentTurn     int32                  `protobuf:"varint,4,opt,name=current_turn,json=currentTurn,proto3" json:"current_turn,omitempty"`
+	CurrentPlayerId string                 `protobuf:"bytes,5,opt,name=current_player_id,json=currentPlayerId,proto3" json:"current_player_id,omitempty"` // ターンプレイヤーのID
+	WinnerId        string                 `protobuf:"bytes,6,opt,name=winner_id,json=winnerId,proto3" json:"winner_id,omitempty"`                        // 勝者のID ("" なら対戦中)
+	Logs            []string               `protobuf:"bytes,7,rep,name=logs,proto3" json:"logs,omitempty"`
+	unknownFields   protoimpl.UnknownFields
+	sizeCache       protoimpl.SizeCache
+}
+
+func (x *BattleState) Reset() {
+	*x = BattleState{}
+	mi := &file_ptera_v1_ptera_proto_msgTypes[5]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *BattleState) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*BattleState) ProtoMessage() {}
+
+func (x *BattleState) ProtoReflect() protoreflect.Message {
+	mi := &file_ptera_v1_ptera_proto_msgTypes[5]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use BattleState.ProtoReflect.Descriptor instead.
+func (*BattleState) Descriptor() ([]byte, []int) {
+	return file_ptera_v1_ptera_proto_rawDescGZIP(), []int{5}
+}
+
+func (x *BattleState) GetBattleId() string {
+	if x != nil {
+		return x.BattleId
+	}
+	return ""
+}
+
+func (x *BattleState) GetPlayerMe() *Player {
+	if x != nil {
+		return x.PlayerMe
+	}
+	return nil
+}
+
+func (x *BattleState) GetPlayerOpponent() *Player {
+	if x != nil {
+		return x.PlayerOpponent
+	}
+	return nil
+}
+
+func (x *BattleState) GetCurrentTurn() int32 {
+	if x != nil {
+		return x.CurrentTurn
+	}
+	return 0
+}
+
+func (x *BattleState) GetCurrentPlayerId() string {
+	if x != nil {
+		return x.CurrentPlayerId
+	}
+	return ""
+}
+
+func (x *BattleState) GetWinnerId() string {
+	if x != nil {
+		return x.WinnerId
+	}
+	return ""
+}
+
+func (x *BattleState) GetLogs() []string {
+	if x != nil {
+		return x.Logs
+	}
+	return nil
+}
+
+type Player struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	PlayerId      string                 `protobuf:"bytes,1,opt,name=player_id,json=playerId,proto3" json:"player_id,omitempty"`
+	CircleId      string                 `protobuf:"bytes,2,opt,name=circle_id,json=circleId,proto3" json:"circle_id,omitempty"`
+	CircleName    string                 `protobuf:"bytes,3,opt,name=circle_name,json=circleName,proto3" json:"circle_name,omitempty"`
+	Hp            int32                  `protobuf:"varint,4,opt,name=hp,proto3" json:"hp,omitempty"`    // プレイヤーHP
+	Deck          []*Card                `protobuf:"bytes,5,rep,name=deck,proto3" json:"deck,omitempty"` // [0] is active, [1..] are bench
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *Player) Reset() {
+	*x = Player{}
+	mi := &file_ptera_v1_ptera_proto_msgTypes[6]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *Player) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*Player) ProtoMessage() {}
+
+func (x *Player) ProtoReflect() protoreflect.Message {
+	mi := &file_ptera_v1_ptera_proto_msgTypes[6]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use Player.ProtoReflect.Descriptor instead.
+func (*Player) Descriptor() ([]byte, []int) {
+	return file_ptera_v1_ptera_proto_rawDescGZIP(), []int{6}
+}
+
+func (x *Player) GetPlayerId() string {
+	if x != nil {
+		return x.PlayerId
+	}
+	return ""
+}
+
+func (x *Player) GetCircleId() string {
+	if x != nil {
+		return x.CircleId
+	}
+	return ""
+}
+
+func (x *Player) GetCircleName() string {
+	if x != nil {
+		return x.CircleName
+	}
+	return ""
+}
+
+func (x *Player) GetHp() int32 {
+	if x != nil {
+		return x.Hp
+	}
+	return 0
+}
+
+func (x *Player) GetDeck() []*Card {
+	if x != nil {
+		return x.Deck
+	}
+	return nil
+}
+
+type StartBattleRequest struct {
+	state            protoimpl.MessageState `protogen:"open.v1"`
+	MyCircleId       string                 `protobuf:"bytes,1,opt,name=my_circle_id,json=myCircleId,proto3" json:"my_circle_id,omitempty"`
+	OpponentCircleId string                 `protobuf:"bytes,2,opt,name=opponent_circle_id,json=opponentCircleId,proto3" json:"opponent_circle_id,omitempty"`
+	unknownFields    protoimpl.UnknownFields
+	sizeCache        protoimpl.SizeCache
+}
+
+func (x *StartBattleRequest) Reset() {
+	*x = StartBattleRequest{}
+	mi := &file_ptera_v1_ptera_proto_msgTypes[7]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *StartBattleRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*StartBattleRequest) ProtoMessage() {}
+
+func (x *StartBattleRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_ptera_v1_ptera_proto_msgTypes[7]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use StartBattleRequest.ProtoReflect.Descriptor instead.
+func (*StartBattleRequest) Descriptor() ([]byte, []int) {
+	return file_ptera_v1_ptera_proto_rawDescGZIP(), []int{7}
+}
+
+func (x *StartBattleRequest) GetMyCircleId() string {
+	if x != nil {
+		return x.MyCircleId
+	}
+	return ""
+}
+
+func (x *StartBattleRequest) GetOpponentCircleId() string {
+	if x != nil {
+		return x.OpponentCircleId
+	}
+	return ""
+}
+
+type AttackRequest struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	BattleId      string                 `protobuf:"bytes,1,opt,name=battle_id,json=battleId,proto3" json:"battle_id,omitempty"`
+	PlayerId      string                 `protobuf:"bytes,2,opt,name=player_id,json=playerId,proto3" json:"player_id,omitempty"` // 認証情報から取るべきだが、一旦IDを送る
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *AttackRequest) Reset() {
+	*x = AttackRequest{}
+	mi := &file_ptera_v1_ptera_proto_msgTypes[8]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *AttackRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*AttackRequest) ProtoMessage() {}
+
+func (x *AttackRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_ptera_v1_ptera_proto_msgTypes[8]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use AttackRequest.ProtoReflect.Descriptor instead.
+func (*AttackRequest) Descriptor() ([]byte, []int) {
+	return file_ptera_v1_ptera_proto_rawDescGZIP(), []int{8}
+}
+
+func (x *AttackRequest) GetBattleId() string {
+	if x != nil {
+		return x.BattleId
+	}
+	return ""
+}
+
+func (x *AttackRequest) GetPlayerId() string {
+	if x != nil {
+		return x.PlayerId
+	}
+	return ""
+}
+
+type RetreatRequest struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	BattleId      string                 `protobuf:"bytes,1,opt,name=battle_id,json=battleId,proto3" json:"battle_id,omitempty"`
+	PlayerId      string                 `protobuf:"bytes,2,opt,name=player_id,json=playerId,proto3" json:"player_id,omitempty"`
+	BenchIndex    int32                  `protobuf:"varint,3,opt,name=bench_index,json=benchIndex,proto3" json:"bench_index,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *RetreatRequest) Reset() {
+	*x = RetreatRequest{}
+	mi := &file_ptera_v1_ptera_proto_msgTypes[9]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *RetreatRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*RetreatRequest) ProtoMessage() {}
+
+func (x *RetreatRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_ptera_v1_ptera_proto_msgTypes[9]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use RetreatRequest.ProtoReflect.Descriptor instead.
+func (*RetreatRequest) Descriptor() ([]byte, []int) {
+	return file_ptera_v1_ptera_proto_rawDescGZIP(), []int{9}
+}
+
+func (x *RetreatRequest) GetBattleId() string {
+	if x != nil {
+		return x.BattleId
+	}
+	return ""
+}
+
+func (x *RetreatRequest) GetPlayerId() string {
+	if x != nil {
+		return x.PlayerId
+	}
+	return ""
+}
+
+func (x *RetreatRequest) GetBenchIndex() int32 {
+	if x != nil {
+		return x.BenchIndex
+	}
+	return 0
+}
+
 var File_ptera_v1_ptera_proto protoreflect.FileDescriptor
 
 const file_ptera_v1_ptera_proto_rawDesc = "" +
@@ -495,7 +860,7 @@ const file_ptera_v1_ptera_proto_rawDesc = "" +
 	"\tcircle_id\x18\x05 \x01(\tH\x01R\bcircleId\x88\x01\x01B\b\n" +
 	"\x06_emailB\f\n" +
 	"\n" +
-	"_circle_id\"\x80\x03\n" +
+	"_circle_id\"\xe6\x03\n" +
 	"\x04Card\x12\x0e\n" +
 	"\x02id\x18\x01 \x01(\tR\x02id\x12\x1d\n" +
 	"\n" +
@@ -510,7 +875,12 @@ const file_ptera_v1_ptera_proto_rawDesc = "" +
 	"\n" +
 	"created_at\x18\n" +
 	" \x01(\v2\x1a.google.protobuf.TimestampR\tcreatedAt\x12 \n" +
-	"\tcircle_id\x18\v \x01(\tH\x01R\bcircleId\x88\x01\x01B\x13\n" +
+	"\tcircle_id\x18\v \x01(\tH\x01R\bcircleId\x88\x01\x01\x12\x15\n" +
+	"\x06max_hp\x18\f \x01(\x05R\x05maxHp\x12\x16\n" +
+	"\x06attack\x18\r \x01(\x05R\x06attack\x12\x16\n" +
+	"\x06flavor\x18\x0e \x01(\tR\x06flavor\x12\x1d\n" +
+	"\n" +
+	"current_hp\x18\x0f \x01(\x05R\tcurrentHpB\x13\n" +
 	"\x11_affiliated_groupB\f\n" +
 	"\n" +
 	"_circle_id\",\n" +
@@ -548,9 +918,40 @@ const file_ptera_v1_ptera_proto_rawDesc = "" +
 	"\vdescription\x18\a \x01(\tR\vdescription\x12\x18\n" +
 	"\asuccess\x18\b \x01(\bR\asuccess\x12(\n" +
 	"\rerror_message\x18\t \x01(\tH\x00R\ferrorMessage\x88\x01\x01B\x10\n" +
-	"\x0e_error_message2]\n" +
+	"\x0e_error_message\"\x94\x02\n" +
+	"\vBattleState\x12\x1b\n" +
+	"\tbattle_id\x18\x01 \x01(\tR\bbattleId\x12-\n" +
+	"\tplayer_me\x18\x02 \x01(\v2\x10.ptera.v1.PlayerR\bplayerMe\x129\n" +
+	"\x0fplayer_opponent\x18\x03 \x01(\v2\x10.ptera.v1.PlayerR\x0eplayerOpponent\x12!\n" +
+	"\fcurrent_turn\x18\x04 \x01(\x05R\vcurrentTurn\x12*\n" +
+	"\x11current_player_id\x18\x05 \x01(\tR\x0fcurrentPlayerId\x12\x1b\n" +
+	"\twinner_id\x18\x06 \x01(\tR\bwinnerId\x12\x12\n" +
+	"\x04logs\x18\a \x03(\tR\x04logs\"\x97\x01\n" +
+	"\x06Player\x12\x1b\n" +
+	"\tplayer_id\x18\x01 \x01(\tR\bplayerId\x12\x1b\n" +
+	"\tcircle_id\x18\x02 \x01(\tR\bcircleId\x12\x1f\n" +
+	"\vcircle_name\x18\x03 \x01(\tR\n" +
+	"circleName\x12\x0e\n" +
+	"\x02hp\x18\x04 \x01(\x05R\x02hp\x12\"\n" +
+	"\x04deck\x18\x05 \x03(\v2\x0e.ptera.v1.CardR\x04deck\"d\n" +
+	"\x12StartBattleRequest\x12 \n" +
+	"\fmy_circle_id\x18\x01 \x01(\tR\n" +
+	"myCircleId\x12,\n" +
+	"\x12opponent_circle_id\x18\x02 \x01(\tR\x10opponentCircleId\"I\n" +
+	"\rAttackRequest\x12\x1b\n" +
+	"\tbattle_id\x18\x01 \x01(\tR\bbattleId\x12\x1b\n" +
+	"\tplayer_id\x18\x02 \x01(\tR\bplayerId\"k\n" +
+	"\x0eRetreatRequest\x12\x1b\n" +
+	"\tbattle_id\x18\x01 \x01(\tR\bbattleId\x12\x1b\n" +
+	"\tplayer_id\x18\x02 \x01(\tR\bplayerId\x12\x1f\n" +
+	"\vbench_index\x18\x03 \x01(\x05R\n" +
+	"benchIndex2]\n" +
 	"\fPteraService\x12M\n" +
-	"\fCompleteCard\x12\x1d.ptera.v1.CompleteCardRequest\x1a\x1e.ptera.v1.CompleteCardResponseBAZ?github.com/jyogi-web/2025_Ptera/backend/pkg/grpc/ptera/v1;pterab\x06proto3"
+	"\fCompleteCard\x12\x1d.ptera.v1.CompleteCardRequest\x1a\x1e.ptera.v1.CompleteCardResponse2\xc9\x01\n" +
+	"\rBattleService\x12B\n" +
+	"\vStartBattle\x12\x1c.ptera.v1.StartBattleRequest\x1a\x15.ptera.v1.BattleState\x128\n" +
+	"\x06Attack\x12\x17.ptera.v1.AttackRequest\x1a\x15.ptera.v1.BattleState\x12:\n" +
+	"\aRetreat\x12\x18.ptera.v1.RetreatRequest\x1a\x15.ptera.v1.BattleStateBAZ?github.com/jyogi-web/2025_Ptera/backend/pkg/grpc/ptera/v1;pterab\x06proto3"
 
 var (
 	file_ptera_v1_ptera_proto_rawDescOnce sync.Once
@@ -564,24 +965,38 @@ func file_ptera_v1_ptera_proto_rawDescGZIP() []byte {
 	return file_ptera_v1_ptera_proto_rawDescData
 }
 
-var file_ptera_v1_ptera_proto_msgTypes = make([]protoimpl.MessageInfo, 5)
+var file_ptera_v1_ptera_proto_msgTypes = make([]protoimpl.MessageInfo, 10)
 var file_ptera_v1_ptera_proto_goTypes = []any{
 	(*User)(nil),                  // 0: ptera.v1.User
 	(*Card)(nil),                  // 1: ptera.v1.Card
 	(*Circle)(nil),                // 2: ptera.v1.Circle
 	(*CompleteCardRequest)(nil),   // 3: ptera.v1.CompleteCardRequest
 	(*CompleteCardResponse)(nil),  // 4: ptera.v1.CompleteCardResponse
-	(*timestamppb.Timestamp)(nil), // 5: google.protobuf.Timestamp
+	(*BattleState)(nil),           // 5: ptera.v1.BattleState
+	(*Player)(nil),                // 6: ptera.v1.Player
+	(*StartBattleRequest)(nil),    // 7: ptera.v1.StartBattleRequest
+	(*AttackRequest)(nil),         // 8: ptera.v1.AttackRequest
+	(*RetreatRequest)(nil),        // 9: ptera.v1.RetreatRequest
+	(*timestamppb.Timestamp)(nil), // 10: google.protobuf.Timestamp
 }
 var file_ptera_v1_ptera_proto_depIdxs = []int32{
-	5, // 0: ptera.v1.Card.created_at:type_name -> google.protobuf.Timestamp
-	3, // 1: ptera.v1.PteraService.CompleteCard:input_type -> ptera.v1.CompleteCardRequest
-	4, // 2: ptera.v1.PteraService.CompleteCard:output_type -> ptera.v1.CompleteCardResponse
-	2, // [2:3] is the sub-list for method output_type
-	1, // [1:2] is the sub-list for method input_type
-	1, // [1:1] is the sub-list for extension type_name
-	1, // [1:1] is the sub-list for extension extendee
-	0, // [0:1] is the sub-list for field type_name
+	10, // 0: ptera.v1.Card.created_at:type_name -> google.protobuf.Timestamp
+	6,  // 1: ptera.v1.BattleState.player_me:type_name -> ptera.v1.Player
+	6,  // 2: ptera.v1.BattleState.player_opponent:type_name -> ptera.v1.Player
+	1,  // 3: ptera.v1.Player.deck:type_name -> ptera.v1.Card
+	3,  // 4: ptera.v1.PteraService.CompleteCard:input_type -> ptera.v1.CompleteCardRequest
+	7,  // 5: ptera.v1.BattleService.StartBattle:input_type -> ptera.v1.StartBattleRequest
+	8,  // 6: ptera.v1.BattleService.Attack:input_type -> ptera.v1.AttackRequest
+	9,  // 7: ptera.v1.BattleService.Retreat:input_type -> ptera.v1.RetreatRequest
+	4,  // 8: ptera.v1.PteraService.CompleteCard:output_type -> ptera.v1.CompleteCardResponse
+	5,  // 9: ptera.v1.BattleService.StartBattle:output_type -> ptera.v1.BattleState
+	5,  // 10: ptera.v1.BattleService.Attack:output_type -> ptera.v1.BattleState
+	5,  // 11: ptera.v1.BattleService.Retreat:output_type -> ptera.v1.BattleState
+	8,  // [8:12] is the sub-list for method output_type
+	4,  // [4:8] is the sub-list for method input_type
+	4,  // [4:4] is the sub-list for extension type_name
+	4,  // [4:4] is the sub-list for extension extendee
+	0,  // [0:4] is the sub-list for field type_name
 }
 
 func init() { file_ptera_v1_ptera_proto_init() }
@@ -599,9 +1014,9 @@ func file_ptera_v1_ptera_proto_init() {
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: unsafe.Slice(unsafe.StringData(file_ptera_v1_ptera_proto_rawDesc), len(file_ptera_v1_ptera_proto_rawDesc)),
 			NumEnums:      0,
-			NumMessages:   5,
+			NumMessages:   10,
 			NumExtensions: 0,
-			NumServices:   1,
+			NumServices:   2,
 		},
 		GoTypes:           file_ptera_v1_ptera_proto_goTypes,
 		DependencyIndexes: file_ptera_v1_ptera_proto_depIdxs,

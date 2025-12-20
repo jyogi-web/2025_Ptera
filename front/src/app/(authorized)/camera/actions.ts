@@ -1,8 +1,7 @@
 "use server";
 
-import { create } from "@bufbuild/protobuf";
-import { CompleteCardRequestSchema } from "@/generated/ptera/v1/ptera_pb";
-import { pteraClient } from "@/lib/grpc-client";
+import { CompleteCardRequest } from "@/generated/ptera/v1/ptera_pb";
+import { pteraClient } from "@/lib/grpc";
 
 /**
  * AI補完用のフォームデータ
@@ -49,12 +48,12 @@ export async function completeCardAction(
 
   try {
     try {
-      const request = create(CompleteCardRequestSchema, {
+      const request = new CompleteCardRequest({
         imageUrl: imageUrl,
         name: currentData.name,
         faculty: currentData.faculty,
         department: currentData.department,
-        grade: currentData.grade,
+        grade: currentData.grade ? Number(currentData.grade) : undefined,
         position: currentData.position,
         hobby: currentData.hobby,
         description: currentData.description,
@@ -69,7 +68,7 @@ export async function completeCardAction(
           name: response.name,
           faculty: response.faculty,
           department: response.department,
-          grade: response.grade,
+          grade: response.grade.toString(),
           position: response.position,
           hobby: response.hobby,
           description: response.description,
