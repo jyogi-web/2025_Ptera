@@ -175,7 +175,7 @@ export default function BattleField({
           </div>
 
           {/* Opponent Field */}
-          <div className="flex-1 flex flex-col items-center justify-end gap-2 pl-[15%]">
+          <div className="flex-1 flex flex-col items-center justify-end gap-2 w-1/2 ml-auto pr-8">
             {/* Bench */}
             <div className="flex gap-2 justify-center">
               {opponentBench.map((card) => (
@@ -218,7 +218,7 @@ export default function BattleField({
         <div className="h-[55%] relative w-full p-4 pointer-events-auto flex flex-col justify-end">
           {" "}
           {/* Use justify-end to align to bottom */}
-          <div className="flex-1 flex flex-col items-center justify-start gap-4 pr-[15%] pt-12">
+          <div className="flex-1 flex flex-col items-center justify-start gap-4 w-1/2 pl-8 pt-12">
             {/* Active */}
             <div className="relative transform -translate-y-6">
               {" "}
