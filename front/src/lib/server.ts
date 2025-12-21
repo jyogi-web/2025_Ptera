@@ -160,10 +160,10 @@ function validateCardData(
   // オプショナルフィールドの安全な取得
   const affiliatedGroup =
     data.affiliatedGroupRef &&
-    typeof data.affiliatedGroupRef === "object" &&
-    data.affiliatedGroupRef !== null &&
-    "id" in data.affiliatedGroupRef &&
-    typeof data.affiliatedGroupRef.id === "string"
+      typeof data.affiliatedGroupRef === "object" &&
+      data.affiliatedGroupRef !== null &&
+      "id" in data.affiliatedGroupRef &&
+      typeof data.affiliatedGroupRef.id === "string"
       ? data.affiliatedGroupRef.id
       : undefined;
 
@@ -280,7 +280,21 @@ export async function getCardFromServer(cardId: string) {
     const result = validateCardData(cardDoc.id, cardDoc.data() || {});
 
     if (result.valid && result.card) {
-      return result.card;
+      // Exclude expired cards matchin getCardsFromServer logic
+      const parsedExpiry = parseToDate(
+        result.card.expiryDate as Date | string | undefined,
+      );
+      if (!parsedExpiry) {
+        console.warn(
+          `Card ${cardId}: expiryDate is invalid or missing, including by default`,
+        );
+        return result.card;
+      }
+      if (!isExpired(parsedExpiry)) {
+        return result.card;
+      }
+      // expired -> return null
+      return null;
     }
 
     console.warn(`Card ${cardId} validation failed:`, result.error);
