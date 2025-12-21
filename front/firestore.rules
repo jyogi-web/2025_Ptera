@@ -114,6 +114,12 @@ service cloud.firestore {
       allow delete: if isAuthenticated();
     }
 
+    // Game Records Collection (Setsuna, etc)
+    match /game_records/{recordId} {
+      allow read: if isAuthenticated();
+      allow create: if isAuthenticated(); // Check valid fields if strict, but authenticated is baseline
+    }
+
     // Default rule: Deny everything else by default for safety
     match /{document=**} {
       allow read, write: if false;
