@@ -1,0 +1,135 @@
+<mxfile host="65bd71144e">
+    <diagram name="User Journey" id="user-journey">
+        <mxGraphModel dx="3120" dy="3137" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="0" pageScale="1" pageWidth="827" pageHeight="1169" background="#ffffff" math="0" shadow="0">
+            <root>
+                <mxCell id="0"/>
+                <mxCell id="1" parent="0"/>
+                <mxCell id="arrow-1" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeWidth=3;fontSize=18;fontFamily=Noto Sans JP;endArrow=classic;endFill=1;fontColor=#000000;" parent="1" source="start" target="login" edge="1">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="arrow-2" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeWidth=3;fontSize=18;fontFamily=Noto Sans JP;endArrow=classic;endFill=1;fontColor=#000000;" parent="1" source="login" target="join-circle" edge="1">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="arrow-3" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeWidth=3;fontSize=18;fontFamily=Noto Sans JP;endArrow=classic;endFill=1;fontColor=#000000;" parent="1" source="join-circle" target="create-card" edge="1">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="arrow-4" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeWidth=3;fontSize=18;fontFamily=Noto Sans JP;endArrow=classic;endFill=1;fontColor=#000000;" parent="1" source="create-card" target="binder" edge="1">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="arrow-5" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeWidth=2;fontSize=18;fontFamily=Noto Sans JP;endArrow=classic;endFill=1;dashed=1;fontColor=#000000;" parent="1" source="binder" target="gacha" edge="1">
+                    <mxGeometry relative="1" as="geometry"/>
+                    <mxObject label="オプション" as="label">
+                        <mxCell style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];fontSize=14;fontFamily=Noto Sans JP;" vertex="1" connectable="0" parent="arrow-5">
+                            <mxGeometry x="-0.2" y="20" relative="1" as="geometry">
+                                <mxPoint as="offset"/>
+                            </mxGeometry>
+                        </mxCell>
+                    </mxObject>
+                </mxCell>
+                <mxCell id="arrow-6" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeWidth=3;fontSize=18;fontFamily=Noto Sans JP;endArrow=classic;endFill=1;fontColor=#000000;" parent="1" source="binder" target="battle-request" edge="1">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="arrow-7" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeWidth=2;fontSize=18;fontFamily=Noto Sans JP;endArrow=classic;endFill=1;dashed=1;fontColor=#000000;" parent="1" source="gacha" target="battle-request" edge="1">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="arrow-8" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeWidth=3;fontSize=18;fontFamily=Noto Sans JP;endArrow=classic;endFill=1;fontColor=#000000;" parent="1" source="battle-request" target="matching" edge="1">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="arrow-9" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeWidth=3;fontSize=18;fontFamily=Noto Sans JP;endArrow=classic;endFill=1;fontColor=#000000;" parent="1" source="matching" target="battle" edge="1">
+                    <mxGeometry relative="1" as="geometry"/>
+                    <mxObject label="承認" as="label">
+                        <mxCell style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];fontSize=16;fontFamily=Noto Sans JP;fontColor=#000000;" vertex="1" connectable="0" parent="arrow-9">
+                            <mxGeometry x="-0.2" y="20" relative="1" as="geometry">
+                                <mxPoint as="offset"/>
+                            </mxGeometry>
+                        </mxCell>
+                    </mxObject>
+                </mxCell>
+                <mxCell id="arrow-10" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeWidth=3;fontSize=18;fontFamily=Noto Sans JP;endArrow=classic;endFill=1;fontColor=#000000;" parent="1" source="battle" target="result" edge="1">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="arrow-11" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeWidth=2;fontSize=18;fontFamily=Noto Sans JP;endArrow=classic;endFill=1;dashed=1;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=1;entryY=0.5;entryDx=0;entryDy=0;fontColor=#000000;" parent="1" source="result" target="battle-request" edge="1">
+                    <mxGeometry relative="1" as="geometry">
+                        <Array as="points">
+                            <mxPoint x="1180" y="1180"/>
+                            <mxPoint x="1180" y="800"/>
+                        </Array>
+                    </mxGeometry>
+                    <mxObject label="もう一度遊ぶ" as="label">
+                        <mxCell style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];fontSize=14;fontFamily=Noto Sans JP;" vertex="1" connectable="0" parent="arrow-11">
+                            <mxGeometry x="0.2" y="-25" relative="1" as="geometry">
+                                <mxPoint as="offset"/>
+                            </mxGeometry>
+                        </mxCell>
+                    </mxObject>
+                </mxCell>
+                <mxCell id="arrow-12" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeWidth=2;fontSize=18;fontFamily=Noto Sans JP;endArrow=classic;endFill=1;dashed=1;exitX=0;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;fontColor=#000000;" parent="1" source="result" target="create-card" edge="1">
+                    <mxGeometry relative="1" as="geometry">
+                        <Array as="points">
+                            <mxPoint x="80" y="1180"/>
+                            <mxPoint x="80" y="440"/>
+                        </Array>
+                    </mxGeometry>
+                    <mxObject label="新しいカード追加" as="label">
+                        <mxCell style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];fontSize=14;fontFamily=Noto Sans JP;" vertex="1" connectable="0" parent="arrow-12">
+                            <mxGeometry x="0.5" y="-25" relative="1" as="geometry">
+                                <mxPoint as="offset"/>
+                            </mxGeometry>
+                        </mxCell>
+                    </mxObject>
+                </mxCell>
+                <mxCell id="start" value="スタート" style="ellipse;whiteSpace=wrap;html=1;fillColor=#4CAF50;strokeColor=#2E7D32;fontSize=20;fontFamily=Noto Sans JP;fontStyle=1;strokeWidth=3;fontColor=#000000;" parent="1" vertex="1">
+                    <mxGeometry x="500" y="40" width="200" height="80" as="geometry"/>
+                </mxCell>
+                <mxCell id="login" value="1. ログイン&#10;Firebase認証でログイン" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#E3F2FD;strokeColor=#1976D2;fontSize=18;fontFamily=Noto Sans JP;strokeWidth=2;align=center;fontColor=#000000;" parent="1" vertex="1">
+                    <mxGeometry x="460" y="160" width="280" height="80" as="geometry"/>
+                </mxCell>
+                <mxCell id="join-circle" value="2. サークル参加&lt;br&gt;サークルページから参加or作成" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#F3E5F5;strokeColor=#7B1FA2;fontSize=18;fontFamily=Noto Sans JP;strokeWidth=2;align=center;fontColor=#000000;" parent="1" vertex="1">
+                    <mxGeometry x="460" y="280" width="280" height="80" as="geometry"/>
+                </mxCell>
+                <mxCell id="create-card" value="3. カード生成&#10;カメラで撮影→AI自動生成" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFF3E0;strokeColor=#E65100;fontSize=18;fontFamily=Noto Sans JP;strokeWidth=2;align=center;fontColor=#000000;" parent="1" vertex="1">
+                    <mxGeometry x="460" y="400" width="280" height="80" as="geometry"/>
+                </mxCell>
+                <mxCell id="card-process" value="📸 写真撮影&#10;↓&#10;☁️ Firebase Storage保存&#10;↓&#10;🤖 Gemini AI解析&#10;↓&#10;✏️ カード情報編集&#10;↓&#10;💾 Firestore保存" style="text;html=1;strokeColor=#E65100;fillColor=#FFF8E1;align=left;verticalAlign=top;whiteSpace=wrap;rounded=1;fontSize=14;fontFamily=Noto Sans JP;strokeWidth=1;spacing=10;fontColor=#000000;" parent="1" vertex="1">
+                    <mxGeometry x="800" y="360" width="260" height="180" as="geometry"/>
+                </mxCell>
+                <mxCell id="binder" value="4. バインダー確認&#10;カードを閲覧・編集・お気に入り登録" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#E8F5E9;strokeColor=#2E7D32;fontSize=18;fontFamily=Noto Sans JP;strokeWidth=2;align=center;fontColor=#000000;" parent="1" vertex="1">
+                    <mxGeometry x="460" y="520" width="280" height="80" as="geometry"/>
+                </mxCell>
+                <mxCell id="gacha" value="5. ガチャ (オプション)&#10;ランダムカード獲得" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FCE4EC;strokeColor=#C2185B;fontSize=18;fontFamily=Noto Sans JP;strokeWidth=2;align=center;dashed=1;fontColor=#000000;" parent="1" vertex="1">
+                    <mxGeometry x="140" y="640" width="280" height="80" as="geometry"/>
+                </mxCell>
+                <mxCell id="battle-request" value="6. バトルリクエスト送信&#10;対戦相手のサークルを選択" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFF9C4;strokeColor=#F57F17;fontSize=18;fontFamily=Noto Sans JP;strokeWidth=2;align=center;fontColor=#000000;" parent="1" vertex="1">
+                    <mxGeometry x="460" y="760" width="280" height="80" as="geometry"/>
+                </mxCell>
+                <mxCell id="matching" value="7. マッチング&#10;相手がリクエスト承認待ち" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#E1F5FE;strokeColor=#0277BD;fontSize=18;fontFamily=Noto Sans JP;strokeWidth=2;align=center;fontColor=#000000;" parent="1" vertex="1">
+                    <mxGeometry x="460" y="880" width="280" height="80" as="geometry"/>
+                </mxCell>
+                <mxCell id="battle" value="8. バトル開始&#10;ターン制カードバトル" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFEBEE;strokeColor=#C62828;fontSize=20;fontFamily=Noto Sans JP;fontStyle=1;strokeWidth=3;align=center;fontColor=#000000;" parent="1" vertex="1">
+                    <mxGeometry x="460" y="1000" width="280" height="80" as="geometry"/>
+                </mxCell>
+                <mxCell id="battle-system" value="🎮 バトルシステム&#10;&#10;• 各サークル5枚のデッキ&#10;• 1枚がアクティブ、4枚がベンチ&#10;• ターン制で「攻撃」or「交代」&#10;• HP 0 でカード戦闘不能&#10;• 5枚全滅で敗北" style="text;html=1;strokeColor=#C62828;fillColor=#FFEBEE;align=left;verticalAlign=top;whiteSpace=wrap;rounded=1;fontSize=14;fontFamily=Noto Sans JP;strokeWidth=2;spacing=10;fontColor=#000000;" parent="1" vertex="1">
+                    <mxGeometry x="800" y="960" width="320" height="200" as="geometry"/>
+                </mxCell>
+                <mxCell id="result" value="9. 勝敗決定" style="ellipse;whiteSpace=wrap;html=1;fillColor=#FFD54F;strokeColor=#F57F00;fontSize=20;fontFamily=Noto Sans JP;fontStyle=1;strokeWidth=3;fontColor=#000000;" parent="1" vertex="1">
+                    <mxGeometry x="500" y="1120" width="200" height="120" as="geometry"/>
+                </mxCell>
+                <mxCell id="phase-1" value="準備フェーズ" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontSize=18;fontFamily=Noto Sans JP;fontStyle=3;fontColor=#000000;" parent="1" vertex="1">
+                    <mxGeometry x="160" y="160" width="180" height="40" as="geometry"/>
+                </mxCell>
+                <mxCell id="phase-2" value="カード収集フェーズ" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontSize=18;fontFamily=Noto Sans JP;fontStyle=3;fontColor=#000000;" parent="1" vertex="1">
+                    <mxGeometry x="160" y="400" width="240" height="40" as="geometry"/>
+                </mxCell>
+                <mxCell id="phase-3" value="バトルフェーズ" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontSize=18;fontFamily=Noto Sans JP;fontStyle=3;fontColor=#000000;" parent="1" vertex="1">
+                    <mxGeometry x="160" y="760" width="200" height="40" as="geometry"/>
+                </mxCell>
+                <mxCell id="title" value="Ptera - 遊び方の流れ" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontSize=28;fontFamily=Noto Sans JP;fontStyle=1;fontColor=#000000;" parent="1" vertex="1">
+                    <mxGeometry x="380" y="-60" width="440" height="50" as="geometry"/>
+                </mxCell>
+                <mxCell id="note" value="💡 ポイント&#10;• サークルメンバー全員でカードを集める&#10;• カードのステータスは学年とIDから自動生成&#10;• リアルタイムでバトル状態が同期&#10;• 何度でも繰り返し遊べる" style="text;html=1;strokeColor=#F57F00;fillColor=#FFF8E1;align=left;verticalAlign=top;whiteSpace=wrap;rounded=1;fontSize=14;fontFamily=Noto Sans JP;strokeWidth=2;spacing=10;fontColor=#000000;" parent="1" vertex="1">
+                    <mxGeometry x="140" y="1000" width="280" height="160" as="geometry"/>
+                </mxCell>
+            </root>
+        </mxGraphModel>
+    </diagram>
+</mxfile>

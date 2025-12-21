@@ -1,0 +1,58 @@
+<mxfile host="65bd71144e">
+    <diagram name="Protocol Buffers Code Generation" id="proto-generation">
+        <mxGraphModel dx="637" dy="1031" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="0" pageScale="1" pageWidth="827" pageHeight="1169" background="#ffffff" math="0" shadow="0">
+            <root>
+                <mxCell id="0"/>
+                <mxCell id="1" parent="0"/>
+                <mxCell id="arrow-1" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeWidth=3;fontSize=18;fontFamily=Noto Sans JP;endArrow=classic;endFill=1;strokeColor=#000000;" parent="1" source="proto-file" target="backend-code" edge="1">
+                    <mxGeometry relative="1" as="geometry"/>
+                    <mxObject label="型生成" as="label">
+                        <mxCell style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];fontSize=18;fontFamily=Noto Sans JP;fontColor=#000000;" vertex="1" connectable="0" parent="arrow-1">
+                            <mxGeometry x="-0.2" y="-25" relative="1" as="geometry">
+                                <mxPoint as="offset"/>
+                            </mxGeometry>
+                        </mxCell>
+                    </mxObject>
+                </mxCell>
+                <mxCell id="arrow-2" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeWidth=3;fontSize=18;fontFamily=Noto Sans JP;endArrow=classic;endFill=1;strokeColor=#000000;" parent="1" source="proto-file" target="frontend-code" edge="1">
+                    <mxGeometry relative="1" as="geometry"/>
+                    <mxObject label="型生成" as="label">
+                        <mxCell style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];fontSize=18;fontFamily=Noto Sans JP;fontColor=#000000;" vertex="1" connectable="0" parent="arrow-2">
+                            <mxGeometry x="-0.2" y="-25" relative="1" as="geometry">
+                                <mxPoint as="offset"/>
+                            </mxGeometry>
+                        </mxCell>
+                    </mxObject>
+                </mxCell>
+                <mxCell id="arrow-3" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeWidth=4;fontSize=18;fontFamily=Noto Sans JP;endArrow=classic;endFill=1;startArrow=classic;startFill=1;strokeColor=#E65100;" parent="1" source="backend-code" target="frontend-code" edge="1">
+                    <mxGeometry relative="1" as="geometry"/>
+                    <mxObject label="型安全な通信" as="label">
+                        <mxCell style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];fontSize=18;fontFamily=Noto Sans JP;fontColor=#E65100;fontStyle=1" vertex="1" connectable="0" parent="arrow-3">
+                            <mxGeometry x="-0.1" y="25" relative="1" as="geometry">
+                                <mxPoint as="offset"/>
+                            </mxGeometry>
+                        </mxCell>
+                    </mxObject>
+                </mxCell>
+                <mxCell id="title" value="Protocol Buffers で共通の型を生成" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontSize=28;fontFamily=Noto Sans JP;fontStyle=1;fontColor=#000000;" parent="1" vertex="1">
+                    <mxGeometry x="200" y="80" width="600" height="50" as="geometry"/>
+                </mxCell>
+                <mxCell id="proto-file" value="ptera.proto&#10;&#10;共通のAPI定義" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#E1F5FE;strokeColor=#0277BD;fontSize=20;fontFamily=Noto Sans JP;fontStyle=1;strokeWidth=3;fontColor=#000000;" parent="1" vertex="1">
+                    <mxGeometry x="350" y="200" width="300" height="120" as="geometry"/>
+                </mxCell>
+                <mxCell id="backend-code" value="Go&#10;バックエンド&#10;&#10;生成された型" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;fontSize=20;fontFamily=Noto Sans JP;fontStyle=1;strokeWidth=3;fontColor=#000000;" parent="1" vertex="1">
+                    <mxGeometry x="100" y="420" width="280" height="140" as="geometry"/>
+                </mxCell>
+                <mxCell id="frontend-code" value="TypeScript&#10;フロントエンド&#10;&#10;生成された型" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=20;fontFamily=Noto Sans JP;fontStyle=1;strokeWidth=3;fontColor=#000000;" parent="1" vertex="1">
+                    <mxGeometry x="620" y="420" width="280" height="140" as="geometry"/>
+                </mxCell>
+                <mxCell id="benefit" value="✅ 同じ型定義を共有&#10;✅ 型の不一致エラーを防止&#10;✅ APIの変更が自動反映" style="text;html=1;strokeColor=#1976D2;fillColor=#BBDEFB;align=left;verticalAlign=middle;whiteSpace=wrap;rounded=1;fontSize=18;fontFamily=Noto Sans JP;strokeWidth=3;spacing=15;fontColor=#000000;fontStyle=1" parent="1" vertex="1">
+                    <mxGeometry x="250" y="620" width="500" height="120" as="geometry"/>
+                </mxCell>
+                <mxCell id="2" value="" style="shape=image;verticalLabelPosition=bottom;labelBackgroundColor=default;verticalAlign=top;aspect=fixed;imageAspect=0;image=https://soichisumi.net/images/protobuf.png;" vertex="1" parent="1">
+                    <mxGeometry x="660" y="190" width="140" height="140" as="geometry"/>
+                </mxCell>
+            </root>
+        </mxGraphModel>
+    </diagram>
+</mxfile>
