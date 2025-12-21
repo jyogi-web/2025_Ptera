@@ -429,7 +429,7 @@ export default function ShootingGame() {
         if (!canvasRef.current || !containerRef.current) return;
 
         const scene = new THREE.Scene();
-        scene.fog = new THREE.FogExp2(0x000000, 0.15);
+        scene.fog = new THREE.FogExp2(0x151525, 0.15);
 
         const width = containerRef.current.clientWidth;
         const height = containerRef.current.clientHeight;
@@ -445,7 +445,7 @@ export default function ShootingGame() {
         renderer.setSize(width, height);
         renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
 
-        const gridHelper = new THREE.GridHelper(30, 30, 0x00ffff, 0x222222);
+        const gridHelper = new THREE.GridHelper(30, 30, 0x222222, 0x222222);
         gridHelper.rotation.x = Math.PI / 2;
         gridHelper.position.y = -4;
         scene.add(gridHelper);
