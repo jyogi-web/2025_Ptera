@@ -334,6 +334,7 @@ export default function ShootingGame() {
         const y = (Math.random() - 0.5) * (boundsY * 2);
 
         mesh.position.set(x, y, 0);
+        mesh.scale.set(0, 0, 0); // Start scaling from 0
 
         const speed = 0.02 + Math.random() * 0.04;
         const angle = Math.random() * Math.PI * 2;
@@ -421,6 +422,13 @@ export default function ShootingGame() {
                 // velocity * timeScale -> add to position
                 const moveStep = tempVec3.copy(enemy.velocity).multiplyScalar(timeScale);
                 enemy.mesh.position.add(moveStep);
+
+                // Spawn Animation (Scale up)
+                if (enemy.mesh.scale.x < 1) {
+                    const scaleSpeed = 0.1 * timeScale;
+                    const newScale = Math.min(enemy.mesh.scale.x + scaleSpeed, 1);
+                    enemy.mesh.scale.set(newScale, newScale, newScale);
+                }
 
                 // Simple rotation
                 enemy.mesh.rotation.z += 0.05 * timeScale;
