@@ -317,24 +317,17 @@ export default function BattleField({
         </div>
       </div>
 
-      {/* --- Turn Indicator (Center) --- */}
-      <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 z-30 pointer-events-none">
-        <div className="text-4xl font-black text-white/5 tracking-[0.2em] whitespace-nowrap blur-[1px]">
-          TURN {currentTurn}
-        </div>
-      </div>
-
       {/* --- Log Area (Fixed Top-Right) --- */}
       {state.logs && state.logs.length > 0 && (
         <div
-          className={`fixed top-16 right-4 z-50 w-64 font-mono text-xs rounded-lg border border-cyan-500/30 bg-black/90 shadow-[0_0_15px_rgba(6,182,212,0.15)] backdrop-blur-md transition-all duration-300 ${
-            isLogMinimized ? "h-auto" : "max-h-48"
+          className={`fixed top-16 right-4 z-50 w-64 font-mono text-xs rounded-lg border border-cyan-500/30 bg-black/90 shadow-[0_0_15px_rgba(6,182,212,0.15)] backdrop-blur-md transition-all duration-300 flex flex-col overflow-hidden ${
+            isLogMinimized ? "h-auto" : "max-h-64"
           }`}
         >
           {/* Header */}
-          <div className="bg-cyan-950/80 border-b border-cyan-500/30 px-3 py-1.5 flex items-center justify-between">
+          <div className="bg-cyan-950/80 border-b border-cyan-500/30 px-3 py-1.5 flex items-center justify-between shrink-0">
             <span className="text-cyan-400 font-bold tracking-wider flex items-center gap-2">
-              <span className="w-2 h-2 bg-cyan-500 rounded-full animate-pulse"></span>
+              <span className="w-2 h-2 bg-cyan-500 rounded-full animate-pulse" />
               BATTLE LOG
             </span>
             <button
@@ -347,11 +340,11 @@ export default function BattleField({
           </div>
           {/* Content */}
           {!isLogMinimized && (
-            <div className="p-2 space-y-1 overflow-y-auto max-h-[calc(16rem-2.5rem)] scrollbar-thin scrollbar-thumb-cyan-900 scrollbar-track-transparent">
+            <div className="p-2 space-y-1 overflow-y-auto flex-1 scrollbar-thin scrollbar-thumb-cyan-900 scrollbar-track-transparent">
               {state.logs.map((log, i) => (
                 <div
                   key={`${i}-${log}`}
-                  className="pl-2 border-l-2 border-cyan-500/20 py-0.5 text-cyan-200/80"
+                  className="pl-2 border-l-2 border-cyan-500/20 py-0.5 text-cyan-200/80 break-words"
                 >
                   <span className="opacity-50 mr-1">{i + 1}.</span> {log}
                 </div>
