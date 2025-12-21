@@ -50,9 +50,7 @@ export const Footer = () => {
 
   // 特定のパスで非表示にする場合はここに追加
   const isHiddenPath =
-    ["/login", "/"].includes(pathname) ||
-    pathname.startsWith("/battle") ||
-    pathname.startsWith("/circle/matching");
+    ["/login", "/"].includes(pathname) || pathname.startsWith("/battle");
   if (isHiddenPath) return null;
 
   return (
@@ -72,18 +70,16 @@ export const Footer = () => {
                   <button
                     type="button"
                     onClick={() => router.push(item.href)}
-                    className={`flex flex-col items-center justify-center space-y-1 transition-all duration-300 w-16 ${
-                      isActive
+                    className={`flex flex-col items-center justify-center space-y-1 transition-all duration-300 w-16 ${isActive
                         ? "text-cyan-400 drop-shadow-[0_0_8px_rgba(34,211,238,0.8)] scale-110"
                         : "text-slate-500 hover:text-cyan-200/70"
-                    }`}
+                      }`}
                   >
                     <div
-                      className={`p-1.5 rounded-xl transition-all duration-300 ${
-                        isActive
+                      className={`p-1.5 rounded-xl transition-all duration-300 ${isActive
                           ? "bg-cyan-950/50 border border-cyan-500/30 shadow-[inset_0_0_10px_rgba(6,182,212,0.2)]"
                           : "border border-transparent"
-                      }`}
+                        }`}
                     >
                       <Icon
                         size={24}
@@ -92,9 +88,8 @@ export const Footer = () => {
                       />
                     </div>
                     <span
-                      className={`text-[10px] font-bold tracking-wider ${
-                        isActive ? "text-cyan-400" : "text-slate-500"
-                      }`}
+                      className={`text-[10px] font-bold tracking-wider ${isActive ? "text-cyan-400" : "text-slate-500"
+                        }`}
                     >
                       {item.label}
                     </span>

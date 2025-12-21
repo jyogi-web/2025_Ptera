@@ -26,7 +26,7 @@ export const styles: { [key: string]: CSSProperties } = {
   dashboardContent: {
     height: "100%",
     width: "100%",
-    padding: "60px 16px 20px 16px", // Reduced bottom padding
+    padding: "60px 16px 80px 16px", // Increased bottom padding for footer
     display: "flex",
     flexDirection: "column",
     alignItems: "center",
