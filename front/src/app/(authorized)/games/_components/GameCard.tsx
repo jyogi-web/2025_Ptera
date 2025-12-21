@@ -1,6 +1,5 @@
 "use client";
 
-import { FrameCorners } from "@arwes/react";
 import Link from "next/link";
 import { useState } from "react";
 import { styles } from "../_styles/GameCard.styles";
@@ -35,14 +34,6 @@ export const GameCard = ({
       onBlur={() => setIsHovered(false)}
     >
       <div style={styles.card}>
-        <FrameCorners
-          style={{
-            ...styles.frame,
-            color: isHovered && !disabled ? color : "rgba(255, 255, 255, 0.1)",
-          }}
-          strokeWidth={2}
-          cornerLength={20}
-        />
         <div style={styles.cardContent}>
           <h2
             style={{

@@ -25,8 +25,6 @@ export const styles: { [key: string]: CSSProperties } = {
     fontSize: "2rem",
     fontWeight: "bold",
     color: "#00dac1",
-    letterSpacing: "4px",
-    textShadow: "0 0 20px rgba(0, 218, 193, 0.5)",
   },
   grid: {
     display: "grid",

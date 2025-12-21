@@ -1,6 +1,5 @@
 "use client";
 
-import { Animator, FrameCorners } from "@arwes/react";
 import { styles } from "../_styles/GameDescription.styles";
 import { Button } from "./Button";
 
@@ -11,16 +10,8 @@ interface GameDescriptionProps {
 export const GameDescription = ({ onStart }: GameDescriptionProps) => {
   return (
     <div style={styles.container}>
-      <Animator active={true}>
-        <FrameCorners style={styles.frame} strokeWidth={2} cornerLength={20} />
-      </Animator>
-
       <div style={styles.content}>
-        <div style={styles.buttonWrapper}>
-          <Button onClick={onStart} palette="secondary">
-            刹那のメンコ
-          </Button>
-        </div>
+        <Button onClick={onStart}>刹那のメンコ</Button>
 
         <p style={styles.text}>
           QRコードを見失わないようにカメラを固定せよ。

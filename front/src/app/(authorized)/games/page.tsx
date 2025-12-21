@@ -31,17 +31,9 @@ export default function GameHub() {
           />
           <GameCard
             title="SHOOTING"
-            description="Training Simulation"
+            description=""
             href="/games/shooting"
             color="#ff0055"
-          />
-          {/* Placeholder for future games */}
-          <GameCard
-            title="COMING_SOON"
-            description="Next Operation..."
-            href="#"
-            color="#444"
-            disabled
           />
         </div>
       </Animator>

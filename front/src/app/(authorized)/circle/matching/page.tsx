@@ -80,13 +80,13 @@ export default function MatchingPage() {
             </div>
 
             {/* Requests List */}
-            <div className="flex-none mb-6">
+            <div className="flex-none mb-2">
               <BattleRequestList myCircleId={user.circleId} />
             </div>
 
             {/* Opponent Selection */}
 
-            <div className="relative z-10 p-6 flex flex-col h-full">
+            <div className="relative z-10 px-6 pb-6 pt-2 flex flex-col h-full">
               <div style={styles.panelHeader}>
                 <div className="flex items-center gap-2">
                   <div className="w-2 h-2 bg-orange-500 rounded-full animate-ping" />
