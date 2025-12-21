@@ -3,7 +3,7 @@
 # 完成品
 
 デプロイ先
-<https://2025-ptera.vercel.app>
+<https://2025-ptera.vercel.app/>
 
 # 【アプリ概要】
 
@@ -21,6 +21,9 @@
 6. サークルメンバーでデッキを作って対戦！
 
 その他ミニゲームも遊べる！
+
+- QRメンコ
+- 指バンバン
 
 ![image](https://ptera-publish.topaz.dev/project/01KCZFKMBM3TP22F7T56GXDVEA.png)
 
@@ -62,21 +65,80 @@ service BattleService {
 }
 ```
 
-### lefthook
+### プロトコルバッファーでの生成
+
+![image](https://ptera-publish.topaz.dev/project/01KCZG1EJ12G21WVHJRQADGA8V.png)
+
+### lefthook🤛導入 〜何を四天王！〜
 
 めちゃくちゃフォーマットかけ忘れマンなのでpre-commitを導入しました〜
+
+```yaml
+# Lefthook configuration for 2025_Ptera
+# https://lefthook.dev/configuration/
+
+pre-commit:
+  parallel: true
+  commands:
+    lint:
+      glob: "front/**/*.{js,ts,jsx,tsx}"
+      run: cd front && npm run lint:fix
+      stage_fixed: true
+
+    format:
+      glob: "front/**/*.{js,ts,jsx,tsx,json,md,yml,yaml}"
+      run: cd front && npm run format:fix
+      stage_fixed: true
+
+    typescript:
+      glob: "front/**/*.{ts,tsx}"
+      run: cd front && npx tsc --noEmit --skipLibCheck
+
+pre-push:
+  commands:
+    test:
+      run: cd front && npm test
+```
 
 pre-commitの管理にはLefthookを導入してみて、結構楽に導入できたとという印象です
 <https://qiita.com/KOU050223/items/35cfaedefad2bc88a89d>
 
-### ほげほげ
+### [coderabbit](https://www.coderabbit.ai/ja)導入 〜レビュー大臣〜
+
+coderabbitを入れることで以下の点をカバーしました！
+
+- 複数視点でのレビュー(`〇〇の観点により✖️✖️を改善しましょう！`)
+- PRのサマリー
+- issueの詳細なプランを立ててくれる
+- @coderabbitaiで呼び出して会話！
+- パブリックリポジトリは無料でレビューしてくれる
 
 ## アーキテクチャ
 
+これはclaudecodeくんにdrawioで書いて若干修正してみました！
+最近QiitaかZennで記事を見たので...
+
+XMLでわりかしトークンを食う...?
+
+```text
+draw.io で〇〇図を作成してください。以下のルールに従ってください。
+
+- mxGraphModel に defaultFontFamily="フォント名" を設定
+- すべてのテキスト要素の style に fontFamily=フォント名; を追加
+- フォントサイズは標準の1.5倍 (18px程度) を使用
+- 矢印は XML の先頭に配置 (最背面)
+- 矢印とラベルは 20px 以上離す
+- 日本語テキストの width は十分に確保 (1文字あたり 30-40px)
+- 背景色は設定しない (透明)
+- page="0" を設定
+```
+
 ![image](https://ptera-publish.topaz.dev/project/01KCZFY7GBX8EVTB523FSJEW80.png)
 
-## プロトコルバッファーでの生成
+## ゲーム詳細
 
-![image](https://ptera-publish.topaz.dev/project/01KCZG1EJ12G21WVHJRQADGA8V.png)
+## QRメンコ詳細
+
+## 指バンバン詳細
 
 # これからの展望
