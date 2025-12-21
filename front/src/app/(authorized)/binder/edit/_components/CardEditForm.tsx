@@ -129,7 +129,7 @@ export default function CardEditForm({ card }: Props) {
     return (
         <form
             onSubmit={handleSubmit}
-            className="max-w-md mx-auto p-4 space-y-6 text-slate-100"
+            className="w-full mx-auto p-4 space-y-6 text-slate-100"
         >
             {/* Title */}
             <h2 className="text-xl font-bold text-center text-cyan-400 border-b border-cyan-500/30 pb-2">
