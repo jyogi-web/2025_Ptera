@@ -160,10 +160,10 @@ function validateCardData(
   // オプショナルフィールドの安全な取得
   const affiliatedGroup =
     data.affiliatedGroupRef &&
-    typeof data.affiliatedGroupRef === "object" &&
-    data.affiliatedGroupRef !== null &&
-    "id" in data.affiliatedGroupRef &&
-    typeof data.affiliatedGroupRef.id === "string"
+      typeof data.affiliatedGroupRef === "object" &&
+      data.affiliatedGroupRef !== null &&
+      "id" in data.affiliatedGroupRef &&
+      typeof data.affiliatedGroupRef.id === "string"
       ? data.affiliatedGroupRef.id
       : undefined;
 
@@ -263,5 +263,30 @@ export async function getCardsFromServer(circleId?: string) {
   } catch (error) {
     console.error("Failed to fetch cards from server:", error);
     throw error;
+  }
+}
+
+/**
+ * サーバー側で単一のカードデータを取得
+ */
+export async function getCardFromServer(cardId: string) {
+  try {
+    const cardDoc = await adminDB.collection("cards").doc(cardId).get();
+
+    if (!cardDoc.exists) {
+      return null;
+    }
+
+    const result = validateCardData(cardDoc.id, cardDoc.data()!);
+
+    if (result.valid && result.card) {
+      return result.card;
+    }
+
+    console.warn(`Card ${cardId} validation failed:`, result.error);
+    return null;
+  } catch (error) {
+    console.error(`Failed to fetch card ${cardId} from server:`, error);
+    return null;
   }
 }

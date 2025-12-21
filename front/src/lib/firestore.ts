@@ -2,6 +2,7 @@ import {
   addDoc,
   arrayUnion,
   collection,
+  deleteDoc,
   doc,
   getDoc,
   getDocs,
@@ -13,6 +14,7 @@ import {
   serverTimestamp,
   setDoc,
   Timestamp,
+  updateDoc,
   where,
 } from "firebase/firestore";
 import { convertCard } from "@/helper/converter";
@@ -182,6 +184,39 @@ export const getCards = async (circleId?: string): Promise<Card[]> => {
       return null;
     })
     .filter((card): card is Card => card !== null);
+};
+
+export const getCard = async (cardId: string): Promise<Card | null> => {
+  const docRef = doc(db, CARDS_COLLECTION, cardId);
+  const docSnap = await getDoc(docRef);
+
+  if (docSnap.exists()) {
+    const data = docSnap.data();
+    if (isValidFirestoreCard(docSnap.id, data)) {
+      return convertCard(docSnap.id, data);
+    }
+  }
+  return null;
+};
+
+export const updateCard = async (
+  cardId: string,
+  data: Partial<FirestoreCard>,
+): Promise<void> => {
+  const docRef = doc(db, CARDS_COLLECTION, cardId);
+
+  // Consider validating data here if needed, similar to validateCardData
+  // allowing partial updates.
+
+  await updateDoc(docRef, {
+    ...data,
+    updatedAt: serverTimestamp(),
+  });
+};
+
+export const deleteCard = async (cardId: string): Promise<void> => {
+  const docRef = doc(db, CARDS_COLLECTION, cardId);
+  await deleteDoc(docRef);
 };
 
 // --- User & Circle Management ---
