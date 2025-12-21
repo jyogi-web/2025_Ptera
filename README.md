@@ -5,6 +5,10 @@
 デプロイ先
 <https://2025-ptera.vercel.app/>
 
+デモ動画
+
+<https://youtu.be/GJS2rUClz1g>
+
 # 【アプリ概要】
 
 サークルの部員をカード化してコレクションできます
