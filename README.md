@@ -11,6 +11,15 @@
 写真を撮って情報を入力するとカード化して保存
 対戦機能も実装、QRコードでミニゲーム可能です
 
+## このアプリの良さ
+
+- **サークルメンバーの資産化**: 仲間をカードとしてコレクションすることで、サークルへの帰属意識を高め、交流を可視化できるはず。
+- **AIによるスマートな生成**: 面倒なプロフィール入力はAIにお任せ。写真からその人の特徴を捉えたステータスを自動生成します。
+- **こだわりのサイバーUI**: Arwesライブラリを駆使したSFチックなインターフェースが、カード収集の没入感を高めます。
+- **サークル対抗の対戦**: サークルの団結力を上げるほか、他の団体のことも知れる対戦機能です。
+- **推し部員**: 推しを設定することでやる気UP！
+- **リアルとデジタルの融合**: QRコードを用いた対戦機能により、対面での集まりをよりエキサイティングなものにします。
+
 # ユーザーフロー
 
 1. ログイン(Google)を行う
@@ -29,7 +38,9 @@
 
 # 技術の話
 
-## 使用技術
+## フロントエンド
+
+### 使用技術
 
 ```
 "next": "16.0.10",
@@ -48,9 +59,100 @@
 "vitest": "^4.0.15"
 ```
 
+### デプロイ手順
+
+vercelポン乗せではなく、GithubActionsを用いてデプロイを行いました！
+Vercelのチームは有料であるためデプロイ周りを管理者しか触ることができていませんでしたが、GithubActionsで管理することでいじることができました
+
+<details>
+<summary>deploy workflow</summary>
+
+```yaml
+name: CI/CD
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - 'front/**'
+  pull_request:
+    paths:
+      - 'front/**'
+
+jobs:
+  checks:
+    runs-on: ubuntu-latest
+    env:
+      NEXT_PUBLIC_FIREBASE_API_KEY: ${{ secrets.NEXT_PUBLIC_FIREBASE_API_KEY }}
+      NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN: ${{ secrets.NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN }}
+      NEXT_PUBLIC_FIREBASE_PROJECT_ID: ${{ secrets.NEXT_PUBLIC_FIREBASE_PROJECT_ID }}
+      NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET: ${{ secrets.NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET }}
+      NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID: ${{ secrets.NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID }}
+      NEXT_PUBLIC_FIREBASE_APP_ID: ${{ secrets.NEXT_PUBLIC_FIREBASE_APP_ID }}
+      FIREBASE_SERVICE_ACCOUNT_KEY: ${{ secrets.FIREBASE_SERVICE_ACCOUNT_KEY }}
+    defaults:
+      run:
+        working-directory: front
+
+    steps:
+      - name: Check out the code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: 'npm'
+          cache-dependency-path: front/package-lock.json
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Type check
+        run: npx tsc --noEmit
+
+      - name: Lint check
+        run: npm run lint
+
+      - name: Format check
+        run: npm run format
+
+      - name: Run tests
+        run: npm run test
+
+      - name: Build check
+        run: npm run build
+
+  deploy:
+    needs: checks
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: front
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+
+    steps:
+      - name: Check out the code
+        uses: actions/checkout@v4
+
+      - name: Deploy to Vercel
+        uses: amondnet/vercel-action@v25
+        with:
+          vercel-token: ${{ secrets.VERCEL_TOKEN }}
+          vercel-org-id: ${{ secrets.VERCEL_ORG_ID }}
+          vercel-project-id: ${{ secrets.VERCEL_PROJECT_ID }}
+          vercel-args: '--prod'
+
+```
+
+</details>
+
+## バックエンド
+
 ### gRPCを用いたバックエンド
 
-gRPCを用いたgoのバックエンドを構築しました
+バックエンドはgRPCを用いたgoのバックエンドを構築しました
 
 ```proto
 service BattleService {
@@ -68,6 +170,8 @@ service BattleService {
 ### プロトコルバッファーでの生成
 
 ![image](https://ptera-publish.topaz.dev/project/01KCZG1EJ12G21WVHJRQADGA8V.png)
+
+## 開発周りの話
 
 ### lefthook🤛導入 〜何を四天王！〜
 
@@ -135,10 +239,14 @@ draw.io で〇〇図を作成してください。以下のルールに従って
 
 ![image](https://ptera-publish.topaz.dev/project/01KCZFY7GBX8EVTB523FSJEW80.png)
 
-## ゲーム詳細
+## ゲーム
+
+### カードゲーム
 
 ## QRメンコ詳細
 
 ## 指バンバン詳細
 
 # これからの展望
+
+- ほげほげ
