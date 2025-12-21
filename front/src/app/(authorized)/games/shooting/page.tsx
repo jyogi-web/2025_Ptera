@@ -429,7 +429,7 @@ export default function ShootingGame() {
         if (!canvasRef.current || !containerRef.current) return;
 
         const scene = new THREE.Scene();
-        scene.fog = new THREE.FogExp2(0x151525, 0.15);
+        scene.fog = new THREE.FogExp2(0x2a2a4a, 0.15);
 
         const width = containerRef.current.clientWidth;
         const height = containerRef.current.clientHeight;
