@@ -9,9 +9,9 @@ import * as THREE from "three";
 // --- Configuration ---
 const MP_HANDS_VERSION = "0.4.1646424915";
 const MAX_ENEMIES = 9;
-const AI_INTERVAL_MS = 33; // ~30 FPS for AI
+
 const AIM_ASSIST_RADIUS = 0.3; // Normalized screen space
-const AIM_SENSITIVITY = 1.8; // Amplifies hand movement
+const AIM_SENSITIVITY = 1.5; // Reduced from 1.8
 
 // --- Type Definitions ---
 interface Landmark {
@@ -101,6 +101,7 @@ export default function ShootingGame() {
             isPistol: false,
             isTriggerPulled: false,
             aimPosition: new THREE.Vector2(0, 0), // Screen coords (-1 to 1)
+            smoothAimPosition: new THREE.Vector2(0, 0), // Interpolated for 60FPS
             wasTriggerPulled: false, // For edge detection
         },
         audioCtx: null as AudioContext | null,
@@ -109,6 +110,7 @@ export default function ShootingGame() {
         tempVec3: new THREE.Vector3(),
         tempVec3_2: new THREE.Vector3(),
         tempVec3_3: new THREE.Vector3(),
+        isAIProcessing: false,
     });
 
     // --- 2. MediaPipe Integration ---
@@ -388,10 +390,15 @@ export default function ShootingGame() {
 
             const { tempVec3, tempVec3_2, tempVec3_3 } = gameRef.current;
 
+            // Smoothing (Linear Interpolation)
+            // Interpolate from current smooth position to the latest raw AI aim position.
+            // Factor 0.3 = fast response but smooth enough to hide 30fps stutter.
+            gesture.smoothAimPosition.lerp(gesture.aimPosition, 0.35 * timeScale);
+
             // Reuse tempVec3 for projection
             tempVec3.set(
-                gesture.aimPosition.x,
-                gesture.aimPosition.y,
+                gesture.smoothAimPosition.x,
+                gesture.smoothAimPosition.y,
                 0.5,
             );
             tempVec3.unproject(camera);
@@ -486,16 +493,25 @@ export default function ShootingGame() {
 
             const delta = clock.getDelta();
 
-            const now = performance.now();
+            // --- AI Loop (Uncapped / As Fast As Possible) ---
             if (
                 gameRef.current.handLandmarker &&
                 videoRef.current &&
-                videoRef.current.readyState >= 2
+                videoRef.current.readyState >= 2 &&
+                !gameRef.current.isAIProcessing
             ) {
-                if (now - gameRef.current.lastAITime >= AI_INTERVAL_MS) {
-                    gameRef.current.lastAITime = now;
-                    gameRef.current.handLandmarker.send({ image: videoRef.current });
-                }
+                gameRef.current.isAIProcessing = true;
+                const startTime = performance.now();
+
+                // Process in background promise to not block main thread
+                gameRef.current.handLandmarker.send({ image: videoRef.current })
+                    .then(() => {
+                        gameRef.current.isAIProcessing = false;
+                    })
+                    .catch((err: unknown) => {
+                        console.warn("AI Err", err);
+                        gameRef.current.isAIProcessing = false;
+                    });
             }
 
             updateGameLogic(delta);
