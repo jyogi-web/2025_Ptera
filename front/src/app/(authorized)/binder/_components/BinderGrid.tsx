@@ -131,11 +131,13 @@ export function BinderGrid({
         {cards.map((card) => (
           <div
             key={card.id}
-            className={`transition-all ${processing ? "opacity-50 pointer-events-none" : ""
-              } ${isSelectingFavorite
+            className={`transition-all ${
+              processing ? "opacity-50 pointer-events-none" : ""
+            } ${
+              isSelectingFavorite
                 ? "ring-2 ring-yellow-400 ring-offset-2 scale-105"
                 : ""
-              }`}
+            }`}
           >
             <BinderCard
               card={card}

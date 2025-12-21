@@ -160,10 +160,10 @@ function validateCardData(
   // オプショナルフィールドの安全な取得
   const affiliatedGroup =
     data.affiliatedGroupRef &&
-      typeof data.affiliatedGroupRef === "object" &&
-      data.affiliatedGroupRef !== null &&
-      "id" in data.affiliatedGroupRef &&
-      typeof data.affiliatedGroupRef.id === "string"
+    typeof data.affiliatedGroupRef === "object" &&
+    data.affiliatedGroupRef !== null &&
+    "id" in data.affiliatedGroupRef &&
+    typeof data.affiliatedGroupRef.id === "string"
       ? data.affiliatedGroupRef.id
       : undefined;
 
@@ -277,7 +277,7 @@ export async function getCardFromServer(cardId: string) {
       return null;
     }
 
-    const result = validateCardData(cardDoc.id, cardDoc.data()!);
+    const result = validateCardData(cardDoc.id, cardDoc.data() || {});
 
     if (result.valid && result.card) {
       return result.card;
