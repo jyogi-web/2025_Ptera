@@ -1,6 +1,5 @@
 "use client";
 
-import { FrameCorners } from "@arwes/react";
 import { useRouter } from "next/navigation";
 import { useBattle } from "@/hooks/useBattle";
 import { useBattleRequests } from "@/hooks/useBattleRequests";
@@ -73,15 +72,6 @@ export function BattleRequestList({ myCircleId }: BattleRequestListProps) {
       {/* 受信box */}
       {incomingRequests.length > 0 && (
         <div className="relative group">
-          <FrameCorners
-            strokeWidth={2}
-            cornerLength={15}
-            style={{
-              color: "#00dac1",
-              backgroundColor: "rgba(0, 218, 193, 0.05)",
-              zIndex: 0,
-            }}
-          />
           <div className="relative z-10 p-6">
             <div className="flex items-center gap-2 mb-4 border-b border-cyan-900/50 pb-2">
               <div className="w-2 h-2 bg-cyan-500 animate-pulse rounded-full" />
@@ -166,15 +156,6 @@ export function BattleRequestList({ myCircleId }: BattleRequestListProps) {
       {/* 送信box */}
       {outgoingRequests.length > 0 && (
         <div className="relative group">
-          <FrameCorners
-            strokeWidth={2}
-            cornerLength={15}
-            style={{
-              color: "#f700ff", // Purple/Pink for outgoing/opponent
-              backgroundColor: "rgba(247, 0, 255, 0.05)",
-              zIndex: 0,
-            }}
-          />
           <div className="relative z-10 p-6">
             <div className="flex items-center gap-2 mb-4 border-b border-purple-900/50 pb-2">
               <div className="w-2 h-2 bg-purple-500 rounded-full" />
