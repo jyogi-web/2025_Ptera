@@ -178,7 +178,7 @@ export function BinderGrid({
                 </div>
               ) : (
                 <div
-                  className="mb-4 w-full max-h-64 bg-slate-800 rounded-md"
+                  className="mb-4 w-full h-64 bg-slate-800 rounded-md"
                   aria-hidden
                 />
               )}
