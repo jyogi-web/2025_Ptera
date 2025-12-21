@@ -27,7 +27,16 @@ export default function CardEditForm({ card }: Props) {
   });
 
   // Determine ownership based on client-side auth
-  const isOwner = !loading && user && card.creatorId === user.id;
+  // Ensure we don't assume ownership until loading is complete and user exists
+  const isOwner = !loading && !!user && card.creatorId === user.id;
+
+  if (loading) {
+    return (
+      <div className="flex justify-center items-center min-h-[50vh]">
+        <div className="animate-spin h-8 w-8 border-4 border-cyan-500 rounded-full border-t-transparent"></div>
+      </div>
+    );
+  }
 
   const handleChange = (
     e: React.ChangeEvent<
@@ -107,9 +116,7 @@ export default function CardEditForm({ card }: Props) {
     }
   };
 
-  if (loading) {
-    return <div className="p-10 text-center text-slate-400">Loading...</div>;
-  }
+
 
   if (!isOwner) {
     return (
