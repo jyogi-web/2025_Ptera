@@ -120,7 +120,8 @@ service cloud.firestore {
       // Allow create and update if user is authenticated. 
       // Ideally we check if recordId corresponds to user, or if data.userId == auth.uid
       // Since recordId is gameId_userId, we can check if it ends with userId or check resource data.
-      allow write: if isAuthenticated() && request.resource.data.userId == request.auth.uid;
+      allow create: if isAuthenticated() && request.resource.data.userId == request.auth.uid;
+      allow update: if isAuthenticated() && request.resource.data.userId == request.auth.uid;
     }
 
     // Default rule: Deny everything else by default for safety

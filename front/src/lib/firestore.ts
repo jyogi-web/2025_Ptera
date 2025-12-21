@@ -494,7 +494,14 @@ export const saveGameRecord = async (
     const docSnap = await getDoc(recordRef);
 
     if (docSnap.exists()) {
-      const currentBest = docSnap.data().score as number;
+      const data = docSnap.data();
+      const currentBest =
+        typeof data.score === "number" ? data.score : Infinity;
+
+      console.log(
+        `[GameRecord] Existing record found. Current best: ${currentBest}, New score: ${score}`,
+      );
+
       if (score < currentBest) {
         // New record is faster (lower), update it
         await setDoc(recordRef, {
@@ -505,15 +512,18 @@ export const saveGameRecord = async (
           displayName,
           photoURL: photoURL || "",
           updatedAt: serverTimestamp(),
-          createdAt: docSnap.data().createdAt, // Preserve original creation time? Or just overwrite? Let's overwrite "createdAt" context to "recordSetAt". Actually, let's keep original createdAt if we want "first time played", but usually "date achieved" is better. Let's just set createdAt to now for simplicity of "when this record was achieved".
-          // actually, usually we want "updatedAt" for the new record time.
-          // Let's just overwrite the whole doc for simplicity.
+          createdAt: data.createdAt || serverTimestamp(),
         });
-        console.log("New high score saved!");
+        console.log("[GameRecord] New high score saved!");
       } else {
-        console.log("Score not better than personal best. Skipping save.");
+        console.log(
+          "[GameRecord] Score not better than personal best. Skipping save.",
+        );
       }
     } else {
+      console.log(
+        `[GameRecord] No existing record for ${docId}. creating new.`,
+      );
       // No record exists, create new
       await setDoc(recordRef, {
         userId,
@@ -524,7 +534,7 @@ export const saveGameRecord = async (
         photoURL: photoURL || "",
         createdAt: serverTimestamp(),
       });
-      console.log("First game record saved successfully");
+      console.log("[GameRecord] First game record saved successfully");
     }
   } catch (error) {
     console.error("Error saving game record:", error);
