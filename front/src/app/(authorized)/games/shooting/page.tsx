@@ -11,6 +11,7 @@ const MP_HANDS_VERSION = "0.4.1646424915";
 const MAX_ENEMIES = 9;
 const AI_INTERVAL_MS = 33; // ~30 FPS for AI
 const AIM_ASSIST_RADIUS = 0.3; // Normalized screen space
+const AIM_SENSITIVITY = 1.8; // Amplifies hand movement
 
 // --- Type Definitions ---
 interface Landmark {
@@ -165,8 +166,17 @@ export default function ShootingGame() {
                 // 1. Detect Aim Point (Index Finger Tip)
                 const indexTip = landmarks[8];
 
-                const aimX = (1 - indexTip.x) * 2 - 1; // Flip X for mirror effect
-                const aimY = -(indexTip.y * 2 - 1); // Flip Y because 3D y-up vs screen y-down
+                // Raw coordinates (-1 to 1)
+                let aimX = (1 - indexTip.x) * 2 - 1; // Flip X for mirror effect
+                let aimY = -(indexTip.y * 2 - 1); // Flip Y because 3D y-up vs screen y-down
+
+                // Apply Sensitivity
+                aimX *= AIM_SENSITIVITY;
+                aimY *= AIM_SENSITIVITY;
+
+                // Clamp to screen bounds [-1, 1]
+                aimX = Math.max(-1, Math.min(1, aimX));
+                aimY = Math.max(-1, Math.min(1, aimY));
 
                 gameRef.current.gesture.aimPosition.set(aimX, aimY);
 
