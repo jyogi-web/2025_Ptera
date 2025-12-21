@@ -22,8 +22,10 @@ export default async function EditCardPage({ params }: PageProps) {
 
     return (
         <div style={styles.container}>
-            <div style={{ ...styles.contentWrapper, overflowY: "auto" }}>
-                <CardEditForm card={card} />
+            <div style={styles.contentWrapper} className="w-full max-w-lg mx-auto h-full">
+                <div style={{ ...styles.scrollableGrid, padding: "24px 8px" }}>
+                    <CardEditForm card={card} />
+                </div>
             </div>
         </div>
     );

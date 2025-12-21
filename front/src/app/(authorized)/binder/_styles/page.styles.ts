@@ -10,7 +10,8 @@ export const styles: { [key: string]: CSSProperties } = {
     zIndex: 0,
     width: "100vw",
     height: "100dvh",
-    overflow: "hidden", // Prevent scrolling on the body/container
+    overflowX: "hidden", // Prevent scrolling on the body/container
+    overflowY: "hidden",
     touchAction: "pan-y", // Allow vertical pan, prevent bounce scroll where supported/needed
     fontFamily: '"Segoe UI", Roboto, Helvetica, Arial, sans-serif',
     color: "#e6fdf9",
@@ -23,9 +24,10 @@ export const styles: { [key: string]: CSSProperties } = {
     flex: 1,
     display: "flex",
     flexDirection: "column",
-    overflow: "hidden", // Ensure children handle scrolling
+    overflowX: "hidden", // Ensure children handle scrolling
+    overflowY: "hidden",
     width: "100%",
-    maxWidth: "480px", // Keep the max-w-md constraint roughly
+    // maxWidth: "480px", // Removed for responsive design - handled by consumers
     margin: "0 auto",
     padding: "24px 16px",
   },

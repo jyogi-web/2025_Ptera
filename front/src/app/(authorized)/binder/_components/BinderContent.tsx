@@ -16,7 +16,7 @@ export function BinderContent({ cards }: BinderContentProps) {
   const requireJoin = !!user && !user.circleId;
 
   return (
-    <div style={styles.contentWrapper}>
+    <div style={styles.contentWrapper} className="w-full max-w-7xl mx-auto">
       {/* Header */}
       {/* Header */}
       <div style={styles.header}>
