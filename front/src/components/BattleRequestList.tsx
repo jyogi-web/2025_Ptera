@@ -73,14 +73,16 @@ export function BattleRequestList({ myCircleId }: BattleRequestListProps) {
       {incomingRequests.length > 0 && (
         <div className="relative group">
           <div className="relative z-10 p-6">
-            <div className="flex items-center gap-2 mb-4 border-b border-cyan-900/50 pb-2">
-              <div className="w-2 h-2 bg-cyan-500 animate-pulse rounded-full" />
-              <h3 className="text-lg font-bold" style={styles.neonTextCyan}>
-                INCOMING SIGNALS ({incomingRequests.length})
-              </h3>
+            <div className="flex items-center justify-between gap-2 mb-6 pb-2 border-b border-cyan-900/50">
+              <div className="flex items-center gap-2">
+                <div className="w-2 h-2 bg-cyan-500 animate-pulse rounded-full" />
+                <h3 className="text-lg font-bold" style={styles.neonTextCyan}>
+                  INCOMING SIGNALS ({incomingRequests.length})
+                </h3>
+              </div>
             </div>
 
-            <div className="space-y-4">
+            <div className="space-y-4 max-h-[150px] overflow-y-auto pr-2 scrollbar-thin scrollbar-thumb-cyan-900 scrollbar-track-transparent">
               {incomingRequests.map((req) => (
                 <div
                   key={req.requestId}
@@ -157,14 +159,16 @@ export function BattleRequestList({ myCircleId }: BattleRequestListProps) {
       {outgoingRequests.length > 0 && (
         <div className="relative group">
           <div className="relative z-10 p-6">
-            <div className="flex items-center gap-2 mb-4 border-b border-purple-900/50 pb-2">
-              <div className="w-2 h-2 bg-purple-500 rounded-full" />
-              <h3 className="text-lg font-bold" style={styles.neonTextPurple}>
-                OUTGOING SIGNALS ({outgoingRequests.length})
-              </h3>
+            <div className="flex items-center justify-between gap-2 mb-6 pb-2 border-b border-purple-900/50">
+              <div className="flex items-center gap-2">
+                <div className="w-2 h-2 bg-purple-500 rounded-full" />
+                <h3 className="text-lg font-bold" style={styles.neonTextPurple}>
+                  OUTGOING SIGNALS ({outgoingRequests.length})
+                </h3>
+              </div>
             </div>
 
-            <div className="space-y-4">
+            <div className="space-y-4 max-h-[150px] overflow-y-auto pr-2 scrollbar-thin scrollbar-thumb-purple-900 scrollbar-track-transparent">
               {outgoingRequests.map((req) => (
                 <div
                   key={req.requestId}
