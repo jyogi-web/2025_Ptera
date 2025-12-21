@@ -2,10 +2,12 @@
 
 import { useRouter } from "next/navigation";
 import { use } from "react";
+import toast from "react-hot-toast";
 import BattleField from "@/components/BattleField";
 import { useAuth } from "@/context/AuthContext";
 import { useBattle } from "@/hooks/useBattle";
 import { useBattleRealtime } from "@/hooks/useBattleRealtime";
+import { deleteBattle } from "@/lib/firestore";
 
 interface BattlePageProps {
   params: Promise<{ battleId: string }>;
@@ -40,6 +42,27 @@ export default function BattlePage({ params }: BattlePageProps) {
   const handleRetreat = async (benchIndex: number) => {
     if (!battleId || !user?.circleId) return;
     await retreat(battleId, user.circleId, benchIndex);
+  };
+
+  // 終了ハンドラー
+  const handleFinish = async () => {
+    // 終了時は勝者・敗者に関わらずデータを削除を試みる
+    // (既に削除されている場合は内部でハンドルされる)
+    try {
+      await deleteBattle(battleId);
+      toast.success("BATTLE ROOM CLOSED - MISSION COMPLETE", {
+        style: {
+          background: "rgba(0, 0, 0, 0.9)",
+          border: "1px solid #06b6d4",
+          color: "#06b6d4",
+          fontFamily: "monospace",
+        },
+        icon: "",
+      });
+    } catch (e) {
+      console.error("Failed to delete battle:", e);
+    }
+    router.push("/circle");
   };
 
   // エラー表示
@@ -78,25 +101,29 @@ export default function BattlePage({ params }: BattlePageProps) {
   // バトル画面
   if (battleState) {
     return (
-      <div className="min-h-screen bg-gradient-to-b from-gray-900 via-gray-800 to-black pb-20 pt-4">
+      <div className="flex flex-col h-screen w-full bg-gradient-to-b from-gray-900 via-gray-800 to-black overflow-hidden relative">
         <div className="absolute top-2 right-2 z-50">
           <button
             type="button"
             onClick={() => {
               router.push("/circle");
             }}
-            className="text-xs text-gray-400 border border-gray-600 px-2 py-1 rounded hover:bg-gray-800"
+            className="text-xs text-gray-400 border border-gray-600 px-2 py-1 rounded hover:bg-gray-800 hover:text-white transition-colors"
           >
             Quit Fight
           </button>
         </div>
-        <BattleField
-          state={battleState}
-          onAttack={handleAttack}
-          onRetreat={handleRetreat}
-        />
+        <div className="flex-1 w-full relative">
+          <BattleField
+            state={battleState}
+            onAttack={handleAttack}
+            onRetreat={handleRetreat}
+            onFinish={handleFinish}
+            loading={actionLoading}
+          />
+        </div>
         {actionLoading && (
-          <div className="fixed bottom-4 right-4 bg-blue-600 text-white px-4 py-2 rounded-lg shadow-lg">
+          <div className="fixed bottom-4 right-4 bg-blue-600 text-white px-4 py-2 rounded-lg shadow-lg z-50">
             処理中...
           </div>
         )}

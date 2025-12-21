@@ -1,6 +1,6 @@
 "use client";
 
-import { Animator, FrameCorners } from "@arwes/react";
+import { Animator } from "@arwes/react";
 import { useEffect, useState } from "react";
 import { useAuth } from "@/context/AuthContext";
 import { getFavoriteCards } from "@/lib/firestore";
@@ -58,17 +58,6 @@ export default function Home() {
           <div className="w-full relative flex flex-col items-center">
             {/* Character Display Area */}
             <div className="relative w-full p-4">
-              {/* Frame for the character area */}
-              <FrameCorners
-                strokeWidth={2}
-                cornerLength={20}
-                style={{
-                  color: "#00dac1",
-                  backgroundColor: "rgba(3, 15, 25, 0.4)",
-                  zIndex: 0,
-                }}
-              />
-
               <div className="relative z-10">
                 {loading ? (
                   <div className="text-cyan-500/50 font-mono text-center py-20 animate-pulse text-sm">

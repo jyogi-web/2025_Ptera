@@ -1,12 +1,10 @@
 "use client";
 
-import { Animator, FrameCorners } from "@arwes/react";
+import { Animator } from "@arwes/react";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import toast from "react-hot-toast";
-
 import { useAuth } from "@/context/AuthContext";
-
 import { createCircle, getCircles, joinCircle } from "@/lib/firestore";
 import type { Circle } from "@/types/app";
 import Loading from "../loading";
@@ -82,17 +80,6 @@ export default function CirclePage() {
         <div style={styles.dashboardContent}>
           <Animator active={true}>
             <div className="w-full max-w-4xl relative">
-              {/* Main Frame */}
-              <FrameCorners
-                strokeWidth={2}
-                cornerLength={20}
-                style={{
-                  color: "#00dac1",
-                  backgroundColor: "rgba(3, 15, 25, 0.6)",
-                  backdropFilter: "blur(10px)",
-                }}
-              />
-
               <div className="relative p-8 md:p-12 space-y-10">
                 {/* Header */}
                 <div className="text-center space-y-2">
@@ -121,11 +108,6 @@ export default function CirclePage() {
                     style={styles.cyberButton}
                   >
                     <div className="absolute inset-0 bg-cyan-500/10 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
-                    <FrameCorners
-                      cornerLength={10}
-                      strokeWidth={1}
-                      style={{ color: "#00dac1", zIndex: 0 }}
-                    />
                     <div className="relative z-10 flex flex-col h-full">
                       <div className="flex items-center gap-3 mb-3 text-cyan-400">
                         <svg
@@ -166,11 +148,6 @@ export default function CirclePage() {
                     style={styles.cyberButton}
                   >
                     <div className="absolute inset-0 bg-purple-500/10 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
-                    <FrameCorners
-                      cornerLength={10}
-                      strokeWidth={1}
-                      style={{ color: "#f700ff", zIndex: 0 }}
-                    />
                     <div className="relative z-10 flex flex-col h-full">
                       <div className="flex items-center gap-3 mb-3 text-purple-400">
                         <svg
@@ -223,11 +200,6 @@ export default function CirclePage() {
                 }}
               >
                 <div className="absolute inset-0 bg-orange-500/10 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
-                <FrameCorners
-                  cornerLength={10}
-                  strokeWidth={1}
-                  style={{ color: "#f97316", zIndex: 0 }}
-                />
                 <div className="relative z-10 flex flex-row items-center justify-between w-full">
                   <div className="flex items-center gap-4">
                     <div className="p-3 bg-orange-900/20 rounded border border-orange-500/30 text-orange-400">
@@ -277,14 +249,7 @@ export default function CirclePage() {
               </button>
             </div>
 
-            <div className="mt-8 pt-8 border-t border-gray-700/50">
-              <p className="text-sm text-gray-500 text-center">
-                サークルID:{" "}
-                <span className="font-mono bg-gray-900 px-2 py-1 rounded select-all">
-                  {user.circleId}
-                </span>
-              </p>
-            </div>
+            <div className="mt-8 pt-8 border-t border-gray-700/50"></div>
           </Animator>
         </div>
       </div>
@@ -336,11 +301,6 @@ export default function CirclePage() {
 
             <form onSubmit={handleCreateCircle} className="space-y-6">
               <div style={styles.onboardingInputContainer}>
-                <FrameCorners
-                  cornerLength={10}
-                  strokeWidth={1}
-                  style={{ color: "#f700ff", zIndex: 0, opacity: 0.5 }}
-                />
                 <input
                   type="text"
                   value={newCircleName}
