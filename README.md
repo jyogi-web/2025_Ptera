@@ -217,14 +217,72 @@ coderabbitを入れることで以下の点をカバーしました！
 - @coderabbitaiで呼び出して会話！
 - パブリックリポジトリは無料でレビューしてくれる
 
-## アーキテクチャ
+プロジェクトに`.coderabbit.yaml`を導入することで、特定の指示をすることができます
+
+<details>
+<summary>deploy workflow</summary>
+
+```yaml
+# yaml-language-server: $schema=https://coderabbit.ai/integrations/schema.v2.json
+language: "ja-JP"
+tone_instructions: "丁寧な言葉遣いで、具体的な改善点を指摘してください。"
+early_access: false
+
+reviews:
+  profile: "assertive"
+  request_changes_workflow: true
+  high_level_summary: true
+  review_status: true
+  collapse_walkthrough: false
+  suggested_reviewers: true
+  
+  path_instructions:
+    - path: "**/*.{ts,tsx}"
+      instructions: |
+        TypeScript、React、Next.jsのベストプラクティスに従い、
+        コードの可読性とメンテナンス性を向上させてください。
+        命名規則：コンポーネント名はPascalCase、関数・変数名はcamelCaseで統一。
+        型安全性：anyの使用を避け、適切な型定義を行う。
+        コンポーネント設計：単一責任の原則（SRP）を意識し、再利用可能なコンポーネントを作成。
+        Server/Client Components：Next.js App Routerでは、Server ComponentsとClient Componentsを適切に使い分ける。Server Componentsでは非同期処理とデータフェッチを直接実行、Client Componentsではインタラクティブな機能と状態管理を担当。
+        パフォーマンス：不要な再レンダリングを避け、useMemo、useCallbackを適切に使用。
+        データフェッチング：Server Componentsでのfetch（キャッシュ戦略含む）、Client ComponentsでのuseEffectや非同期フックを適切に使い分ける。
+        エラーハンドリング：error.tsxやloading.tsxを活用し、適切なエラー処理とローディング状態を実装。
+        セキュリティ：XSS対策、環境変数の適切な管理（NEXT_PUBLIC_プレフィックス）を徹底。
+        アクセシビリティ：セマンティックなHTML、ARIA属性を適切に使用。
+        テスト：重要なロジックやコンポーネントには単体テストを追加。
+    - path: "**/src/app/**/page.tsx"
+      instructions: |
+        Next.js App Routerのページコンポーネントとして適切に実装してください。
+        Server Componentを優先し、クライアント側の処理が必要な場合のみ'use client'を使用。
+        メタデータはmetadataオブジェクトまたはgenerateMetadata関数で定義。
+        データフェッチングはasync/awaitで直接実行し、キャッシュ戦略（force-cache, no-store等）を明示。
+
+    - path: "**/src/app/**/layout.tsx"
+      instructions: |
+        レイアウトコンポーネントとして、共通のUI要素やプロバイダーを適切に配置。
+        不要な再レンダリングを避けるため、状態管理は慎重に行う。
+        メタデータはルートレイアウトで定義し、子レイアウトで上書き可能。
+
+  auto_review:
+    enabled: true
+
+chat:
+  auto_reply: true
+```
+
+</details>
+
+### アーキテクチャ図作成
 
 これはclaudecodeくんにdrawioで書いて若干修正してみました！
 最近QiitaかZennで記事を見たので...
 
 XMLでわりかしトークンを食う...?
 
-```text
+以下使ったプロンプト
+
+```plaintext
 draw.io で〇〇図を作成してください。以下のルールに従ってください。
 
 - mxGraphModel に defaultFontFamily="フォント名" を設定
@@ -249,4 +307,7 @@ draw.io で〇〇図を作成してください。以下のルールに従って
 
 # これからの展望
 
-- ほげほげ
+<https://github.com/jyogi-web/2025_Ptera/issues>
+
+- 経験値など育成要素
+- カード物理印刷
