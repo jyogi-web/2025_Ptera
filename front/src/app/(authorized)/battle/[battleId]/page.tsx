@@ -2,6 +2,7 @@
 
 import { useRouter } from "next/navigation";
 import { use } from "react";
+import toast from "react-hot-toast";
 import BattleField from "@/components/BattleField";
 import { useAuth } from "@/context/AuthContext";
 import { useBattle } from "@/hooks/useBattle";
@@ -49,6 +50,15 @@ export default function BattlePage({ params }: BattlePageProps) {
     // (既に削除されている場合は内部でハンドルされる)
     try {
       await deleteBattle(battleId);
+      toast.success("BATTLE ROOM CLOSED - MISSION COMPLETE", {
+        style: {
+          background: "rgba(0, 0, 0, 0.9)",
+          border: "1px solid #06b6d4",
+          color: "#06b6d4",
+          fontFamily: "monospace",
+        },
+        icon: "",
+      });
     } catch (e) {
       console.error("Failed to delete battle:", e);
     }
