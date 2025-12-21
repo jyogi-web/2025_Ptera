@@ -3,6 +3,7 @@
 import Image from "next/image";
 import type { Card } from "@/types/app";
 import { styles } from "../_styles/BinderCard.styles";
+import React from "react";
 
 interface BinderCardProps {
   card: Card;
@@ -10,9 +11,10 @@ interface BinderCardProps {
   isFavorite?: boolean;
 }
 
-export const BinderCard = ({ card, onClick, isFavorite }: BinderCardProps) => {
-  return (
-    <button type="button" style={styles.container} onClick={onClick}>
+export const BinderCard = React.forwardRef<HTMLButtonElement, BinderCardProps>(
+  ({ card, onClick, isFavorite }, ref) => {
+    return (
+      <button ref={ref} type="button" style={styles.container} onClick={onClick}>
       {/* Main Container Glow */}
       <div style={styles.mainGlow} />
 
@@ -68,6 +70,9 @@ export const BinderCard = ({ card, onClick, isFavorite }: BinderCardProps) => {
         {/* Position Text (Below Name) */}
         {card.position && <p style={styles.positionText}>{card.position}</p>}
       </div>
-    </button>
-  );
-};
+      </button>
+    );
+  },
+);
+
+BinderCard.displayName = "BinderCard";

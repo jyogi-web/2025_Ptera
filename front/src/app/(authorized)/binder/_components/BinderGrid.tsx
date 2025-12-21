@@ -1,9 +1,10 @@
 "use client";
 
 import Image from "next/image";
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import toast from "react-hot-toast";
 import Modal from "@/components/ui/Modal";
+import exportElementToPng from "@/lib/exportImage";
 import { useAuth } from "@/context/AuthContext";
 import { addFavoriteCard, getFavoriteCards } from "@/lib/firestore";
 import type { Card as CardType } from "@/types/app";
@@ -24,6 +25,7 @@ export function BinderGrid({
   const { user } = useAuth();
   const [processing, setProcessing] = useState(false);
   const [favoriteCardIds, setFavoriteCardIds] = useState<string[]>([]);
+  const binderRefs = useRef<Record<string, HTMLButtonElement | null>>({});
 
   useEffect(() => {
     const loadFavorites = async () => {
@@ -63,6 +65,43 @@ export function BinderGrid({
     setIsModalOpen(false);
     setSelectedCard(null);
   }, []);
+
+  const modalContentRef = useRef<HTMLDivElement | null>(null);
+
+  const handleExport = async () => {
+    if (!selectedCard) return;
+    const safeName = selectedCard.name.replace(/[\\/\\\\:\\*\?"<>|]/g, "_");
+    try {
+      // Inject a temporary safe style to override modern color functions
+      // (e.g. lab()) that html2canvas cannot parse. We add a class and a
+      // <style> element, then remove them after export.
+      const styleId = "export-safe-style";
+      let styleEl = document.getElementById(styleId) as HTMLStyleElement | null;
+      if (!styleEl) {
+        styleEl = document.createElement("style");
+        styleEl.id = styleId;
+        styleEl.innerHTML = `
+          .export-safe, .export-safe * { 
+            color: #0f172a !important; 
+            background: transparent !important; 
+            background-color: transparent !important; 
+            border-color: #0f172a !important; 
+            box-shadow: none !important; 
+            text-shadow: none !important; 
+          }
+          .export-safe img { background: transparent !important; }
+        `;
+        document.head.appendChild(styleEl);
+      }
+
+const el = modalContentRef.current;
+await exportElementToPng(el, `${safeName}.png`);
+toast.success("画像をダウンロードしました", { style: cyberToastStyle });
+    } catch (e) {
+      console.error("Export failed:", e);
+      toast.error("画像の保存に失敗しました", { style: cyberToastStyle });
+    }
+  };
 
   const handleCardClick = async (card: CardType) => {
     if (!user || processing) return;
@@ -112,9 +151,14 @@ export function BinderGrid({
       return;
     }
 
-    // open detail modal
+    // open detail modal and record the clicked element for export
     setSelectedCard(card);
     setIsModalOpen(true);
+    const el = binderRefs.current[card.id];
+    if (el) {
+      // store as data attribute so export can find it, or keep ref
+      // we keep binderRefs and use it in export
+    }
   };
 
   return (
@@ -132,6 +176,9 @@ export function BinderGrid({
             }`}
           >
             <BinderCard
+              ref={(el) => {
+                binderRefs.current[card.id] = el;
+              }}
               card={card}
               onClick={() => handleCardClick(card)}
               isFavorite={favoriteCardIds.includes(card.id)}
@@ -142,7 +189,7 @@ export function BinderGrid({
 
       <Modal isOpen={isModalOpen} onClose={closeModal} title="カード詳細">
         {selectedCard ? (
-          <div>
+          <div ref={modalContentRef}>
             {selectedCard.imageUrl ? (
               <div className="mb-4 relative w-full h-64 rounded-md overflow-hidden">
                 <Image
@@ -196,7 +243,44 @@ export function BinderGrid({
                 作成: {new Date(selectedCard.createdAt).toLocaleString()}
               </div>
             )}
-            <div className="mt-4 flex justify-end">
+            <div className="mt-4 flex justify-end space-x-2">
+              <button
+                type="button"
+                onClick={async () => {
+                  // Prefer exporting the binder-displayed card if available
+                  try {
+                    const binderEl = selectedCard && binderRefs.current[selectedCard.id];
+                    if (binderEl) {
+                      // Temporarily apply export-safe class to binder element as well
+                      const styleId = "export-safe-style";
+                      let styleEl = document.getElementById(styleId) as HTMLStyleElement | null;
+                      if (!styleEl) {
+                        styleEl = document.createElement("style");
+                        styleEl.id = styleId;
+                        styleEl.innerHTML = `\n                          .export-safe, .export-safe * { \n                            color: #0f172a !important; \n                            background: transparent !important; \n                            background-color: transparent !important; \n                            border-color: #0f172a !important; \n                            box-shadow: none !important; \n                            text-shadow: none !important; \n                          }\n                          .export-safe img { background: transparent !important; }\n                        `;
+                        document.head.appendChild(styleEl);
+                      }
+                      binderEl.classList.add("export-safe");
+                      try {
+                        await exportElementToPng(binderEl, `${selectedCard.name.replace(/[\\/\\\\:\\*\?"<>|]/g, "_")}.png`);
+                        toast.success("画像をダウンロードしました", { style: cyberToastStyle });
+                      } finally {
+                        binderEl.classList.remove("export-safe");
+                      }
+                      return;
+                    }
+
+                    // Fallback to modal content export
+                    await handleExport();
+                  } catch (e) {
+                    console.error("Export failed:", e);
+                    toast.error("画像の保存に失敗しました", { style: cyberToastStyle });
+                  }
+                }}
+                className="px-3 py-1 rounded bg-cyan-700/40 hover:bg-cyan-700/60 text-slate-100"
+              >
+                画像を保存
+              </button>
               <button
                 type="button"
                 onClick={closeModal}

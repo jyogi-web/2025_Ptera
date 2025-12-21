@@ -32,6 +32,8 @@
     "react-webcam": "^7.2.0",
     "server-only": "^0.0.1",
     "three": "^0.182.0"
+    ,"html2canvas": "^1.4.1"
+    ,"html-to-image": "latest"
   },
   "overrides": {
     "react": "19.2.1",
