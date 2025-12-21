@@ -41,7 +41,7 @@ export const styles: { [key: string]: CSSProperties } = {
   scrollableGrid: {
     flex: 1,
     overflowY: "auto",
-    paddingBottom: "20px", // Extra padding for bottom
+    paddingBottom: "100px", // Extra padding for bottom
     scrollbarWidth: "thin",
     scrollbarColor: "#334455 transparent",
   },
