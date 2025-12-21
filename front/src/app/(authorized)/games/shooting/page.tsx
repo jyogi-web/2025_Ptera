@@ -8,7 +8,7 @@ import * as THREE from "three";
 
 // --- Configuration ---
 const MP_HANDS_VERSION = "0.4.1646424915";
-const MAX_ENEMIES = 6;
+const MAX_ENEMIES = 9;
 const AI_INTERVAL_MS = 33; // ~30 FPS for AI
 const AIM_ASSIST_RADIUS = 0.3; // Normalized screen space
 
@@ -102,6 +102,10 @@ export default function ShootingGame() {
         },
         audioCtx: null as AudioContext | null,
         bounds: { x: 5, y: 3 }, // Default bounds, updated in init
+        // Temp objects for GC optimization
+        tempVec3: new THREE.Vector3(),
+        tempVec3_2: new THREE.Vector3(),
+        tempVec3_3: new THREE.Vector3(),
     });
 
     // --- 2. MediaPipe Integration ---
@@ -171,12 +175,13 @@ export default function ShootingGame() {
                 gameRef.current.gesture.isPistol = true;
                 gameRef.current.gesture.isTriggerPulled = isTriggerActive;
 
-                setDebugMsg(
-                    `TrigRatio: ${ratio.toFixed(2)} / 0.65 | ${isTriggerActive ? "FIRE" : "OPEN"}`,
-                );
+                // Removed to prevent re-renders (Performance Optimization)
+                // setDebugMsg(
+                //    `TrigRatio: ${ratio.toFixed(2)} / 0.65 | ${isTriggerActive ? "FIRE" : "OPEN"}`,
+                // );
             } else {
                 gameRef.current.gesture.isPistol = false;
-                setDebugMsg("No Hand Detected");
+                // setDebugMsg("No Hand Detected");
             }
         } catch (err) {
             console.warn("Hand Process Error", err);
@@ -354,17 +359,23 @@ export default function ShootingGame() {
 
             const timeScale = delta * 60;
 
-            const vector = new THREE.Vector3(
+            const { tempVec3, tempVec3_2, tempVec3_3 } = gameRef.current;
+
+            // Reuse tempVec3 for projection
+            tempVec3.set(
                 gesture.aimPosition.x,
                 gesture.aimPosition.y,
                 0.5,
             );
-            vector.unproject(camera);
-            const dir = vector.sub(camera.position).normalize();
-            const distance = -camera.position.z / dir.z;
-            const pos = camera.position.clone().add(dir.multiplyScalar(distance));
+            tempVec3.unproject(camera);
 
-            const finalAimPos = pos.clone();
+            const dir = tempVec3.sub(camera.position).normalize();
+            const distance = -camera.position.z / dir.z;
+
+            // pos = camera + dir * distance
+            const pos = tempVec3_2.copy(camera.position).add(dir.multiplyScalar(distance));
+
+            const finalAimPos = tempVec3_3.copy(pos);
             let closestDist = Infinity;
             let targetEnemy: Enemy | null = null;
 
@@ -407,7 +418,8 @@ export default function ShootingGame() {
 
             gameRef.current.enemies.forEach((enemy) => {
                 if (!enemy.active) return;
-                const moveStep = enemy.velocity.clone().multiplyScalar(timeScale);
+                // velocity * timeScale -> add to position
+                const moveStep = tempVec3.copy(enemy.velocity).multiplyScalar(timeScale);
                 enemy.mesh.position.add(moveStep);
 
                 // Simple rotation
