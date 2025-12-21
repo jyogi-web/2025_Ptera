@@ -476,3 +476,23 @@ export const deleteBattle = async (battleId: string): Promise<void> => {
     );
   }
 };
+
+export const saveGameRecord = async (
+  userId: string,
+  circleId: string | undefined,
+  gameId: string,
+  score: number,
+): Promise<void> => {
+  try {
+    await addDoc(collection(db, "game_records"), {
+      userId,
+      circleId: circleId || null,
+      gameId,
+      score,
+      createdAt: serverTimestamp(),
+    });
+    console.log("Game record saved successfully");
+  } catch (error) {
+    console.error("Error saving game record:", error);
+  }
+};
