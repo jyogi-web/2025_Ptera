@@ -100,6 +100,7 @@ export default function BattleField({
                 card={adaptCard(card)}
                 variant="enemy"
                 className="opacity-80"
+                isFaceDown={true}
               />
             </div>
           ))}

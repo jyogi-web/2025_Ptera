@@ -7,6 +7,7 @@ interface BattleCardProps {
   variant: "friend" | "enemy";
   onClick?: () => void;
   className?: string; // Add className prop for sizing/positioning
+  isFaceDown?: boolean;
 }
 
 export default function BattleCard({
@@ -14,6 +15,7 @@ export default function BattleCard({
   variant,
   onClick,
   className,
+  isFaceDown = false,
 }: BattleCardProps) {
   // Theme configuration
   const theme =
@@ -49,15 +51,15 @@ export default function BattleCard({
       position: "absolute",
       inset: 0,
       backgroundColor: theme.bg,
-      borderRadius: "0.5rem", // slightly smaller radius for battle cards? Keep consistent? CharacterDisplay has 0.75rem
+      borderRadius: "0.5rem",
       border: `1px solid ${theme.border}`,
-      boxShadow: `0 0 15px ${theme.glow}`, // Reduced glow for smaller cards
-      backdropFilter: "blur(4px)", // Reduced blur
+      boxShadow: `0 0 15px ${theme.glow}`,
+      backdropFilter: "blur(4px)",
       zIndex: 0,
     },
     cornerBase: {
       position: "absolute",
-      width: "8px", // Smaller corners for battle cards
+      width: "8px",
       height: "8px",
       zIndex: 20,
       boxShadow: `0 0 5px ${theme.borderStrong}`,
@@ -94,8 +96,8 @@ export default function BattleCard({
     },
     imageArea: {
       position: "absolute",
-      inset: "6px", // Reduced inset
-      bottom: "50px", // Reduced bottom space for smaller info panel
+      inset: "6px",
+      bottom: isFaceDown ? "6px" : "50px", // Expand image area for face down
       borderRadius: "2px",
       overflow: "hidden",
       backgroundColor: "rgba(0, 0, 0, 0.6)",
@@ -114,6 +116,19 @@ export default function BattleCard({
       backgroundPosition: "center",
       backgroundSize: "cover",
       opacity: 0.8,
+    },
+    faceDownContainer: {
+      width: "100%",
+      height: "100%",
+      display: "flex",
+      flexDirection: "column",
+      alignItems: "center",
+      justifyContent: "center",
+      backgroundImage: "url('/assets/hex_grid.png')",
+      backgroundPosition: "center",
+      backgroundSize: "cover",
+      backgroundColor: theme.bg,
+      opacity: 0.9,
     },
     scanline: {
       position: "absolute",
@@ -222,9 +237,30 @@ export default function BattleCard({
       <div style={{ ...styles.cornerBase, ...styles.cornerBL }} />
       <div style={{ ...styles.cornerBase, ...styles.cornerBR }} />
 
-      {/* Character Image Area */}
+      {/* Character Image Area (Or Face Down Pattern) */}
       <div style={styles.imageArea}>
-        {card.imageUrl ? (
+        {isFaceDown ? (
+          <div style={styles.faceDownContainer}>
+            <div
+              className="w-8 h-8 rounded-full border-2 border-dashed animate-spin-slow flex items-center justify-center opacity-60"
+              style={{ borderColor: theme.border }}
+            >
+              <div className="w-4 h-4 rounded-full bg-current opacity-50 animate-pulse" />
+            </div>
+            <p
+              style={{
+                fontFamily: "monospace",
+                fontSize: "10px",
+                letterSpacing: "0.1em",
+                marginTop: "4px",
+                color: theme.text,
+                opacity: 0.7,
+              }}
+            >
+              LOCKED
+            </p>
+          </div>
+        ) : card.imageUrl ? (
           <Image
             src={card.imageUrl}
             alt={card.name}
@@ -251,33 +287,35 @@ export default function BattleCard({
         <div style={styles.scanline} />
       </div>
 
-      {/* Info Panel */}
-      <div style={styles.infoPanel}>
-        {/* Stats Badges */}
-        <div style={styles.statsContainer}>
-          {/* ATK */}
-          <div style={{ ...styles.statBadge, borderColor: "#fca5a5" }}>
-            <span style={{ ...styles.statText, color: "#fca5a5" }}>
-              ⚔ {card.attack}
-            </span>
+      {/* Info Panel (Hidden if face down) */}
+      {!isFaceDown && (
+        <div style={styles.infoPanel}>
+          {/* Stats Badges */}
+          <div style={styles.statsContainer}>
+            {/* ATK */}
+            <div style={{ ...styles.statBadge, borderColor: "#fca5a5" }}>
+              <span style={{ ...styles.statText, color: "#fca5a5" }}>
+                ⚔ {card.attack}
+              </span>
+            </div>
+            {/* HP */}
+            <div style={{ ...styles.statBadge, borderColor: "#86efac" }}>
+              <span style={{ ...styles.statText, color: "#86efac" }}>
+                ♥ {card.maxHp}
+              </span>
+            </div>
           </div>
-          {/* HP */}
-          <div style={{ ...styles.statBadge, borderColor: "#86efac" }}>
-            <span style={{ ...styles.statText, color: "#86efac" }}>
-              ♥ {card.maxHp}
-            </span>
-          </div>
-        </div>
 
-        {/* Name Box */}
-        <div style={styles.nameBox}>
-          <div style={{ ...styles.nameMarker, left: "-2px" }} />
-          <div style={{ ...styles.nameMarker, right: "-2px" }} />
-          <div style={styles.nameContent}>
-            <span style={styles.nameText}>{card.name}</span>
+          {/* Name Box */}
+          <div style={styles.nameBox}>
+            <div style={{ ...styles.nameMarker, left: "-2px" }} />
+            <div style={{ ...styles.nameMarker, right: "-2px" }} />
+            <div style={styles.nameContent}>
+              <span style={styles.nameText}>{card.name}</span>
+            </div>
           </div>
         </div>
-      </div>
+      )}
     </div>
   );
 }
