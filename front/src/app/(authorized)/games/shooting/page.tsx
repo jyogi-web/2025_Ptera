@@ -51,7 +51,7 @@ interface CustomWindow extends Window {
 // --- Three.js & Game State Types ---
 type Enemy = {
     id: string;
-    mesh: THREE.Mesh; // Reverted to Mesh
+    mesh: THREE.Group;
     velocity: THREE.Vector3;
     active: boolean;
 };
@@ -279,19 +279,45 @@ export default function ShootingGame() {
         [],
     );
 
-    const createEnemy = (): THREE.Mesh => {
+    const createEnemy = (): THREE.Group => {
+        const group = new THREE.Group();
+
         // Random Color
         const colors = [0x00ffff, 0xff00ff, 0x00ff00, 0xffaa00, 0xff3333];
         const color = colors[Math.floor(Math.random() * colors.length)];
 
-        const geometry = new THREE.CylinderGeometry(0.5, 0.5, 0.1, 16);
+        // 1. Base Disk
+        const geometry = new THREE.CylinderGeometry(0.5, 0.5, 0.1, 32);
         geometry.rotateX(Math.PI / 2);
         const material = new THREE.MeshPhongMaterial({
             color: color,
             shininess: 100,
         });
-        const mesh = new THREE.Mesh(geometry, material);
-        return mesh;
+        const base = new THREE.Mesh(geometry, material);
+        group.add(base);
+
+        // 2. Bullseye Rings (White)
+        const ringMat = new THREE.MeshBasicMaterial({ color: 0xffffff });
+
+        // Outer Ring
+        const ring1Geo = new THREE.TorusGeometry(0.35, 0.02, 16, 32);
+        const ring1 = new THREE.Mesh(ring1Geo, ringMat);
+        ring1.position.z = 0.06;
+        group.add(ring1);
+
+        // Inner Ring
+        const ring2Geo = new THREE.TorusGeometry(0.2, 0.02, 16, 32);
+        const ring2 = new THREE.Mesh(ring2Geo, ringMat);
+        ring2.position.z = 0.06;
+        group.add(ring2);
+
+        // Center Dot
+        const dotGeo = new THREE.CircleGeometry(0.08, 16);
+        const dot = new THREE.Mesh(dotGeo, ringMat);
+        dot.position.z = 0.07;
+        group.add(dot);
+
+        return group;
     };
 
     const spawnEnemy = useCallback(() => {
