@@ -1,6 +1,7 @@
 "use client";
 
 import Image from "next/image";
+import { useRouter } from "next/navigation";
 import { useCallback, useEffect, useState } from "react";
 import toast from "react-hot-toast";
 import Modal from "@/components/ui/Modal";
@@ -24,6 +25,7 @@ export function BinderGrid({
   const { user } = useAuth();
   const [processing, setProcessing] = useState(false);
   const [favoriteCardIds, setFavoriteCardIds] = useState<string[]>([]);
+  const router = useRouter();
 
   useEffect(() => {
     const loadFavorites = async () => {
@@ -112,6 +114,12 @@ export function BinderGrid({
       return;
     }
 
+    // Check if current user is the creator
+    if (user.id === card.creatorId) {
+      router.push(`/binder/edit/${card.id}`);
+      return;
+    }
+
     // open detail modal
     setSelectedCard(card);
     setIsModalOpen(true);
@@ -119,7 +127,7 @@ export function BinderGrid({
 
   return (
     <div>
-      <div className="grid grid-cols-3 gap-3">
+      <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-5 lg:grid-cols-6 gap-3">
         {cards.map((card) => (
           <div
             key={card.id}

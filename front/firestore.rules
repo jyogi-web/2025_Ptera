@@ -83,7 +83,8 @@ service cloud.firestore {
     match /cards/{cardId} {
       allow read: if isAuthenticated();
       // Allow create if authenticated (validation is handled in client/function mostly, but basic auth check is needed)
-      allow create: if isAuthenticated();
+      // Allow create if authenticated and creating for self
+      allow create: if isAuthenticated() && request.resource.data.creatorId == request.auth.uid;
       // Allow update/delete if creator
       allow update, delete: if isAuthenticated() && resource.data.creatorId == request.auth.uid;
     }
