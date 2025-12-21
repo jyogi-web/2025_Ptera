@@ -1,7 +1,7 @@
 "use client";
 
 import { Animator, AnimatorGeneralProvider } from "@arwes/react";
-import { Book, Home, Sword, Users } from "lucide-react";
+import { Book, Gamepad2, Home, Sword, Users } from "lucide-react";
 import { usePathname, useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { useAuth } from "@/context/AuthContext";
@@ -27,6 +27,11 @@ const FOOTER_ITEMS = [
     label: "バトル",
     href: "/circle/matching",
     icon: Sword,
+  },
+  {
+    label: "ゲーム",
+    href: "/games",
+    icon: Gamepad2,
   },
 ];
 
