@@ -14,903 +14,1000 @@ const AIM_SENSITIVITY = 1.4; // Reduced from 1.8
 const TRIGGER_THRESHOLD = 0.75; // Relaxed from 0.65 for easier firing
 
 const createEnemy = (): THREE.Group => {
-  const group = new THREE.Group();
+    const group = new THREE.Group();
 
-  // Random Color
-  const colors = [0x00ffff, 0xff00ff, 0x00ff00, 0xffaa00, 0xff3333];
-  const color = colors[Math.floor(Math.random() * colors.length)];
+    // Random Color
+    const colors = [0x00ffff, 0xff00ff, 0x00ff00, 0xffaa00, 0xff3333];
+    const color = colors[Math.floor(Math.random() * colors.length)];
 
-  // 1. Base Disk
-  const geometry = new THREE.CylinderGeometry(0.5, 0.5, 0.1, 32);
-  geometry.rotateX(Math.PI / 2);
-  const material = new THREE.MeshPhongMaterial({
-    color: color,
-    shininess: 100,
-  });
-  const base = new THREE.Mesh(geometry, material);
-  group.add(base);
+    // 1. Base Disk
+    const geometry = new THREE.CylinderGeometry(0.5, 0.5, 0.1, 32);
+    geometry.rotateX(Math.PI / 2);
+    const material = new THREE.MeshPhongMaterial({
+        color: color,
+        shininess: 100,
+    });
+    const base = new THREE.Mesh(geometry, material);
+    group.add(base);
 
-  // 2. Bullseye Rings (White)
-  const ringMat = new THREE.MeshBasicMaterial({ color: 0xffffff });
+    // 2. Bullseye Rings (White)
+    const ringMat = new THREE.MeshBasicMaterial({ color: 0xffffff });
 
-  // Outer Ring
-  const ring1Geo = new THREE.TorusGeometry(0.35, 0.02, 16, 32);
-  const ring1 = new THREE.Mesh(ring1Geo, ringMat);
-  ring1.position.z = 0.06;
-  group.add(ring1);
+    // Outer Ring
+    const ring1Geo = new THREE.TorusGeometry(0.35, 0.02, 16, 32);
+    const ring1 = new THREE.Mesh(ring1Geo, ringMat);
+    ring1.position.z = 0.06;
+    group.add(ring1);
 
-  // Inner Ring
-  const ring2Geo = new THREE.TorusGeometry(0.2, 0.02, 16, 32);
-  const ring2 = new THREE.Mesh(ring2Geo, ringMat);
-  ring2.position.z = 0.06;
-  group.add(ring2);
+    // Inner Ring
+    const ring2Geo = new THREE.TorusGeometry(0.2, 0.02, 16, 32);
+    const ring2 = new THREE.Mesh(ring2Geo, ringMat);
+    ring2.position.z = 0.06;
+    group.add(ring2);
 
-  // Center Dot
-  const dotGeo = new THREE.CircleGeometry(0.08, 16);
-  const dot = new THREE.Mesh(dotGeo, ringMat);
-  dot.position.z = 0.07;
-  group.add(dot);
+    // Center Dot
+    const dotGeo = new THREE.CircleGeometry(0.08, 16);
+    const dot = new THREE.Mesh(dotGeo, ringMat);
+    dot.position.z = 0.07;
+    group.add(dot);
 
-  return group;
+    return group;
 };
 
 // --- Type Definitions ---
 interface Landmark {
-  x: number;
-  y: number;
-  z: number;
+    x: number;
+    y: number;
+    z: number;
 }
 
 interface HandsResults {
-  multiHandLandmarks: Landmark[][];
+    multiHandLandmarks: Landmark[][];
 }
 
 interface HandsOptions {
-  maxNumHands: number;
-  modelComplexity: number;
-  minDetectionConfidence: number;
-  minTrackingConfidence: number;
+    maxNumHands: number;
+    modelComplexity: number;
+    minDetectionConfidence: number;
+    minTrackingConfidence: number;
 }
 
 interface HandsInput {
-  image: HTMLVideoElement;
+    image: HTMLVideoElement;
 }
 
 interface HandsInstance {
-  setOptions: (options: HandsOptions) => void;
-  onResults: (callback: (results: HandsResults) => void) => void;
-  initialize: () => Promise<void>;
-  send: (input: HandsInput) => Promise<void>;
-  close: () => Promise<void>;
+    setOptions: (options: HandsOptions) => void;
+    onResults: (callback: (results: HandsResults) => void) => void;
+    initialize: () => Promise<void>;
+    send: (input: HandsInput) => Promise<void>;
+    close: () => Promise<void>;
 }
 
 interface CustomWindow extends Window {
-  Hands: new (config: {
-    locateFile: (file: string) => string;
-  }) => HandsInstance;
-  webkitAudioContext: typeof AudioContext;
+    Hands: new (config: {
+        locateFile: (file: string) => string;
+    }) => HandsInstance;
+    webkitAudioContext: typeof AudioContext;
 }
 
 // --- Three.js & Game State Types ---
 type Enemy = {
-  id: string;
-  mesh: THREE.Group;
-  velocity: THREE.Vector3;
-  active: boolean;
+    id: string;
+    mesh: THREE.Group;
+    velocity: THREE.Vector3;
+    active: boolean;
 };
 
 type FloatingText = {
-  id: number;
-  x: number;
-  y: number;
-  text: string;
-  life: number; // 0-1
-  color: string;
+    id: number;
+    x: number;
+    y: number;
+    text: string;
+    life: number; // 0-1
+    color: string;
 };
 
 export default function ShootingGame() {
-  const containerRef = useRef<HTMLDivElement>(null);
-  const videoRef = useRef<HTMLVideoElement>(null);
-  const canvasRef = useRef<HTMLCanvasElement>(null);
-  const router = useRouter();
+    const containerRef = useRef<HTMLDivElement>(null);
+    const videoRef = useRef<HTMLVideoElement>(null);
+    const debugCanvasRef = useRef<HTMLCanvasElement>(null);
+    const canvasRef = useRef<HTMLCanvasElement>(null);
+    const router = useRouter();
 
-  // Loading States
-  const [isModelLoaded, setIsModelLoaded] = useState(false);
-  const [isCameraReady, setIsCameraReady] = useState(false);
-  const [loadingStatus, setLoadingStatus] = useState("Initializing...");
-  const [errorMsg, setErrorMsg] = useState<string | null>(null);
+    // Loading States
+    const [isModelLoaded, setIsModelLoaded] = useState(false);
+    const [isCameraReady, setIsCameraReady] = useState(false);
+    const [loadingStatus, setLoadingStatus] = useState("Initializing...");
+    const [errorMsg, setErrorMsg] = useState<string | null>(null);
 
-  // Game UI State
-  const [score, setScore] = useState(0);
-  const [timeLeft, setTimeLeft] = useState(60);
-  const [gameState, setGameState] = useState<"playing" | "finished">("playing");
-  const [_debugMsg, _setDebugMsg] = useState("-");
-  const [floatingTexts, setFloatingTexts] = useState<FloatingText[]>([]);
+    // Game UI State
+    const [score, setScore] = useState(0);
+    const [timeLeft, setTimeLeft] = useState(60);
+    const [gameState, setGameState] = useState<"playing" | "finished">("playing");
+    const [_debugMsg, _setDebugMsg] = useState("-");
+    const [floatingTexts, setFloatingTexts] = useState<FloatingText[]>([]);
 
-  // Mutable References for Performance (Game Loop)
-  const gameRef = useRef({
-    scene: null as THREE.Scene | null,
-    camera: null as THREE.PerspectiveCamera | null,
-    renderer: null as THREE.WebGLRenderer | null,
-    enemies: [] as Enemy[],
-    lasers: [] as THREE.Mesh[] | THREE.Line[],
-    reticle: null as THREE.Group | null,
-    reticleMaterial: null as THREE.MeshBasicMaterial | null,
-    lastTime: 0,
-    handLandmarker: null as HandsInstance | null,
-    lastVideoTime: -1,
-    lastAITime: 0,
-    gesture: {
-      isPistol: false,
-      isTriggerPulled: false,
-      aimPosition: new THREE.Vector2(0, 0), // Screen coords (-1 to 1)
-      smoothAimPosition: new THREE.Vector2(0, 0), // Interpolated for 60FPS
-      wasTriggerPulled: false, // For edge detection
-    },
-    audioCtx: null as AudioContext | null,
-    bounds: { x: 5, y: 3 }, // Default bounds, updated in init
-    // Temp objects for GC optimization
-    tempVec3: new THREE.Vector3(),
-    tempVec3_2: new THREE.Vector3(),
-    tempVec3_3: new THREE.Vector3(),
-    isAIProcessing: false,
-  });
+    // Mutable References for Performance (Game Loop)
+    const gameRef = useRef({
+        scene: null as THREE.Scene | null,
+        camera: null as THREE.PerspectiveCamera | null,
+        renderer: null as THREE.WebGLRenderer | null,
+        enemies: [] as Enemy[],
+        lasers: [] as THREE.Mesh[] | THREE.Line[],
+        reticle: null as THREE.Group | null,
+        reticleMaterial: null as THREE.MeshBasicMaterial | null,
+        lastTime: 0,
+        handLandmarker: null as HandsInstance | null,
+        lastVideoTime: -1,
+        lastAITime: 0,
+        gesture: {
+            isPistol: false,
+            isTriggerPulled: false,
+            aimPosition: new THREE.Vector2(0, 0), // Screen coords (-1 to 1)
+            smoothAimPosition: new THREE.Vector2(0, 0), // Interpolated for 60FPS
+            wasTriggerPulled: false, // For edge detection
+        },
+        audioCtx: null as AudioContext | null,
+        bounds: { x: 5, y: 3 }, // Default bounds, updated in init
+        // Temp objects for GC optimization
+        tempVec3: new THREE.Vector3(),
+        tempVec3_2: new THREE.Vector3(),
+        tempVec3_3: new THREE.Vector3(),
+        isAIProcessing: false,
+    });
 
-  // --- 2. MediaPipe Integration ---
-  const isInit = useRef(false);
+    // --- 2. MediaPipe Integration ---
+    const isInit = useRef(false);
 
-  // Process AI Results
-  const onHandsResults = useCallback((results: HandsResults) => {
-    try {
-      if (results.multiHandLandmarks && results.multiHandLandmarks.length > 0) {
-        const landmarks = results.multiHandLandmarks[0];
+    // Process AI Results
+    const onHandsResults = useCallback((results: HandsResults) => {
+        try {
+            // --- Debug Drawing ---
+            const canvas = debugCanvasRef.current;
+            const video = videoRef.current;
+            if (canvas && video) {
+                const ctx = canvas.getContext("2d");
+                if (ctx) {
+                    ctx.save();
+                    ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-        // 1. Detect Aim Point (Index Finger Tip)
-        const indexTip = landmarks[8];
+                    // Draw Video Feed (Mirrored)
+                    ctx.translate(canvas.width, 0);
+                    ctx.scale(-1, 1);
+                    ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
 
-        // Raw coordinates (-1 to 1)
-        let aimX = (1 - indexTip.x) * 2 - 1; // Flip X for mirror effect
-        let aimY = -(indexTip.y * 2 - 1); // Flip Y because 3D y-up vs screen y-down
+                    // Draw Landmarks
+                    if (results.multiHandLandmarks && results.multiHandLandmarks.length > 0) {
+                        const landmarks = results.multiHandLandmarks[0];
 
-        // Apply Sensitivity
-        aimX *= AIM_SENSITIVITY;
-        aimY *= AIM_SENSITIVITY;
+                        // Helper to get canvas coords
+                        const getCoord = (idx: number) => ({
+                            x: landmarks[idx].x * canvas.width,
+                            y: landmarks[idx].y * canvas.height
+                        });
 
-        // Clamp to screen bounds [-1, 1]
-        aimX = Math.max(-1, Math.min(1, aimX));
-        aimY = Math.max(-1, Math.min(1, aimY));
+                        // Draw Skeleton Lines
+                        ctx.strokeStyle = "#00ffff"; // Cyan bones
+                        ctx.lineWidth = 2;
+                        ctx.beginPath();
 
-        gameRef.current.gesture.aimPosition.set(aimX, aimY);
+                        // Simple connections
+                        const connections = [
+                            [0, 1], [1, 2], [2, 3], [3, 4], // Thumb
+                            [0, 5], [5, 6], [6, 7], [7, 8], // Index
+                            [0, 9], [9, 10], [10, 11], [11, 12], // Middle
+                            [0, 13], [13, 14], [14, 15], [15, 16], // Ring
+                            [0, 17], [17, 18], [18, 19], [19, 20], // Pinky
+                            [5, 9], [9, 13], [13, 17] // Palm
+                        ];
 
-        // 2. Detect Trigger (Thumb scale invariant)
-        const wrist = landmarks[0];
-        const indexMCP = landmarks[5];
-        const handScale = Math.hypot(
-          indexMCP.x - wrist.x,
-          indexMCP.y - wrist.y,
+                        connections.forEach(([i, j]) => {
+                            const p1 = getCoord(i);
+                            const p2 = getCoord(j);
+                            ctx.moveTo(p1.x, p1.y);
+                            ctx.lineTo(p2.x, p2.y);
+                        });
+                        ctx.stroke();
+
+                        // Draw Aim Point (Index Tip)
+                        const indexTip = getCoord(8);
+                        ctx.beginPath();
+                        ctx.arc(indexTip.x, indexTip.y, 8, 0, 2 * Math.PI);
+                        ctx.fillStyle = "#00ff00"; // Green Aim
+                        ctx.fill();
+                        ctx.strokeStyle = "white";
+                        ctx.stroke();
+
+                        // Draw Trigger Points (Thumb Tip & Middle MCP)
+                        const thumbTip = getCoord(4);
+                        const middleMCP = getCoord(9);
+
+                        // Trigger Line
+                        ctx.beginPath();
+                        ctx.moveTo(thumbTip.x, thumbTip.y);
+                        ctx.lineTo(middleMCP.x, middleMCP.y);
+                        ctx.lineWidth = 3;
+                        // Color based on trigger state (calculated below)
+                        const dist = Math.hypot(landmarks[4].x - landmarks[9].x, landmarks[4].y - landmarks[9].y);
+                        // Need to recalculate ratio locally for color, or just use constant color
+                        // Let's use logic similar to main game
+                        const wrist = landmarks[0];
+                        const indexMCP = landmarks[5];
+                        const scale = Math.hypot(indexMCP.x - wrist.x, indexMCP.y - wrist.y);
+                        const ratio = dist / (scale || 1);
+                        const isTrigger = ratio < TRIGGER_THRESHOLD;
+
+                        ctx.strokeStyle = isTrigger ? "#ff0000" : "#ffff00";
+                        ctx.stroke();
+
+                        // Thumb Point
+                        ctx.beginPath();
+                        ctx.arc(thumbTip.x, thumbTip.y, 6, 0, 2 * Math.PI);
+                        ctx.fillStyle = isTrigger ? "#ff0000" : "#ffff00";
+                        ctx.fill();
+                    }
+                    ctx.restore();
+                }
+            }
+
+            if (results.multiHandLandmarks && results.multiHandLandmarks.length > 0) {
+                const landmarks = results.multiHandLandmarks[0];
+
+                // 1. Detect Aim Point (Index Finger Tip)
+                const indexTip = landmarks[8];
+
+                // Raw coordinates (-1 to 1)
+                let aimX = (1 - indexTip.x) * 2 - 1; // Flip X for mirror effect
+                let aimY = -(indexTip.y * 2 - 1); // Flip Y because 3D y-up vs screen y-down
+
+                // Apply Sensitivity
+                aimX *= AIM_SENSITIVITY;
+                aimY *= AIM_SENSITIVITY;
+
+                // Clamp to screen bounds [-1, 1]
+                aimX = Math.max(-1, Math.min(1, aimX));
+                aimY = Math.max(-1, Math.min(1, aimY));
+
+                gameRef.current.gesture.aimPosition.set(aimX, aimY);
+
+                // 2. Detect Trigger (Thumb scale invariant)
+                const wrist = landmarks[0];
+                const indexMCP = landmarks[5];
+                const handScale = Math.hypot(
+                    indexMCP.x - wrist.x,
+                    indexMCP.y - wrist.y,
+                );
+
+                const thumbTip = landmarks[4];
+                const middleMCP = landmarks[9];
+                const triggerDist = Math.hypot(
+                    thumbTip.x - middleMCP.x,
+                    thumbTip.y - middleMCP.y,
+                );
+
+                const ratio = triggerDist / (handScale || 1);
+                const isTriggerActive = ratio < TRIGGER_THRESHOLD;
+
+                gameRef.current.gesture.isPistol = true;
+                gameRef.current.gesture.isTriggerPulled = isTriggerActive;
+
+                // Removed to prevent re-renders (Performance Optimization)
+                // setDebugMsg(
+                //    `TrigRatio: ${ratio.toFixed(2)} / 0.65 | ${isTriggerActive ? "FIRE" : "OPEN"}`,
+                // );
+            } else {
+                gameRef.current.gesture.isPistol = false;
+                // setDebugMsg("No Hand Detected");
+            }
+        } catch (err) {
+            console.warn("Hand Process Error", err);
+        }
+    }, []);
+
+    const handleScriptLoad = useCallback(async () => {
+        if (isInit.current) return;
+        isInit.current = true;
+
+        setLoadingStatus("Loading AI Model...");
+        try {
+            const { Hands } = window as unknown as CustomWindow;
+            if (!Hands) throw new Error("MediaPipe Hands not found in window");
+
+            const hands = new Hands({
+                locateFile: (file: string) =>
+                    `https://unpkg.com/@mediapipe/hands@${MP_HANDS_VERSION}/${file}`,
+            });
+
+            hands.setOptions({
+                maxNumHands: 1,
+                modelComplexity: 1,
+                minDetectionConfidence: 0.5,
+                minTrackingConfidence: 0.5,
+            });
+
+            hands.onResults(onHandsResults);
+
+            await hands.initialize();
+            gameRef.current.handLandmarker = hands;
+            setIsModelLoaded(true);
+            setLoadingStatus("Ready!");
+        } catch (e: unknown) {
+            console.error("MediaPipe Init Error:", e);
+            const msg = e instanceof Error ? e.message : String(e);
+            setErrorMsg(`AI Model Error: ${msg}`);
+            isInit.current = false; // Allow retry on error
+        }
+    }, [onHandsResults]);
+
+    // Manual init check if script is already loaded
+    useEffect(() => {
+        const { Hands } = window as unknown as CustomWindow;
+        if (Hands && !isInit.current) {
+            handleScriptLoad();
+        }
+    }, [handleScriptLoad]);
+
+    // Timer Logic
+    useEffect(() => {
+        if (!isCameraReady || !isModelLoaded || gameState === "finished") return;
+
+        const timer = setInterval(() => {
+            setTimeLeft((prev) => {
+                if (prev <= 1) {
+                    clearInterval(timer);
+                    setGameState("finished");
+                    return 0;
+                }
+                return prev - 1;
+            });
+        }, 1000);
+
+        return () => clearInterval(timer);
+    }, [isCameraReady, isModelLoaded, gameState]);
+
+    const resetGame = () => {
+        setScore(0);
+        setTimeLeft(60);
+        setGameState("playing");
+        // Clear enemies
+        gameRef.current.enemies.forEach((e) => {
+            gameRef.current.scene?.remove(e.mesh);
+        });
+        gameRef.current.enemies = [];
+    };
+
+    const addFloatingText = useCallback(
+        (text: string, x: number, y: number, color: string) => {
+            const id = Date.now() + Math.random();
+            setFloatingTexts((prev) => [...prev, { id, x, y, text, life: 1, color }]);
+            setTimeout(() => {
+                setFloatingTexts((prev) => prev.filter((t) => t.id !== id));
+            }, 800);
+        },
+        [],
+    );
+
+    const playSound = useCallback((type: "shoot" | "hit") => {
+        const ctx = gameRef.current.audioCtx;
+        if (!ctx) return;
+
+        const osc = ctx.createOscillator();
+        const gain = ctx.createGain();
+        osc.connect(gain);
+        gain.connect(ctx.destination);
+
+        if (type === "shoot") {
+            osc.type = "square";
+            osc.frequency.setValueAtTime(400, ctx.currentTime);
+            osc.frequency.exponentialRampToValueAtTime(100, ctx.currentTime + 0.1);
+            gain.gain.setValueAtTime(0.05, ctx.currentTime);
+            gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.1);
+            osc.start();
+            osc.stop(ctx.currentTime + 0.1);
+        } else if (type === "hit") {
+            osc.type = "sine";
+            osc.frequency.setValueAtTime(800, ctx.currentTime);
+            osc.frequency.exponentialRampToValueAtTime(1200, ctx.currentTime + 0.1);
+            gain.gain.setValueAtTime(0.1, ctx.currentTime);
+            gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.1);
+            osc.start();
+            osc.stop(ctx.currentTime + 0.1);
+        }
+    }, []);
+
+    const recycleEnemy = useCallback((enemy: Enemy) => {
+        enemy.active = false;
+        gameRef.current.scene?.remove(enemy.mesh);
+        gameRef.current.enemies = gameRef.current.enemies.filter(
+            (e) => e !== enemy,
+        );
+    }, []);
+
+    const handleShoot = useCallback(
+        (atPosition: THREE.Vector3) => {
+            playSound("shoot");
+            let hit = false;
+
+            if (!gameRef.current.camera) return;
+
+            const screenPos = atPosition.clone().project(gameRef.current.camera);
+            const x = ((screenPos.x + 1) / 2) * window.innerWidth;
+            const y = (-(screenPos.y - 1) / 2) * window.innerHeight;
+
+            gameRef.current.enemies.forEach((enemy) => {
+                if (!enemy.active) return;
+                if (enemy.mesh.position.distanceTo(atPosition) < 0.8) {
+                    hit = true;
+                    recycleEnemy(enemy);
+                    setScore((s) => s + 100);
+                    playSound("hit");
+                }
+            });
+
+            addFloatingText(hit ? "HIT!" : "MISS", x, y, hit ? "#00ff00" : "#555");
+        },
+        [playSound, recycleEnemy, addFloatingText],
+    );
+
+    const updateLaser = useCallback(
+        (start: THREE.Vector3, end: THREE.Vector3, visible: boolean) => {
+            const laser = gameRef.current.lasers[0] as THREE.Line;
+            if (!laser || !laser.geometry) return;
+
+            if (visible) {
+                const positions = laser.geometry.attributes.position
+                    .array as Float32Array;
+                positions[0] = start.x;
+                positions[1] = start.y - 0.2;
+                positions[2] = start.z;
+                positions[3] = end.x;
+                positions[4] = end.y;
+                positions[5] = end.z;
+                laser.geometry.attributes.position.needsUpdate = true;
+                laser.visible = true;
+            } else {
+                laser.visible = false;
+            }
+        },
+        [],
+    );
+
+    const spawnEnemy = useCallback(() => {
+        const mesh = createEnemy();
+
+        const boundsX = gameRef.current.bounds.x - 0.6; // Margin for size
+        const boundsY = gameRef.current.bounds.y - 0.6;
+        const x = (Math.random() - 0.5) * (boundsX * 2);
+        const y = (Math.random() - 0.5) * (boundsY * 2);
+
+        mesh.position.set(x, y, 0);
+        mesh.scale.set(0, 0, 0); // Start scaling from 0
+
+        const speed = 0.02 + Math.random() * 0.04;
+        const angle = Math.random() * Math.PI * 2;
+        const velocity = new THREE.Vector3(
+            Math.cos(angle) * speed,
+            Math.sin(angle) * speed,
+            0,
         );
 
-        const thumbTip = landmarks[4];
-        const middleMCP = landmarks[9];
-        const triggerDist = Math.hypot(
-          thumbTip.x - middleMCP.x,
-          thumbTip.y - middleMCP.y,
+        gameRef.current.scene?.add(mesh);
+        gameRef.current.enemies.push({
+            id: Math.random().toString(),
+            mesh,
+            velocity,
+            active: true,
+        });
+    }, []);
+
+    const updateGameLogic = useCallback(
+        (delta: number) => {
+            if (gameState === "finished") return;
+
+            const { camera, scene, enemies, gesture, reticle, reticleMaterial } =
+                gameRef.current;
+            if (!camera || !scene || !reticle || !reticleMaterial) return;
+
+            const timeScale = delta * 60;
+
+            const { tempVec3, tempVec3_2, tempVec3_3 } = gameRef.current;
+
+            // Smoothing (Linear Interpolation)
+            // Interpolate from current smooth position to the latest raw AI aim position.
+            // Factor 0.3 = fast response but smooth enough to hide 30fps stutter.
+            gesture.smoothAimPosition.lerp(gesture.aimPosition, 0.35 * timeScale);
+
+            // Reuse tempVec3 for projection
+            tempVec3.set(
+                gesture.smoothAimPosition.x,
+                gesture.smoothAimPosition.y,
+                0.5,
+            );
+            tempVec3.unproject(camera);
+
+            const dir = tempVec3.sub(camera.position).normalize();
+            const distance = -camera.position.z / dir.z;
+
+            // pos = camera + dir * distance
+            const pos = tempVec3_2
+                .copy(camera.position)
+                .add(dir.multiplyScalar(distance));
+
+            const finalAimPos = tempVec3_3.copy(pos);
+            let closestDist = Infinity;
+            let targetEnemy: Enemy | null = null;
+
+            enemies.forEach((enemy) => {
+                if (!enemy.active) return;
+                const dist = pos.distanceTo(enemy.mesh.position);
+                if (dist < AIM_ASSIST_RADIUS * 5) {
+                    if (dist < closestDist) {
+                        closestDist = dist;
+                        targetEnemy = enemy;
+                    }
+                }
+            });
+
+            if (targetEnemy) {
+                // finalAimPos.lerp((targetEnemy as Enemy).mesh.position, 0.2 * timeScale); // Removed causing jitter
+                reticleMaterial.color.setHex(0xff0000);
+            } else {
+                reticleMaterial.color.setHex(0x00ff00);
+            }
+
+            reticle.position.copy(finalAimPos);
+
+            updateLaser(pos, finalAimPos, gesture.isPistol);
+
+            if (
+                gesture.isPistol &&
+                gesture.isTriggerPulled &&
+                !gesture.wasTriggerPulled
+            ) {
+                handleShoot(finalAimPos);
+            }
+            gameRef.current.gesture.wasTriggerPulled = gesture.isTriggerPulled;
+
+            if (
+                gameRef.current.enemies.filter((e) => e.active).length < MAX_ENEMIES
+            ) {
+                spawnEnemy();
+            }
+
+            gameRef.current.enemies.forEach((enemy) => {
+                if (!enemy.active) return;
+                // velocity * timeScale -> add to position
+                const moveStep = tempVec3
+                    .copy(enemy.velocity)
+                    .multiplyScalar(timeScale);
+                enemy.mesh.position.add(moveStep);
+
+                // Spawn Animation (Scale up)
+                if (enemy.mesh.scale.x < 1) {
+                    const scaleSpeed = 0.1 * timeScale;
+                    const newScale = Math.min(enemy.mesh.scale.x + scaleSpeed, 1);
+                    enemy.mesh.scale.set(newScale, newScale, newScale);
+                }
+
+                // Simple rotation
+                enemy.mesh.rotation.z += 0.05 * timeScale;
+
+                const boundX = gameRef.current.bounds.x - 0.5; // Radius
+                const boundY = gameRef.current.bounds.y - 0.5;
+
+                if (enemy.mesh.position.x > boundX || enemy.mesh.position.x < -boundX) {
+                    enemy.velocity.x *= -1;
+                    enemy.mesh.position.x =
+                        Math.sign(enemy.mesh.position.x) * (boundX - 0.01);
+                }
+                if (enemy.mesh.position.y > boundY || enemy.mesh.position.y < -boundY) {
+                    enemy.velocity.y *= -1;
+                    enemy.mesh.position.y =
+                        Math.sign(enemy.mesh.position.y) * (boundY - 0.01);
+                }
+            });
+        },
+        [spawnEnemy, handleShoot, updateLaser, gameState],
+    );
+
+    const gameLoop = useCallback(
+        (clock: THREE.Clock) => {
+            if (
+                !gameRef.current.renderer ||
+                !gameRef.current.scene ||
+                !gameRef.current.camera
+            )
+                return;
+
+            const delta = clock.getDelta();
+
+            // --- AI Loop (Uncapped / As Fast As Possible) ---
+            if (
+                gameRef.current.handLandmarker &&
+                videoRef.current &&
+                videoRef.current.readyState >= 2 &&
+                !gameRef.current.isAIProcessing
+            ) {
+                gameRef.current.isAIProcessing = true;
+                const _startTime = performance.now();
+
+                // Process in background promise to not block main thread
+                gameRef.current.handLandmarker
+                    .send({ image: videoRef.current })
+                    .then(() => {
+                        gameRef.current.isAIProcessing = false;
+                    })
+                    .catch((err: unknown) => {
+                        console.warn("AI Err", err);
+                        gameRef.current.isAIProcessing = false;
+                    });
+            }
+
+            updateGameLogic(delta);
+
+            gameRef.current.renderer.render(
+                gameRef.current.scene,
+                gameRef.current.camera,
+            );
+        },
+        [updateGameLogic],
+    );
+
+    const stopGame = useCallback(() => {
+        gameRef.current.scene?.clear();
+        gameRef.current.enemies = [];
+        if (gameRef.current.renderer) {
+            gameRef.current.renderer.dispose();
+            gameRef.current.renderer = null;
+        }
+        if (gameRef.current.handLandmarker) {
+            gameRef.current.handLandmarker.close();
+            gameRef.current.handLandmarker = null;
+        }
+        if (gameRef.current.audioCtx) {
+            gameRef.current.audioCtx.close();
+            gameRef.current.audioCtx = null;
+        }
+        setIsModelLoaded(false);
+        setIsCameraReady(false);
+    }, []);
+
+    const initGame = useCallback(() => {
+        if (!canvasRef.current || !containerRef.current) return;
+
+        const scene = new THREE.Scene();
+        scene.fog = new THREE.FogExp2(0x2a2a4a, 0.15);
+
+        const width = containerRef.current.clientWidth;
+        const height = containerRef.current.clientHeight;
+        const camera = new THREE.PerspectiveCamera(75, width / height, 0.1, 100);
+        camera.position.z = 5;
+
+        // Calculate Visible Bounds at z=0
+        const vFOV = (camera.fov * Math.PI) / 180;
+        const visibleHeight = 2 * Math.tan(vFOV / 2) * Math.abs(camera.position.z);
+        const visibleWidth = visibleHeight * camera.aspect;
+
+        // Adjust for Header/Footer (approx 100px each to be safe)
+        const uiInsetPixels = 100;
+        const worldScale = visibleHeight / height;
+        const uiInsetWorld = uiInsetPixels * worldScale;
+
+        gameRef.current.bounds = {
+            x: visibleWidth / 2,
+            y: visibleHeight / 2 - uiInsetWorld,
+        };
+
+        const renderer = new THREE.WebGLRenderer({
+            canvas: canvasRef.current,
+            alpha: false,
+            antialias: true,
+            powerPreference: "high-performance",
+        });
+        renderer.setSize(width, height);
+        renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+
+        const gridHelper = new THREE.GridHelper(30, 30, 0x222222, 0x222222);
+        gridHelper.rotation.x = Math.PI / 2;
+        gridHelper.position.y = -4;
+        scene.add(gridHelper);
+
+        const gridTop = new THREE.GridHelper(30, 30, 0xff00ff, 0x222222);
+        gridTop.position.y = 4;
+        scene.add(gridTop);
+
+        const ambientLight = new THREE.AmbientLight(0xffffff, 0.6);
+        scene.add(ambientLight);
+        const dirLight = new THREE.DirectionalLight(0xffffff, 0.8);
+        dirLight.position.set(5, 5, 5);
+        scene.add(dirLight);
+
+        // --- Sci-Fi Reticle ---
+        const reticleGroup = new THREE.Group();
+        const reticleMat = new THREE.MeshBasicMaterial({
+            color: 0x00ff00,
+            transparent: false, // Solid color for maximum brightness
+            opacity: 1.0,
+        });
+        gameRef.current.reticleMaterial = reticleMat;
+
+        // 1. Center Dot (Larger)
+        const centerDot = new THREE.Mesh(
+            new THREE.CircleGeometry(0.025, 16),
+            reticleMat,
         );
-
-        const ratio = triggerDist / (handScale || 1);
-        const isTriggerActive = ratio < TRIGGER_THRESHOLD;
-
-        gameRef.current.gesture.isPistol = true;
-        gameRef.current.gesture.isTriggerPulled = isTriggerActive;
-
-        // Removed to prevent re-renders (Performance Optimization)
-        // setDebugMsg(
-        //    `TrigRatio: ${ratio.toFixed(2)} / 0.65 | ${isTriggerActive ? "FIRE" : "OPEN"}`,
-        // );
-      } else {
-        gameRef.current.gesture.isPistol = false;
-        // setDebugMsg("No Hand Detected");
-      }
-    } catch (err) {
-      console.warn("Hand Process Error", err);
-    }
-  }, []);
-
-  const handleScriptLoad = useCallback(async () => {
-    if (isInit.current) return;
-    isInit.current = true;
-
-    setLoadingStatus("Loading AI Model...");
-    try {
-      const { Hands } = window as unknown as CustomWindow;
-      if (!Hands) throw new Error("MediaPipe Hands not found in window");
-
-      const hands = new Hands({
-        locateFile: (file: string) =>
-          `https://unpkg.com/@mediapipe/hands@${MP_HANDS_VERSION}/${file}`,
-      });
-
-      hands.setOptions({
-        maxNumHands: 1,
-        modelComplexity: 1,
-        minDetectionConfidence: 0.5,
-        minTrackingConfidence: 0.5,
-      });
-
-      hands.onResults(onHandsResults);
-
-      await hands.initialize();
-      gameRef.current.handLandmarker = hands;
-      setIsModelLoaded(true);
-      setLoadingStatus("Ready!");
-    } catch (e: unknown) {
-      console.error("MediaPipe Init Error:", e);
-      const msg = e instanceof Error ? e.message : String(e);
-      setErrorMsg(`AI Model Error: ${msg}`);
-      isInit.current = false; // Allow retry on error
-    }
-  }, [onHandsResults]);
-
-  // Manual init check if script is already loaded
-  useEffect(() => {
-    const { Hands } = window as unknown as CustomWindow;
-    if (Hands && !isInit.current) {
-      handleScriptLoad();
-    }
-  }, [handleScriptLoad]);
-
-  // Timer Logic
-  useEffect(() => {
-    if (!isCameraReady || !isModelLoaded || gameState === "finished") return;
-
-    const timer = setInterval(() => {
-      setTimeLeft((prev) => {
-        if (prev <= 1) {
-          clearInterval(timer);
-          setGameState("finished");
-          return 0;
-        }
-        return prev - 1;
-      });
-    }, 1000);
-
-    return () => clearInterval(timer);
-  }, [isCameraReady, isModelLoaded, gameState]);
-
-  const resetGame = () => {
-    setScore(0);
-    setTimeLeft(60);
-    setGameState("playing");
-    // Clear enemies
-    gameRef.current.enemies.forEach((e) => {
-      gameRef.current.scene?.remove(e.mesh);
-    });
-    gameRef.current.enemies = [];
-  };
-
-  const addFloatingText = useCallback(
-    (text: string, x: number, y: number, color: string) => {
-      const id = Date.now() + Math.random();
-      setFloatingTexts((prev) => [...prev, { id, x, y, text, life: 1, color }]);
-      setTimeout(() => {
-        setFloatingTexts((prev) => prev.filter((t) => t.id !== id));
-      }, 800);
-    },
-    [],
-  );
-
-  const playSound = useCallback((type: "shoot" | "hit") => {
-    const ctx = gameRef.current.audioCtx;
-    if (!ctx) return;
-
-    const osc = ctx.createOscillator();
-    const gain = ctx.createGain();
-    osc.connect(gain);
-    gain.connect(ctx.destination);
-
-    if (type === "shoot") {
-      osc.type = "square";
-      osc.frequency.setValueAtTime(400, ctx.currentTime);
-      osc.frequency.exponentialRampToValueAtTime(100, ctx.currentTime + 0.1);
-      gain.gain.setValueAtTime(0.05, ctx.currentTime);
-      gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.1);
-      osc.start();
-      osc.stop(ctx.currentTime + 0.1);
-    } else if (type === "hit") {
-      osc.type = "sine";
-      osc.frequency.setValueAtTime(800, ctx.currentTime);
-      osc.frequency.exponentialRampToValueAtTime(1200, ctx.currentTime + 0.1);
-      gain.gain.setValueAtTime(0.1, ctx.currentTime);
-      gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.1);
-      osc.start();
-      osc.stop(ctx.currentTime + 0.1);
-    }
-  }, []);
-
-  const recycleEnemy = useCallback((enemy: Enemy) => {
-    enemy.active = false;
-    gameRef.current.scene?.remove(enemy.mesh);
-    gameRef.current.enemies = gameRef.current.enemies.filter(
-      (e) => e !== enemy,
-    );
-  }, []);
-
-  const handleShoot = useCallback(
-    (atPosition: THREE.Vector3) => {
-      playSound("shoot");
-      let hit = false;
-
-      if (!gameRef.current.camera) return;
-
-      const screenPos = atPosition.clone().project(gameRef.current.camera);
-      const x = ((screenPos.x + 1) / 2) * window.innerWidth;
-      const y = (-(screenPos.y - 1) / 2) * window.innerHeight;
-
-      gameRef.current.enemies.forEach((enemy) => {
-        if (!enemy.active) return;
-        if (enemy.mesh.position.distanceTo(atPosition) < 0.8) {
-          hit = true;
-          recycleEnemy(enemy);
-          setScore((s) => s + 100);
-          playSound("hit");
-        }
-      });
-
-      addFloatingText(hit ? "HIT!" : "MISS", x, y, hit ? "#00ff00" : "#555");
-    },
-    [playSound, recycleEnemy, addFloatingText],
-  );
-
-  const updateLaser = useCallback(
-    (start: THREE.Vector3, end: THREE.Vector3, visible: boolean) => {
-      const laser = gameRef.current.lasers[0] as THREE.Line;
-      if (!laser || !laser.geometry) return;
-
-      if (visible) {
-        const positions = laser.geometry.attributes.position
-          .array as Float32Array;
-        positions[0] = start.x;
-        positions[1] = start.y - 0.2;
-        positions[2] = start.z;
-        positions[3] = end.x;
-        positions[4] = end.y;
-        positions[5] = end.z;
-        laser.geometry.attributes.position.needsUpdate = true;
-        laser.visible = true;
-      } else {
-        laser.visible = false;
-      }
-    },
-    [],
-  );
-
-  const spawnEnemy = useCallback(() => {
-    const mesh = createEnemy();
-
-    const boundsX = gameRef.current.bounds.x - 0.6; // Margin for size
-    const boundsY = gameRef.current.bounds.y - 0.6;
-    const x = (Math.random() - 0.5) * (boundsX * 2);
-    const y = (Math.random() - 0.5) * (boundsY * 2);
-
-    mesh.position.set(x, y, 0);
-    mesh.scale.set(0, 0, 0); // Start scaling from 0
-
-    const speed = 0.02 + Math.random() * 0.04;
-    const angle = Math.random() * Math.PI * 2;
-    const velocity = new THREE.Vector3(
-      Math.cos(angle) * speed,
-      Math.sin(angle) * speed,
-      0,
-    );
-
-    gameRef.current.scene?.add(mesh);
-    gameRef.current.enemies.push({
-      id: Math.random().toString(),
-      mesh,
-      velocity,
-      active: true,
-    });
-  }, []);
-
-  const updateGameLogic = useCallback(
-    (delta: number) => {
-      if (gameState === "finished") return;
-
-      const { camera, scene, enemies, gesture, reticle, reticleMaterial } =
-        gameRef.current;
-      if (!camera || !scene || !reticle || !reticleMaterial) return;
-
-      const timeScale = delta * 60;
-
-      const { tempVec3, tempVec3_2, tempVec3_3 } = gameRef.current;
-
-      // Smoothing (Linear Interpolation)
-      // Interpolate from current smooth position to the latest raw AI aim position.
-      // Factor 0.3 = fast response but smooth enough to hide 30fps stutter.
-      gesture.smoothAimPosition.lerp(gesture.aimPosition, 0.35 * timeScale);
-
-      // Reuse tempVec3 for projection
-      tempVec3.set(
-        gesture.smoothAimPosition.x,
-        gesture.smoothAimPosition.y,
-        0.5,
-      );
-      tempVec3.unproject(camera);
-
-      const dir = tempVec3.sub(camera.position).normalize();
-      const distance = -camera.position.z / dir.z;
-
-      // pos = camera + dir * distance
-      const pos = tempVec3_2
-        .copy(camera.position)
-        .add(dir.multiplyScalar(distance));
-
-      const finalAimPos = tempVec3_3.copy(pos);
-      let closestDist = Infinity;
-      let targetEnemy: Enemy | null = null;
-
-      enemies.forEach((enemy) => {
-        if (!enemy.active) return;
-        const dist = pos.distanceTo(enemy.mesh.position);
-        if (dist < AIM_ASSIST_RADIUS * 5) {
-          if (dist < closestDist) {
-            closestDist = dist;
-            targetEnemy = enemy;
-          }
-        }
-      });
-
-      if (targetEnemy) {
-        // finalAimPos.lerp((targetEnemy as Enemy).mesh.position, 0.2 * timeScale); // Removed causing jitter
-        reticleMaterial.color.setHex(0xff0000);
-      } else {
-        reticleMaterial.color.setHex(0x00ff00);
-      }
-
-      reticle.position.copy(finalAimPos);
-
-      updateLaser(pos, finalAimPos, gesture.isPistol);
-
-      if (
-        gesture.isPistol &&
-        gesture.isTriggerPulled &&
-        !gesture.wasTriggerPulled
-      ) {
-        handleShoot(finalAimPos);
-      }
-      gameRef.current.gesture.wasTriggerPulled = gesture.isTriggerPulled;
-
-      if (
-        gameRef.current.enemies.filter((e) => e.active).length < MAX_ENEMIES
-      ) {
-        spawnEnemy();
-      }
-
-      gameRef.current.enemies.forEach((enemy) => {
-        if (!enemy.active) return;
-        // velocity * timeScale -> add to position
-        const moveStep = tempVec3
-          .copy(enemy.velocity)
-          .multiplyScalar(timeScale);
-        enemy.mesh.position.add(moveStep);
-
-        // Spawn Animation (Scale up)
-        if (enemy.mesh.scale.x < 1) {
-          const scaleSpeed = 0.1 * timeScale;
-          const newScale = Math.min(enemy.mesh.scale.x + scaleSpeed, 1);
-          enemy.mesh.scale.set(newScale, newScale, newScale);
-        }
-
-        // Simple rotation
-        enemy.mesh.rotation.z += 0.05 * timeScale;
-
-        const boundX = gameRef.current.bounds.x - 0.5; // Radius
-        const boundY = gameRef.current.bounds.y - 0.5;
-
-        if (enemy.mesh.position.x > boundX || enemy.mesh.position.x < -boundX) {
-          enemy.velocity.x *= -1;
-          enemy.mesh.position.x =
-            Math.sign(enemy.mesh.position.x) * (boundX - 0.01);
-        }
-        if (enemy.mesh.position.y > boundY || enemy.mesh.position.y < -boundY) {
-          enemy.velocity.y *= -1;
-          enemy.mesh.position.y =
-            Math.sign(enemy.mesh.position.y) * (boundY - 0.01);
-        }
-      });
-    },
-    [spawnEnemy, handleShoot, updateLaser, gameState],
-  );
-
-  const gameLoop = useCallback(
-    (clock: THREE.Clock) => {
-      if (
-        !gameRef.current.renderer ||
-        !gameRef.current.scene ||
-        !gameRef.current.camera
-      )
-        return;
-
-      const delta = clock.getDelta();
-
-      // --- AI Loop (Uncapped / As Fast As Possible) ---
-      if (
-        gameRef.current.handLandmarker &&
-        videoRef.current &&
-        videoRef.current.readyState >= 2 &&
-        !gameRef.current.isAIProcessing
-      ) {
-        gameRef.current.isAIProcessing = true;
-        const _startTime = performance.now();
-
-        // Process in background promise to not block main thread
-        gameRef.current.handLandmarker
-          .send({ image: videoRef.current })
-          .then(() => {
-            gameRef.current.isAIProcessing = false;
-          })
-          .catch((err: unknown) => {
-            console.warn("AI Err", err);
-            gameRef.current.isAIProcessing = false;
-          });
-      }
-
-      updateGameLogic(delta);
-
-      gameRef.current.renderer.render(
-        gameRef.current.scene,
-        gameRef.current.camera,
-      );
-    },
-    [updateGameLogic],
-  );
-
-  const stopGame = useCallback(() => {
-    gameRef.current.scene?.clear();
-    gameRef.current.enemies = [];
-    if (gameRef.current.renderer) {
-      gameRef.current.renderer.dispose();
-      gameRef.current.renderer = null;
-    }
-    if (gameRef.current.handLandmarker) {
-      gameRef.current.handLandmarker.close();
-      gameRef.current.handLandmarker = null;
-    }
-    if (gameRef.current.audioCtx) {
-      gameRef.current.audioCtx.close();
-      gameRef.current.audioCtx = null;
-    }
-    setIsModelLoaded(false);
-    setIsCameraReady(false);
-  }, []);
-
-  const initGame = useCallback(() => {
-    if (!canvasRef.current || !containerRef.current) return;
-
-    const scene = new THREE.Scene();
-    scene.fog = new THREE.FogExp2(0x2a2a4a, 0.15);
-
-    const width = containerRef.current.clientWidth;
-    const height = containerRef.current.clientHeight;
-    const camera = new THREE.PerspectiveCamera(75, width / height, 0.1, 100);
-    camera.position.z = 5;
-
-    // Calculate Visible Bounds at z=0
-    const vFOV = (camera.fov * Math.PI) / 180;
-    const visibleHeight = 2 * Math.tan(vFOV / 2) * Math.abs(camera.position.z);
-    const visibleWidth = visibleHeight * camera.aspect;
-
-    // Adjust for Header/Footer (approx 100px each to be safe)
-    const uiInsetPixels = 100;
-    const worldScale = visibleHeight / height;
-    const uiInsetWorld = uiInsetPixels * worldScale;
-
-    gameRef.current.bounds = {
-      x: visibleWidth / 2,
-      y: visibleHeight / 2 - uiInsetWorld,
-    };
-
-    const renderer = new THREE.WebGLRenderer({
-      canvas: canvasRef.current,
-      alpha: false,
-      antialias: true,
-      powerPreference: "high-performance",
-    });
-    renderer.setSize(width, height);
-    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
-
-    const gridHelper = new THREE.GridHelper(30, 30, 0x222222, 0x222222);
-    gridHelper.rotation.x = Math.PI / 2;
-    gridHelper.position.y = -4;
-    scene.add(gridHelper);
-
-    const gridTop = new THREE.GridHelper(30, 30, 0xff00ff, 0x222222);
-    gridTop.position.y = 4;
-    scene.add(gridTop);
-
-    const ambientLight = new THREE.AmbientLight(0xffffff, 0.6);
-    scene.add(ambientLight);
-    const dirLight = new THREE.DirectionalLight(0xffffff, 0.8);
-    dirLight.position.set(5, 5, 5);
-    scene.add(dirLight);
-
-    // --- Sci-Fi Reticle ---
-    const reticleGroup = new THREE.Group();
-    const reticleMat = new THREE.MeshBasicMaterial({
-      color: 0x00ff00,
-      transparent: false, // Solid color for maximum brightness
-      opacity: 1.0,
-    });
-    gameRef.current.reticleMaterial = reticleMat;
-
-    // 1. Center Dot (Larger)
-    const centerDot = new THREE.Mesh(
-      new THREE.CircleGeometry(0.025, 16),
-      reticleMat,
-    );
-    reticleGroup.add(centerDot);
-
-    // 2. Inner Ring (Thicker)
-    const innerRing = new THREE.Mesh(
-      new THREE.RingGeometry(0.14, 0.17, 32),
-      reticleMat,
-    );
-    reticleGroup.add(innerRing);
-
-    // 3. Crosshairs (Thicker Lines)
-    // Top
-    const lineGeoV = new THREE.PlaneGeometry(0.025, 0.12);
-    const lineTop = new THREE.Mesh(lineGeoV, reticleMat);
-    lineTop.position.y = 0.24;
-    reticleGroup.add(lineTop);
-    // Bottom
-    const lineBottom = new THREE.Mesh(lineGeoV, reticleMat);
-    lineBottom.position.y = -0.24;
-    reticleGroup.add(lineBottom);
-    // Left
-    const lineGeoH = new THREE.PlaneGeometry(0.12, 0.025);
-    const lineLeft = new THREE.Mesh(lineGeoH, reticleMat);
-    lineLeft.position.x = -0.24;
-    reticleGroup.add(lineLeft);
-    // Right
-    const lineRight = new THREE.Mesh(lineGeoH, reticleMat);
-    lineRight.position.x = 0.24;
-    reticleGroup.add(lineRight);
-
-    scene.add(reticleGroup);
-    gameRef.current.reticle = reticleGroup;
-
-    gameRef.current.scene = scene;
-    gameRef.current.camera = camera;
-    gameRef.current.renderer = renderer;
-
-    const laserGeo = new THREE.BufferGeometry().setFromPoints([
-      new THREE.Vector3(0, 0, 0),
-      new THREE.Vector3(0, 0, -1),
-    ]);
-    const laserMat = new THREE.LineBasicMaterial({
-      color: 0x00ffff,
-      transparent: true,
-      opacity: 0.5,
-    });
-    const laser = new THREE.Line(laserGeo, laserMat);
-    laser.frustumCulled = false;
-    scene.add(laser);
-    gameRef.current.lasers = [laser];
-
-    gameRef.current.audioCtx = new (
-      window.AudioContext ||
-      (window as unknown as CustomWindow).webkitAudioContext
-    )();
-
-    const clock = new THREE.Clock();
-
-    let animationFrameId: number;
-    const loop = () => {
-      gameLoop(clock);
-      animationFrameId = requestAnimationFrame(loop);
-    };
-    animationFrameId = requestAnimationFrame(loop);
-
-    const handleResize = () => {
-      if (!containerRef.current) return;
-      const width = containerRef.current.clientWidth;
-      const height = containerRef.current.clientHeight;
-
-      camera.aspect = width / height;
-      camera.updateProjectionMatrix();
-
-      renderer.setSize(width, height);
-
-      // Recalculate Bounds
-      const vFOV = (camera.fov * Math.PI) / 180;
-      const visibleHeight =
-        2 * Math.tan(vFOV / 2) * Math.abs(camera.position.z);
-      const visibleWidth = visibleHeight * camera.aspect;
-
-      const uiInsetPixels = 100;
-      const worldScale = visibleHeight / height;
-      const uiInsetWorld = uiInsetPixels * worldScale;
-
-      gameRef.current.bounds = {
-        x: visibleWidth / 2,
-        y: visibleHeight / 2 - uiInsetWorld,
-      };
-    };
-
-    window.addEventListener("resize", handleResize);
-
-    return () => {
-      cancelAnimationFrame(animationFrameId);
-      window.removeEventListener("resize", handleResize);
-    };
-  }, [gameLoop]);
-
-  // --- 1. Initialization ---
-  useEffect(() => {
-    if (!isModelLoaded || !isCameraReady) return;
-
-    const cleanupGame = initGame();
-    return () => {
-      if (cleanupGame) cleanupGame();
-      stopGame();
-    };
-  }, [isModelLoaded, isCameraReady, initGame, stopGame]);
-
-  // Load Camera
-  useEffect(() => {
-    let stream: MediaStream | null = null;
-    async function setupCamera() {
-      try {
-        stream = await navigator.mediaDevices.getUserMedia({
-          video: {
-            facingMode: "environment",
-            width: { ideal: 1280 },
-            height: { ideal: 720 },
-          },
+        reticleGroup.add(centerDot);
+
+        // 2. Inner Ring (Thicker)
+        const innerRing = new THREE.Mesh(
+            new THREE.RingGeometry(0.14, 0.17, 32),
+            reticleMat,
+        );
+        reticleGroup.add(innerRing);
+
+        // 3. Crosshairs (Thicker Lines)
+        // Top
+        const lineGeoV = new THREE.PlaneGeometry(0.025, 0.12);
+        const lineTop = new THREE.Mesh(lineGeoV, reticleMat);
+        lineTop.position.y = 0.24;
+        reticleGroup.add(lineTop);
+        // Bottom
+        const lineBottom = new THREE.Mesh(lineGeoV, reticleMat);
+        lineBottom.position.y = -0.24;
+        reticleGroup.add(lineBottom);
+        // Left
+        const lineGeoH = new THREE.PlaneGeometry(0.12, 0.025);
+        const lineLeft = new THREE.Mesh(lineGeoH, reticleMat);
+        lineLeft.position.x = -0.24;
+        reticleGroup.add(lineLeft);
+        // Right
+        const lineRight = new THREE.Mesh(lineGeoH, reticleMat);
+        lineRight.position.x = 0.24;
+        reticleGroup.add(lineRight);
+
+        scene.add(reticleGroup);
+        gameRef.current.reticle = reticleGroup;
+
+        gameRef.current.scene = scene;
+        gameRef.current.camera = camera;
+        gameRef.current.renderer = renderer;
+
+        const laserGeo = new THREE.BufferGeometry().setFromPoints([
+            new THREE.Vector3(0, 0, 0),
+            new THREE.Vector3(0, 0, -1),
+        ]);
+        const laserMat = new THREE.LineBasicMaterial({
+            color: 0x00ffff,
+            transparent: true,
+            opacity: 0.5,
         });
-        if (videoRef.current) {
-          videoRef.current.srcObject = stream;
-          videoRef.current.onloadedmetadata = () => {
-            videoRef.current?.play();
-            setIsCameraReady(true);
-          };
+        const laser = new THREE.Line(laserGeo, laserMat);
+        laser.frustumCulled = false;
+        scene.add(laser);
+        gameRef.current.lasers = [laser];
+
+        gameRef.current.audioCtx = new (
+            window.AudioContext ||
+            (window as unknown as CustomWindow).webkitAudioContext
+        )();
+
+        const clock = new THREE.Clock();
+
+        let animationFrameId: number;
+        const loop = () => {
+            gameLoop(clock);
+            animationFrameId = requestAnimationFrame(loop);
+        };
+        animationFrameId = requestAnimationFrame(loop);
+
+        const handleResize = () => {
+            if (!containerRef.current) return;
+            const width = containerRef.current.clientWidth;
+            const height = containerRef.current.clientHeight;
+
+            camera.aspect = width / height;
+            camera.updateProjectionMatrix();
+
+            renderer.setSize(width, height);
+
+            // Recalculate Bounds
+            const vFOV = (camera.fov * Math.PI) / 180;
+            const visibleHeight =
+                2 * Math.tan(vFOV / 2) * Math.abs(camera.position.z);
+            const visibleWidth = visibleHeight * camera.aspect;
+
+            const uiInsetPixels = 100;
+            const worldScale = visibleHeight / height;
+            const uiInsetWorld = uiInsetPixels * worldScale;
+
+            gameRef.current.bounds = {
+                x: visibleWidth / 2,
+                y: visibleHeight / 2 - uiInsetWorld,
+            };
+        };
+
+        window.addEventListener("resize", handleResize);
+
+        return () => {
+            cancelAnimationFrame(animationFrameId);
+            window.removeEventListener("resize", handleResize);
+        };
+    }, [gameLoop]);
+
+    // --- 1. Initialization ---
+    useEffect(() => {
+        if (!isModelLoaded || !isCameraReady) return;
+
+        const cleanupGame = initGame();
+        return () => {
+            if (cleanupGame) cleanupGame();
+            stopGame();
+        };
+    }, [isModelLoaded, isCameraReady, initGame, stopGame]);
+
+    // Load Camera
+    useEffect(() => {
+        let stream: MediaStream | null = null;
+        async function setupCamera() {
+            try {
+                stream = await navigator.mediaDevices.getUserMedia({
+                    video: {
+                        facingMode: "environment",
+                        width: { ideal: 1280 },
+                        height: { ideal: 720 },
+                    },
+                });
+                if (videoRef.current) {
+                    videoRef.current.srcObject = stream;
+                    videoRef.current.onloadedmetadata = () => {
+                        videoRef.current?.play();
+                        setIsCameraReady(true);
+                    };
+                }
+            } catch (err) {
+                console.error("Camera Error:", err);
+                setErrorMsg("Camera permission denied or not available.");
+            }
         }
-      } catch (err) {
-        console.error("Camera Error:", err);
-        setErrorMsg("Camera permission denied or not available.");
-      }
-    }
-    setupCamera();
+        setupCamera();
 
-    return () => {
-      if (stream) {
-        stream.getTracks().forEach((track) => {
-          track.stop();
-        });
-      }
-      if (videoRef.current) {
-        videoRef.current.srcObject = null;
-      }
-    };
-  }, []);
+        return () => {
+            if (stream) {
+                stream.getTracks().forEach((track) => {
+                    track.stop();
+                });
+            }
+            if (videoRef.current) {
+                videoRef.current.srcObject = null;
+            }
+        };
+    }, []);
 
-  // --- Render ---
-  return (
-    <div
-      className="fixed inset-0 bg-black overflow-hidden touch-none overscroll-none"
-      ref={containerRef}
-    >
-      {/* Scripts */}
-      <Script
-        src={`https://unpkg.com/@mediapipe/hands@${MP_HANDS_VERSION}/hands.js`}
-        onLoad={handleScriptLoad}
-        strategy="afterInteractive"
-      />
+    // --- Render ---
+    return (
+        <div
+            className="fixed inset-0 bg-black overflow-hidden touch-none overscroll-none"
+            ref={containerRef}
+        >
+            {/* Scripts */}
+            <Script
+                src={`https://unpkg.com/@mediapipe/hands@${MP_HANDS_VERSION}/hands.js`}
+                onLoad={handleScriptLoad}
+                strategy="afterInteractive"
+            />
 
-      {/* Camera Feed (Background) - HIDDEN */}
-      <video
-        ref={videoRef}
-        className="absolute top-0 left-0 w-full h-full object-cover transform -scale-x-100 opacity-0 pointer-events-none"
-        playsInline
-        muted
-      />
+            {/* Camera Feed (Background) - HIDDEN */}
+            <video
+                ref={videoRef}
+                className="absolute top-0 left-0 w-full h-full object-cover transform -scale-x-100 opacity-0 pointer-events-none"
+                playsInline
+                muted
+            />
 
-      {/* 3D Overlay */}
-      <canvas
-        ref={canvasRef}
-        className="absolute top-0 left-0 w-full h-full pointer-events-none"
-      />
+            {/* 3D Overlay */}
+            <canvas
+                ref={canvasRef}
+                className="absolute top-0 left-0 w-full h-full pointer-events-none"
+            />
 
-      {/* Loading Overlay */}
-      {(!isModelLoaded || !isCameraReady) && (
-        <div className="absolute inset-0 flex items-center justify-center bg-black bg-opacity-90 z-50 flex-col gap-4">
-          <div className="text-cyan-400 text-2xl font-bold tracking-widest animate-pulse">
-            SYSTEM_INITIALIZING
-          </div>
-          <div className="text-gray-400 font-mono">{loadingStatus}</div>
-          {errorMsg && (
-            <div className="text-red-500 font-mono text-sm max-w-md text-center p-4 border border-red-900 bg-red-900/20">
-              FATAL ERROR: {errorMsg}
+            {/* Debug Camera View */}
+            <canvas
+                ref={debugCanvasRef}
+                className="fixed bottom-24 left-4 w-[360px] h-[270px] rounded-lg border-2 border-cyan-500/50 z-50 bg-black/50 pointer-events-none"
+                width={480}
+                height={360}
+            />
+
+            {/* Loading Overlay */}
+            {(!isModelLoaded || !isCameraReady) && (
+                <div className="absolute inset-0 flex items-center justify-center bg-black bg-opacity-90 z-50 flex-col gap-4">
+                    <div className="text-cyan-400 text-2xl font-bold tracking-widest animate-pulse">
+                        SYSTEM_INITIALIZING
+                    </div>
+                    <div className="text-gray-400 font-mono">{loadingStatus}</div>
+                    {errorMsg && (
+                        <div className="text-red-500 font-mono text-sm max-w-md text-center p-4 border border-red-900 bg-red-900/20">
+                            FATAL ERROR: {errorMsg}
+                        </div>
+                    )}
+                </div>
+            )}
+
+            {/* HUD */}
+            <div className="absolute top-24 left-4 text-white font-mono text-xl z-10 pointer-events-none drop-shadow-md">
+                SCORE: {score}
             </div>
-          )}
-        </div>
-      )}
-
-      {/* HUD */}
-      <div className="absolute top-24 left-4 text-white font-mono text-xl z-10 pointer-events-none drop-shadow-md">
-        SCORE: {score}
-      </div>
-      <div className="absolute top-24 right-4 text-white font-mono text-xl z-10 pointer-events-none drop-shadow-md">
-        TIME: {timeLeft}
-      </div>
-
-      {/* Game HUD */}
-      {isModelLoaded && (
-        <div className="absolute z-10 p-4 w-full pointer-events-none">
-          <div className="flex justify-end items-start">
-            <button
-              type="button"
-              onClick={() => router.push("/games")}
-              className="pointer-events-auto bg-red-500/20 hover:bg-red-500/40 text-red-300 border border-red-500 px-4 py-2 text-sm font-mono transition-colors"
-            >
-              ABORT_MISSION
-            </button>
-          </div>
-
-          {/* Crosshair (CSS Fallback or decorative) */}
-          <div className="absolute top-1/2 left-1/2 w-8 h-8 -ml-4 -mt-4 border border-cyan-500/30 rounded-full opacity-50" />
-
-          {/* Floating Texts */}
-          {floatingTexts.map((ft) => (
-            <div
-              key={ft.id}
-              className="absolute pointer-events-none font-black text-2xl tracking-widest"
-              style={{
-                left: ft.x,
-                top: ft.y,
-                color: ft.color,
-                transform: `translate(-50%, -50%) scale(${0.5 + ft.life})`,
-                opacity: ft.life,
-                textShadow: "0 0 5px black",
-                transition: "opacity 0.8s, transform 0.8s",
-              }}
-            >
-              {ft.text}
+            <div className="absolute top-24 right-4 text-white font-mono text-xl z-10 pointer-events-none drop-shadow-md">
+                TIME: {timeLeft}
             </div>
-          ))}
-        </div>
-      )}
 
-      {/* Game Over Screen */}
-      {gameState === "finished" && (
-        <div className="absolute inset-0 flex items-center justify-center bg-black/80 z-50 pointer-events-auto">
-          <div className="text-center p-8 bg-gray-900/90 border-2 border-cyan-500 rounded-xl shadow-[0_0_30px_rgba(6,182,212,0.3)]">
-            <h2 className="text-5xl font-bold text-white mb-4 tracking-wider">
-              GAME OVER
-            </h2>
-            <p className="text-3xl text-cyan-400 mb-8 font-mono">
-              FINAL SCORE: {score}
-            </p>
-            <div className="flex gap-4 justify-center">
-              <button
-                type="button"
-                onClick={resetGame}
-                className="px-8 py-3 bg-white text-black font-bold text-lg rounded-full hover:bg-cyan-400 hover:text-white transition-all shadow-lg active:scale-95"
-              >
-                PLAY AGAIN
-              </button>
-              <button
-                type="button"
-                onClick={() => router.push("/games")}
-                className="px-8 py-3 bg-transparent border-2 border-red-500 text-red-500 font-bold text-lg rounded-full hover:bg-red-500 hover:text-white transition-all shadow-lg active:scale-95"
-              >
-                EXIT
-              </button>
-            </div>
-          </div>
+            {/* Game HUD */}
+            {isModelLoaded && (
+                <div className="absolute z-10 p-4 w-full pointer-events-none">
+                    <div className="flex justify-end items-start">
+                        <button
+                            type="button"
+                            onClick={() => router.push("/games")}
+                            className="pointer-events-auto bg-red-500/20 hover:bg-red-500/40 text-red-300 border border-red-500 px-4 py-2 text-sm font-mono transition-colors"
+                        >
+                            ABORT_MISSION
+                        </button>
+                    </div>
+
+                    {/* Crosshair (CSS Fallback or decorative) */}
+                    <div className="absolute top-1/2 left-1/2 w-8 h-8 -ml-4 -mt-4 border border-cyan-500/30 rounded-full opacity-50" />
+
+                    {/* Floating Texts */}
+                    {floatingTexts.map((ft) => (
+                        <div
+                            key={ft.id}
+                            className="absolute pointer-events-none font-black text-2xl tracking-widest"
+                            style={{
+                                left: ft.x,
+                                top: ft.y,
+                                color: ft.color,
+                                transform: `translate(-50%, -50%) scale(${0.5 + ft.life})`,
+                                opacity: ft.life,
+                                textShadow: "0 0 5px black",
+                                transition: "opacity 0.8s, transform 0.8s",
+                            }}
+                        >
+                            {ft.text}
+                        </div>
+                    ))}
+                </div>
+            )}
+
+            {/* Game Over Screen */}
+            {gameState === "finished" && (
+                <div className="absolute inset-0 flex items-center justify-center bg-black/80 z-50 pointer-events-auto">
+                    <div className="text-center p-8 bg-gray-900/90 border-2 border-cyan-500 rounded-xl shadow-[0_0_30px_rgba(6,182,212,0.3)]">
+                        <h2 className="text-5xl font-bold text-white mb-4 tracking-wider">
+                            GAME OVER
+                        </h2>
+                        <p className="text-3xl text-cyan-400 mb-8 font-mono">
+                            FINAL SCORE: {score}
+                        </p>
+                        <div className="flex gap-4 justify-center">
+                            <button
+                                type="button"
+                                onClick={resetGame}
+                                className="px-8 py-3 bg-white text-black font-bold text-lg rounded-full hover:bg-cyan-400 hover:text-white transition-all shadow-lg active:scale-95"
+                            >
+                                PLAY AGAIN
+                            </button>
+                            <button
+                                type="button"
+                                onClick={() => router.push("/games")}
+                                className="px-8 py-3 bg-transparent border-2 border-red-500 text-red-500 font-bold text-lg rounded-full hover:bg-red-500 hover:text-white transition-all shadow-lg active:scale-95"
+                            >
+                                EXIT
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            )}
         </div>
-      )}
-    </div>
-  );
+    );
 }
