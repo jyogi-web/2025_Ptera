@@ -57,7 +57,7 @@ export default function CardEditForm({ card }: Props) {
       return;
     }
     const gradeNum = Number(formData.grade);
-    if (isNaN(gradeNum) || gradeNum < 1 || gradeNum > 4) {
+    if (Number.isNaN(gradeNum) || gradeNum < 1 || gradeNum > 4) {
       toast.error("学年は1から4の間で入力してください");
       return;
     }
@@ -152,8 +152,6 @@ export default function CardEditForm({ card }: Props) {
       setIsSubmitting(false);
     }
   };
-
-
 
   if (!isOwner) {
     return (
