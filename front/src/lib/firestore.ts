@@ -486,16 +486,46 @@ export const saveGameRecord = async (
   photoURL: string,
 ): Promise<void> => {
   try {
-    await addDoc(collection(db, "game_records"), {
-      userId,
-      circleId: circleId || null,
-      gameId,
-      score,
-      displayName,
-      photoURL: photoURL || "",
-      createdAt: serverTimestamp(),
-    });
-    console.log("Game record saved successfully");
+    // Unique Document ID: gameId_userId
+    const docId = `${gameId}_${userId}`;
+    const recordRef = doc(db, "game_records", docId);
+
+    // Check existing record
+    const docSnap = await getDoc(recordRef);
+
+    if (docSnap.exists()) {
+      const currentBest = docSnap.data().score as number;
+      if (score < currentBest) {
+        // New record is faster (lower), update it
+        await setDoc(recordRef, {
+          userId,
+          circleId: circleId || null,
+          gameId,
+          score,
+          displayName,
+          photoURL: photoURL || "",
+          updatedAt: serverTimestamp(),
+          createdAt: docSnap.data().createdAt, // Preserve original creation time? Or just overwrite? Let's overwrite "createdAt" context to "recordSetAt". Actually, let's keep original createdAt if we want "first time played", but usually "date achieved" is better. Let's just set createdAt to now for simplicity of "when this record was achieved".
+          // actually, usually we want "updatedAt" for the new record time.
+          // Let's just overwrite the whole doc for simplicity.
+        });
+        console.log("New high score saved!");
+      } else {
+        console.log("Score not better than personal best. Skipping save.");
+      }
+    } else {
+      // No record exists, create new
+      await setDoc(recordRef, {
+        userId,
+        circleId: circleId || null,
+        gameId,
+        score,
+        displayName,
+        photoURL: photoURL || "",
+        createdAt: serverTimestamp(),
+      });
+      console.log("First game record saved successfully");
+    }
   } catch (error) {
     console.error("Error saving game record:", error);
   }
@@ -515,15 +545,17 @@ export const getGameRanking = async (
   limitCount = 10,
 ): Promise<GameRecord[]> => {
   try {
+    // Fetch more records to account for potential duplicates (old data)
+    // We'll deduplicate in memory.
     const q = query(
       collection(db, "game_records"),
       where("gameId", "==", gameId),
       orderBy("score", "asc"),
-      limit(limitCount),
+      limit(50),
     );
 
     const querySnapshot = await getDocs(q);
-    return querySnapshot.docs.map((doc) => {
+    const records = querySnapshot.docs.map((doc) => {
       const data = doc.data();
       return {
         id: doc.id,
@@ -534,6 +566,19 @@ export const getGameRanking = async (
         createdAt: data.createdAt?.toDate() || new Date(),
       };
     });
+
+    // Deduplicate by userId, keeping the first (lowest score because of orderBy asc)
+    const uniqueRecords: GameRecord[] = [];
+    const seenUserIds = new Set<string>();
+
+    for (const record of records) {
+      if (!seenUserIds.has(record.userId)) {
+        seenUserIds.add(record.userId);
+        uniqueRecords.push(record);
+      }
+    }
+
+    return uniqueRecords.slice(0, limitCount);
   } catch (error) {
     console.error("Error fetching game ranking:", error);
     return [];

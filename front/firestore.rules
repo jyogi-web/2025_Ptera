@@ -117,7 +117,10 @@ service cloud.firestore {
     // Game Records Collection (Setsuna, etc)
     match /game_records/{recordId} {
       allow read: if isAuthenticated();
-      allow create: if isAuthenticated(); // Check valid fields if strict, but authenticated is baseline
+      // Allow create and update if user is authenticated. 
+      // Ideally we check if recordId corresponds to user, or if data.userId == auth.uid
+      // Since recordId is gameId_userId, we can check if it ends with userId or check resource data.
+      allow write: if isAuthenticated() && request.resource.data.userId == request.auth.uid;
     }
 
     // Default rule: Deny everything else by default for safety
