@@ -50,14 +50,51 @@ export default function CardEditForm({ card }: Props) {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!isOwner) return;
+
+    // Validation
+    if (!formData.name.trim()) {
+      toast.error("名前を入力してください");
+      return;
+    }
+    const gradeNum = Number(formData.grade);
+    if (isNaN(gradeNum) || gradeNum < 1 || gradeNum > 4) {
+      toast.error("学年は1から4の間で入力してください");
+      return;
+    }
+    if (!formData.position.trim()) {
+      toast.error("役職を入力してください");
+      return;
+    }
+    if (formData.name.length > 50) {
+      toast.error("名前は50文字以内で入力してください");
+      return;
+    }
+    if (formData.position.length > 50) {
+      toast.error("役職は50文字以内で入力してください");
+      return;
+    }
+    if (formData.hobby && formData.hobby.length > 100) {
+      toast.error("趣味は100文字以内で入力してください");
+      return;
+    }
+    // Description is required per instructions
+    if (!formData.description.trim()) {
+      toast.error("説明/コメントを入力してください");
+      return;
+    }
+    if (formData.description.length > 500) {
+      toast.error("説明/コメントは500文字以内で入力してください");
+      return;
+    }
+
     setIsSubmitting(true);
     try {
       await updateCard(card.id, {
-        name: formData.name,
-        grade: Number(formData.grade),
-        position: formData.position,
-        hobby: formData.hobby,
-        description: formData.description,
+        name: formData.name.trim(),
+        grade: gradeNum,
+        position: formData.position.trim(),
+        hobby: formData.hobby.trim(),
+        description: formData.description.trim(),
       });
       toast.success("カードを更新しました");
       router.push("/binder");
