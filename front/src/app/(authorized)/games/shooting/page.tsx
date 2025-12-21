@@ -604,7 +604,37 @@ export default function ShootingGame() {
         };
         animationFrameId = requestAnimationFrame(loop);
 
-        return () => cancelAnimationFrame(animationFrameId);
+        const handleResize = () => {
+            if (!containerRef.current) return;
+            const width = containerRef.current.clientWidth;
+            const height = containerRef.current.clientHeight;
+
+            camera.aspect = width / height;
+            camera.updateProjectionMatrix();
+
+            renderer.setSize(width, height);
+
+            // Recalculate Bounds
+            const vFOV = (camera.fov * Math.PI) / 180;
+            const visibleHeight = 2 * Math.tan(vFOV / 2) * Math.abs(camera.position.z);
+            const visibleWidth = visibleHeight * camera.aspect;
+
+            const uiInsetPixels = 100;
+            const worldScale = visibleHeight / height;
+            const uiInsetWorld = uiInsetPixels * worldScale;
+
+            gameRef.current.bounds = {
+                x: visibleWidth / 2,
+                y: (visibleHeight / 2) - uiInsetWorld
+            };
+        };
+
+        window.addEventListener("resize", handleResize);
+
+        return () => {
+            cancelAnimationFrame(animationFrameId);
+            window.removeEventListener("resize", handleResize);
+        };
     }, [gameLoop]);
 
     // --- 1. Initialization ---
