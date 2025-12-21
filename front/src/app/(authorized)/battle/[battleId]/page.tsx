@@ -109,6 +109,7 @@ export default function BattlePage({ params }: BattlePageProps) {
             onAttack={handleAttack}
             onRetreat={handleRetreat}
             onFinish={handleFinish}
+            loading={actionLoading}
           />
         </div>
         {actionLoading && (

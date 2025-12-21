@@ -10,6 +10,7 @@ interface BattleFieldProps {
   onAttack: () => void;
   onRetreat: (index: number) => void;
   onFinish: () => void;
+  loading?: boolean;
 }
 
 export default function BattleField({
@@ -17,6 +18,7 @@ export default function BattleField({
   onAttack,
   onRetreat,
   onFinish,
+  loading = false,
 }: BattleFieldProps) {
   // NOTE: Proto generated types use camelCase locally if generated with appropriate options,
   // but looking at valid file content, fields like `playerMe` are available.
@@ -267,12 +269,14 @@ export default function BattleField({
                 {myBench.map((card, i) => (
                   <div
                     key={card.id}
-                    className="w-16 md:w-20 cursor-pointer transition-transform hover:-translate-y-2 active:scale-95"
+                    className={`w-16 md:w-20 transition-transform ${!loading ? "cursor-pointer hover:-translate-y-2 active:scale-95" : "cursor-not-allowed opacity-70"}`}
                   >
                     <BattleCard
                       card={adaptCard(card)}
                       variant="friend"
-                      onClick={() => isMyTurn && !winnerId && onRetreat(i)}
+                      onClick={() =>
+                        !loading && isMyTurn && !winnerId && onRetreat(i)
+                      }
                       className="hover:shadow-[0_0_10px_rgba(59,130,246,0.6)]"
                     />
                   </div>
