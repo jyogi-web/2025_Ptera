@@ -35,14 +35,6 @@ export default function GameHub() {
             href="/games/shooting"
             color="#ff0055"
           />
-          {/* Placeholder for future games */}
-          <GameCard
-            title="COMING_SOON"
-            description="Next Operation..."
-            href="#"
-            color="#444"
-            disabled
-          />
         </div>
       </Animator>
     </div>
