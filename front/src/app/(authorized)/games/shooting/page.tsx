@@ -827,23 +827,18 @@ export default function ShootingGame() {
                 </div>
             )}
 
+            {/* HUD */}
+            <div className="absolute top-24 left-4 text-white font-mono text-xl z-10 pointer-events-none drop-shadow-md">
+                SCORE: {score}
+            </div>
+            <div className="absolute top-24 right-4 text-white font-mono text-xl z-10 pointer-events-none drop-shadow-md">
+                TIME: {timeLeft}
+            </div>
+
             {/* Game HUD */}
             {isModelLoaded && (
                 <div className="absolute z-10 p-4 w-full pointer-events-none">
-                    <div className="flex justify-between items-start">
-                        <div>
-                            <Text
-                                as="h2"
-                                className="text-cyan-400 text-xl font-bold m-0"
-                                style={{ textShadow: "0 0 10px #0ff" }}
-                            >
-                                SCORE: {score.toString().padStart(6, "0")}
-                            </Text>
-                            <p className="text-xs text-gray-500 font-mono mt-1">
-                                FPS: -- | {debugMsg}
-                            </p>
-                        </div>
-
+                    <div className="flex justify-end items-start">
                         <button
                             type="button"
                             onClick={() => router.push("/games")}
@@ -874,6 +869,30 @@ export default function ShootingGame() {
                             {ft.text}
                         </div>
                     ))}
+                </div>
+            )}
+
+            {/* Game Over Screen */}
+            {gameState === "finished" && (
+                <div className="absolute inset-0 flex items-center justify-center bg-black/80 z-50 pointer-events-auto">
+                    <div className="text-center p-8 bg-gray-900/90 border-2 border-cyan-500 rounded-xl shadow-[0_0_30px_rgba(6,182,212,0.3)]">
+                        <h2 className="text-5xl font-bold text-white mb-4 tracking-wider">GAME OVER</h2>
+                        <p className="text-3xl text-cyan-400 mb-8 font-mono">FINAL SCORE: {score}</p>
+                        <div className="flex gap-4 justify-center">
+                            <button
+                                onClick={resetGame}
+                                className="px-8 py-3 bg-white text-black font-bold text-lg rounded-full hover:bg-cyan-400 hover:text-white transition-all shadow-lg active:scale-95"
+                            >
+                                PLAY AGAIN
+                            </button>
+                            <button
+                                onClick={() => router.push("/games")}
+                                className="px-8 py-3 bg-transparent border-2 border-red-500 text-red-500 font-bold text-lg rounded-full hover:bg-red-500 hover:text-white transition-all shadow-lg active:scale-95"
+                            >
+                                EXIT
+                            </button>
+                        </div>
+                    </div>
                 </div>
             )}
         </div>
