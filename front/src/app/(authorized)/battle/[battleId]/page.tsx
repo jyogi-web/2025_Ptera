@@ -45,27 +45,12 @@ export default function BattlePage({ params }: BattlePageProps) {
 
   // 終了ハンドラー
   const handleFinish = async () => {
-    // Check if current user is the winner
-    if (battleState?.winnerId && user?.id) {
-      // Note: battleState.winnerId is likely a playerId (or circleId).
-      // In ptera_pb.ts, playerId is usually a string.
-      // If user.id (which is usually user UID) matches winnerId (which is likely circleId or user UID depending on logic), then delete.
-      // Based on BattleField logic: winnerId === playerMe?.playerId.
-      // And playerMe.playerId usually comes from user.id or circleId logic.
-      // Since the request says "winner deletes it", we trust the client logic if it matches.
-
-      // Check if winnerId matches local player ID (which we don't have easily accessible here except via battleState.playerMe logic)
-      // But wait, if we are the winner, battleState.winnerId should match our ID.
-
-      const isWinner = battleState.winnerId === battleState.playerMe?.playerId;
-
-      if (isWinner) {
-        try {
-          await deleteBattle(battleId);
-        } catch (e) {
-          console.error("Failed to delete battle:", e);
-        }
-      }
+    // 終了時は勝者・敗者に関わらずデータを削除を試みる
+    // (既に削除されている場合は内部でハンドルされる)
+    try {
+      await deleteBattle(battleId);
+    } catch (e) {
+      console.error("Failed to delete battle:", e);
     }
     router.push("/circle");
   };

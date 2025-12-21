@@ -94,8 +94,11 @@ service cloud.firestore {
       // TODO: 本番環境ではバトル参加者のみに制限する
       allow read: if isAuthenticated();
 
-      // バトルの作成・更新・削除はバックエンドのみ
-      allow write: if false;
+      // バトルの作成・更新はバックエンドのみ
+      allow create, update: if false;
+      
+      // フロントエンドから終了時に削除するため許可
+      allow delete: if isAuthenticated();
     }
 
     // Battle Requests Collection (Matching)

@@ -393,8 +393,51 @@ export const getFavoriteCards = async (userId: string): Promise<Card[]> => {
 };
 
 export const deleteBattle = async (battleId: string): Promise<void> => {
+  console.log("Starting deleteBattle for:", battleId);
   const battleRef = doc(db, "battles", battleId);
-  await import("firebase/firestore").then(({ deleteDoc }) =>
-    deleteDoc(battleRef),
-  );
+  const battleDoc = await getDoc(battleRef);
+
+  if (battleDoc.exists()) {
+    console.log("Found battle doc. Deleting...");
+    await import("firebase/firestore").then(({ deleteDoc }) =>
+      deleteDoc(battleRef),
+    );
+  } else {
+    console.log("Battle doc not found (already deleted?)");
+  }
+
+  // Find and delete the associated Battle Request document
+  // Strategy 1: Check battle doc for requestId
+  let requestId = battleDoc.data()?.requestId;
+  console.log("Strategy 1 requestId:", requestId);
+
+  // Strategy 2: If not found, query battle_requests by battleId
+  if (!requestId) {
+    console.log("Querying battle_requests for battleId:", battleId);
+    const q = query(
+      collection(db, "battle_requests"),
+      where("battleId", "==", battleId),
+      limit(1),
+    );
+    const snapshot = await getDocs(q);
+    console.log("Query snapshot size:", snapshot.size);
+    if (!snapshot.empty) {
+      requestId = snapshot.docs[0].id;
+      console.log("Found requestId from query:", requestId);
+    }
+  }
+
+  if (requestId) {
+    console.log("Deleting request:", requestId);
+    const requestRef = doc(db, "battle_requests", requestId);
+    await import("firebase/firestore").then(({ deleteDoc }) =>
+      deleteDoc(requestRef),
+    );
+    console.log("Deleted request successfully");
+  } else {
+    console.warn(
+      "Could not find associated battle_request for battle:",
+      battleId,
+    );
+  }
 };
