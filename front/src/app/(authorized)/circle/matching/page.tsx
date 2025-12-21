@@ -1,6 +1,5 @@
 "use client";
 
-import { Animator, FrameCorners } from "@arwes/react";
 import { useEffect, useState } from "react";
 import toast from "react-hot-toast";
 import { BattleRequestList } from "@/components/BattleRequestList";
@@ -59,153 +58,127 @@ export default function MatchingPage() {
   return (
     <div style={styles.container}>
       <div style={styles.dashboardContent}>
-        <Animator active={true}>
-          <div className="w-full max-w-4xl relative flex flex-col h-full">
-            {/* Main Frame Wrapper - using absolute positioning to stretch */}
-            <div className="flex-1 relative min-h-0">
-              <FrameCorners
-                strokeWidth={2}
-                cornerLength={20}
-                style={{
-                  ...styles.frameCornersCommon,
-                  ...styles.frameCornersMain,
-                }}
-              />
-
-              <div className="relative z-10 p-6 md:p-8 h-full flex flex-col">
-                <div className="flex-none flex items-center justify-between mb-4 border-b border-gray-700/50 pb-2">
-                  <div>
-                    <p style={styles.panelTitle}>TACTICAL OPERATIONS</p>
-                    <h1 className="text-2xl md:text-3xl font-bold flex items-center gap-3">
-                      <span style={styles.headerGradient}>BATTLE MATCHING</span>
-                    </h1>
-                  </div>
-                  <div className="hidden md:block">
-                    <div className="text-right">
-                      <p className="text-xs text-gray-500 font-mono">
-                        SECURE LINK ESTABLISHED
-                      </p>
-                      <p className="text-xs text-cyan-500 font-mono animate-pulse">
-                        MONITORING FREQUENCIES...
-                      </p>
-                    </div>
-                  </div>
-                </div>
-
-                {/* Requests List */}
-                <div className="flex-none mb-6">
-                  <BattleRequestList myCircleId={user.circleId} />
-                </div>
-
-                {/* Opponent Selection */}
-                <div className="flex-1 flex flex-col min-h-0 relative group">
-                  <FrameCorners
-                    strokeWidth={2}
-                    cornerLength={20}
-                    style={{
-                      ...styles.frameCornersCommon,
-                      ...styles.frameCornersOpponent,
-                    }}
-                  />
-                  <div className="relative z-10 p-6 flex flex-col h-full">
-                    <div style={styles.panelHeader}>
-                      <div className="flex items-center gap-2">
-                        <div className="w-2 h-2 bg-orange-500 rounded-full animate-ping" />
-                        <h3
-                          className="text-lg md:text-xl font-bold font-mono tracking-wider text-orange-400"
-                          style={styles.scanTitle}
-                        >
-                          SCAN FOR OPPONENTS
-                        </h3>
-                      </div>
-                      <span className="text-xs text-orange-500/50 font-mono">
-                        RANGE: GLOBAL
-                      </span>
-                    </div>
-
-                    <div
-                      className="flex-1 overflow-y-auto pr-2 custom-scrollbar space-y-3"
-                      style={styles.requestsScrollContainer}
-                    >
-                      {loading ? (
-                        <div className="flex flex-col items-center justify-center h-48 gap-4">
-                          <div style={styles.radarContainer}>
-                            <div style={styles.radarCircle} />
-                            <div
-                              style={styles.radarLine}
-                              className="animate-spin"
-                            />
-                            <div className="absolute inset-0 flex items-center justify-center">
-                              <span className="text-orange-500/50 font-mono text-xs animate-pulse">
-                                SCANNING...
-                              </span>
-                            </div>
-                          </div>
-                        </div>
-                      ) : opponentCircles.length === 0 ? (
-                        <div className="text-center py-10 border border-orange-900/30 bg-orange-900/10 rounded">
-                          <p className="text-orange-400 font-mono mb-2">
-                            NO HOSTILES DETECTED
-                          </p>
-                          <p className="text-gray-500 text-sm">
-                            他のサークルが見つかりません
-                          </p>
-                        </div>
-                      ) : (
-                        opponentCircles.map((circle) => (
-                          <div
-                            key={circle.id}
-                            // biome-ignore lint/a11y/noNoninteractiveTabindex: Keyboard accessible for visual effects
-                            tabIndex={0}
-                            className={classes.listItem}
-                            style={{
-                              clipPath:
-                                "polygon(0 0, 100% 0, 100% calc(100% - 10px), calc(100% - 10px) 100%, 0 100%)",
-                            }}
-                          >
-                            <div className="flex flex-col">
-                              <span className="text-xs text-gray-500 font-mono mb-1">
-                                TARGET_ID: {circle.id.substring(0, 6)}...
-                              </span>
-                              <span className="font-bold text-white text-lg tracking-wide group-hover/item:text-orange-300 group-focus-visible/item:text-orange-300 transition-colors">
-                                {circle.name}
-                              </span>
-                            </div>
-
-                            <button
-                              type="button"
-                              onClick={() =>
-                                handleSendRequest(circle.id, circle.name)
-                              }
-                              disabled={loadingBattle}
-                              className={classes.challengeButton}
-                              style={{
-                                clipPath:
-                                  "polygon(10px 0, 100% 0, 100% 100%, 0 100%, 0 10px)",
-                              }}
-                            >
-                              <span className="w-1.5 h-1.5 bg-orange-400 rounded-full" />
-                              CHALLENGE
-                            </button>
-                          </div>
-                        ))
-                      )}
-                    </div>
-                  </div>
-                </div>
-
-                <div className="flex-none mt-4 pt-4 border-t border-gray-700/50">
-                  <p className="text-sm text-gray-500 text-center">
-                    Logged in as:{" "}
-                    <span className="font-mono text-cyan-400">
-                      {user.id.substring(0, 8)}...
-                    </span>
+        <div className="w-full max-w-4xl relative flex flex-col h-full">
+          <div className="relative z-10 p-6 md:p-8 h-full flex flex-col">
+            <div className="flex-none flex items-center justify-between mb-4 border-b border-gray-700/50 pb-2">
+              <div>
+                <p style={styles.panelTitle}>TACTICAL OPERATIONS</p>
+                <h1 className="text-2xl md:text-3xl font-bold flex items-center gap-3">
+                  <span style={styles.headerGradient}>BATTLE MATCHING</span>
+                </h1>
+              </div>
+              <div className="hidden md:block">
+                <div className="text-right">
+                  <p className="text-xs text-gray-500 font-mono">
+                    SECURE LINK ESTABLISHED
+                  </p>
+                  <p className="text-xs text-cyan-500 font-mono animate-pulse">
+                    MONITORING FREQUENCIES...
                   </p>
                 </div>
               </div>
             </div>
+
+            {/* Requests List */}
+            <div className="flex-none mb-6">
+              <BattleRequestList myCircleId={user.circleId} />
+            </div>
+
+            {/* Opponent Selection */}
+
+            <div className="relative z-10 p-6 flex flex-col h-full">
+              <div style={styles.panelHeader}>
+                <div className="flex items-center gap-2">
+                  <div className="w-2 h-2 bg-orange-500 rounded-full animate-ping" />
+                  <h3
+                    className="text-lg md:text-xl font-bold font-mono tracking-wider text-orange-400"
+                    style={styles.scanTitle}
+                  >
+                    SCAN FOR OPPONENTS
+                  </h3>
+                </div>
+                <span className="text-xs text-orange-500/50 font-mono">
+                  RANGE: GLOBAL
+                </span>
+              </div>
+
+              <div
+                className="flex-1 overflow-y-auto pr-2 custom-scrollbar space-y-3"
+                style={styles.requestsScrollContainer}
+              >
+                {loading ? (
+                  <div className="flex flex-col items-center justify-center h-48 gap-4">
+                    <div style={styles.radarContainer}>
+                      <div style={styles.radarCircle} />
+                      <div style={styles.radarLine} className="animate-spin" />
+                      <div className="absolute inset-0 flex items-center justify-center">
+                        <span className="text-orange-500/50 font-mono text-xs animate-pulse">
+                          SCANNING...
+                        </span>
+                      </div>
+                    </div>
+                  </div>
+                ) : opponentCircles.length === 0 ? (
+                  <div className="text-center py-10 border border-orange-900/30 bg-orange-900/10 rounded">
+                    <p className="text-orange-400 font-mono mb-2">
+                      NO HOSTILES DETECTED
+                    </p>
+                    <p className="text-gray-500 text-sm">
+                      他のサークルが見つかりません
+                    </p>
+                  </div>
+                ) : (
+                  opponentCircles.map((circle) => (
+                    <div
+                      key={circle.id}
+                      // biome-ignore lint/a11y/noNoninteractiveTabindex: Keyboard accessible for visual effects
+                      tabIndex={0}
+                      className={classes.listItem}
+                      style={{
+                        clipPath:
+                          "polygon(0 0, 100% 0, 100% calc(100% - 10px), calc(100% - 10px) 100%, 0 100%)",
+                      }}
+                    >
+                      <div className="flex flex-col">
+                        <span className="text-xs text-gray-500 font-mono mb-1">
+                          TARGET_ID: {circle.id.substring(0, 6)}...
+                        </span>
+                        <span className="font-bold text-white text-lg tracking-wide group-hover/item:text-orange-300 group-focus-visible/item:text-orange-300 transition-colors">
+                          {circle.name}
+                        </span>
+                      </div>
+
+                      <button
+                        type="button"
+                        onClick={() =>
+                          handleSendRequest(circle.id, circle.name)
+                        }
+                        disabled={loadingBattle}
+                        className={classes.challengeButton}
+                        style={{
+                          clipPath:
+                            "polygon(10px 0, 100% 0, 100% 100%, 0 100%, 0 10px)",
+                        }}
+                      >
+                        <span className="w-1.5 h-1.5 bg-orange-400 rounded-full" />
+                        CHALLENGE
+                      </button>
+                    </div>
+                  ))
+                )}
+              </div>
+            </div>
           </div>
-        </Animator>
+
+          <div className="flex-none mt-4 pt-4 border-t border-gray-700/50">
+            <p className="text-sm text-gray-500 text-center">
+              Logged in as:{" "}
+              <span className="font-mono text-cyan-400">
+                {user.id.substring(0, 8)}...
+              </span>
+            </p>
+          </div>
+        </div>
       </div>
     </div>
   );

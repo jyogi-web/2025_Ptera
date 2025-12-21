@@ -4,9 +4,7 @@ import { Animator } from "@arwes/react";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import toast from "react-hot-toast";
-
 import { useAuth } from "@/context/AuthContext";
-
 import { createCircle, getCircles, joinCircle } from "@/lib/firestore";
 import type { Circle } from "@/types/app";
 import Loading from "../loading";
