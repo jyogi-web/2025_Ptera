@@ -50,9 +50,7 @@ export const Footer = () => {
 
   // 特定のパスで非表示にする場合はここに追加
   const isHiddenPath =
-    ["/login", "/"].includes(pathname) ||
-    pathname.startsWith("/battle") ||
-    pathname.startsWith("/circle/matching");
+    ["/login", "/"].includes(pathname) || pathname.startsWith("/battle");
   if (isHiddenPath) return null;
 
   return (
