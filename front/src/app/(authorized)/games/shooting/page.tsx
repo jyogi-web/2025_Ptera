@@ -90,7 +90,8 @@ export default function ShootingGame() {
         renderer: null as THREE.WebGLRenderer | null,
         enemies: [] as Enemy[],
         lasers: [] as THREE.Mesh[] | THREE.Line[],
-        reticle: null as THREE.Mesh | null,
+        reticle: null as THREE.Group | null,
+        reticleMaterial: null as THREE.MeshBasicMaterial | null,
         lastTime: 0,
         handLandmarker: null as HandsInstance | null,
         lastVideoTime: -1,
@@ -370,8 +371,8 @@ export default function ShootingGame() {
 
     const updateGameLogic = useCallback(
         (delta: number) => {
-            const { camera, scene, enemies, gesture, reticle } = gameRef.current;
-            if (!camera || !scene || !reticle) return;
+            const { camera, scene, enemies, gesture, reticle, reticleMaterial } = gameRef.current;
+            if (!camera || !scene || !reticle || !reticleMaterial) return;
 
             const timeScale = delta * 60;
 
@@ -408,9 +409,9 @@ export default function ShootingGame() {
 
             if (targetEnemy) {
                 finalAimPos.lerp((targetEnemy as Enemy).mesh.position, 0.2 * timeScale);
-                (reticle.material as THREE.MeshBasicMaterial).color.setHex(0xff0000);
+                reticleMaterial.color.setHex(0xff0000);
             } else {
-                (reticle.material as THREE.MeshBasicMaterial).color.setHex(0x00ff00);
+                reticleMaterial.color.setHex(0x00ff00);
             }
 
             reticle.position.copy(finalAimPos);
@@ -566,11 +567,51 @@ export default function ShootingGame() {
         dirLight.position.set(5, 5, 5);
         scene.add(dirLight);
 
-        const reticleGeo = new THREE.RingGeometry(0.05, 0.07, 32);
-        const reticleMat = new THREE.MeshBasicMaterial({ color: 0x00ff00 });
-        const reticle = new THREE.Mesh(reticleGeo, reticleMat);
-        scene.add(reticle);
-        gameRef.current.reticle = reticle;
+        // --- Sci-Fi Reticle ---
+        const reticleGroup = new THREE.Group();
+        const reticleMat = new THREE.MeshBasicMaterial({
+            color: 0x00ff00,
+            transparent: false, // Solid color for maximum brightness
+            opacity: 1.0,
+        });
+        gameRef.current.reticleMaterial = reticleMat;
+
+        // 1. Center Dot (Larger)
+        const centerDot = new THREE.Mesh(
+            new THREE.CircleGeometry(0.025, 16),
+            reticleMat,
+        );
+        reticleGroup.add(centerDot);
+
+        // 2. Inner Ring (Thicker)
+        const innerRing = new THREE.Mesh(
+            new THREE.RingGeometry(0.14, 0.17, 32),
+            reticleMat,
+        );
+        reticleGroup.add(innerRing);
+
+        // 3. Crosshairs (Thicker Lines)
+        // Top
+        const lineGeoV = new THREE.PlaneGeometry(0.025, 0.12);
+        const lineTop = new THREE.Mesh(lineGeoV, reticleMat);
+        lineTop.position.y = 0.24;
+        reticleGroup.add(lineTop);
+        // Bottom
+        const lineBottom = new THREE.Mesh(lineGeoV, reticleMat);
+        lineBottom.position.y = -0.24;
+        reticleGroup.add(lineBottom);
+        // Left
+        const lineGeoH = new THREE.PlaneGeometry(0.12, 0.025);
+        const lineLeft = new THREE.Mesh(lineGeoH, reticleMat);
+        lineLeft.position.x = -0.24;
+        reticleGroup.add(lineLeft);
+        // Right
+        const lineRight = new THREE.Mesh(lineGeoH, reticleMat);
+        lineRight.position.x = 0.24;
+        reticleGroup.add(lineRight);
+
+        scene.add(reticleGroup);
+        gameRef.current.reticle = reticleGroup;
 
         gameRef.current.scene = scene;
         gameRef.current.camera = camera;
