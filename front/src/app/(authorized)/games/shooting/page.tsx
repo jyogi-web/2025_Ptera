@@ -101,6 +101,7 @@ export default function ShootingGame() {
             wasTriggerPulled: false, // For edge detection
         },
         audioCtx: null as AudioContext | null,
+        bounds: { x: 5, y: 3 }, // Default bounds, updated in init
     });
 
     // --- 2. MediaPipe Integration ---
@@ -279,8 +280,10 @@ export default function ShootingGame() {
     );
 
     const spawnEnemy = useCallback(() => {
-        const x = (Math.random() - 0.5) * 8;
-        const y = (Math.random() - 0.5) * 5;
+        const boundsX = gameRef.current.bounds.x - 0.5; // Margin for radius
+        const boundsY = gameRef.current.bounds.y - 0.5;
+        const x = (Math.random() - 0.5) * (boundsX * 2);
+        const y = (Math.random() - 0.5) * (boundsY * 2);
 
         const geometry = new THREE.CylinderGeometry(0.5, 0.5, 0.1, 16);
         geometry.rotateX(Math.PI / 2);
@@ -373,13 +376,16 @@ export default function ShootingGame() {
                 enemy.mesh.position.add(moveStep);
                 enemy.mesh.rotation.z += 0.05 * timeScale;
 
-                if (enemy.mesh.position.x > 5 || enemy.mesh.position.x < -5) {
+                const boundX = gameRef.current.bounds.x - 0.5; // Radius
+                const boundY = gameRef.current.bounds.y - 0.5;
+
+                if (enemy.mesh.position.x > boundX || enemy.mesh.position.x < -boundX) {
                     enemy.velocity.x *= -1;
-                    enemy.mesh.position.x = Math.sign(enemy.mesh.position.x) * 4.9;
+                    enemy.mesh.position.x = Math.sign(enemy.mesh.position.x) * (boundX - 0.01);
                 }
-                if (enemy.mesh.position.y > 3 || enemy.mesh.position.y < -3) {
+                if (enemy.mesh.position.y > boundY || enemy.mesh.position.y < -boundY) {
                     enemy.velocity.y *= -1;
-                    enemy.mesh.position.y = Math.sign(enemy.mesh.position.y) * 2.9;
+                    enemy.mesh.position.y = Math.sign(enemy.mesh.position.y) * (boundY - 0.01);
                 }
             });
         },
@@ -435,6 +441,21 @@ export default function ShootingGame() {
         const height = containerRef.current.clientHeight;
         const camera = new THREE.PerspectiveCamera(75, width / height, 0.1, 100);
         camera.position.z = 5;
+
+        // Calculate Visible Bounds at z=0
+        const vFOV = (camera.fov * Math.PI) / 180;
+        const visibleHeight = 2 * Math.tan(vFOV / 2) * Math.abs(camera.position.z);
+        const visibleWidth = visibleHeight * camera.aspect;
+
+        // Adjust for Header/Footer (approx 100px each to be safe)
+        const uiInsetPixels = 100;
+        const worldScale = visibleHeight / height;
+        const uiInsetWorld = uiInsetPixels * worldScale;
+
+        gameRef.current.bounds = {
+            x: visibleWidth / 2,
+            y: (visibleHeight / 2) - uiInsetWorld
+        };
 
         const renderer = new THREE.WebGLRenderer({
             canvas: canvasRef.current,
