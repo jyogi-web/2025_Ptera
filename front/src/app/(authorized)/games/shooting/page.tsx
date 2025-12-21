@@ -418,7 +418,7 @@ export default function ShootingGame() {
             });
 
             if (targetEnemy) {
-                finalAimPos.lerp((targetEnemy as Enemy).mesh.position, 0.2 * timeScale);
+                // finalAimPos.lerp((targetEnemy as Enemy).mesh.position, 0.2 * timeScale); // Removed causing jitter
                 reticleMaterial.color.setHex(0xff0000);
             } else {
                 reticleMaterial.color.setHex(0x00ff00);
