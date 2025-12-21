@@ -111,6 +111,7 @@ type FloatingText = {
 export default function ShootingGame() {
   const containerRef = useRef<HTMLDivElement>(null);
   const videoRef = useRef<HTMLVideoElement>(null);
+  const debugCanvasRef = useRef<HTMLCanvasElement>(null);
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const router = useRouter();
 
@@ -162,6 +163,120 @@ export default function ShootingGame() {
   // Process AI Results
   const onHandsResults = useCallback((results: HandsResults) => {
     try {
+      // --- Debug Drawing ---
+      const canvas = debugCanvasRef.current;
+      const video = videoRef.current;
+      if (canvas && video) {
+        const ctx = canvas.getContext("2d");
+        if (ctx) {
+          ctx.save();
+          ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+          // Draw Video Feed (Mirrored)
+          ctx.translate(canvas.width, 0);
+          ctx.scale(-1, 1);
+          ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+
+          // Draw Landmarks
+          if (
+            results.multiHandLandmarks &&
+            results.multiHandLandmarks.length > 0
+          ) {
+            const landmarks = results.multiHandLandmarks[0];
+
+            // Helper to get canvas coords
+            const getCoord = (idx: number) => ({
+              x: landmarks[idx].x * canvas.width,
+              y: landmarks[idx].y * canvas.height,
+            });
+
+            // Draw Skeleton Lines
+            ctx.strokeStyle = "#00ffff"; // Cyan bones
+            ctx.lineWidth = 2;
+            ctx.beginPath();
+
+            // Simple connections
+            const connections = [
+              [0, 1],
+              [1, 2],
+              [2, 3],
+              [3, 4], // Thumb
+              [0, 5],
+              [5, 6],
+              [6, 7],
+              [7, 8], // Index
+              [0, 9],
+              [9, 10],
+              [10, 11],
+              [11, 12], // Middle
+              [0, 13],
+              [13, 14],
+              [14, 15],
+              [15, 16], // Ring
+              [0, 17],
+              [17, 18],
+              [18, 19],
+              [19, 20], // Pinky
+              [5, 9],
+              [9, 13],
+              [13, 17], // Palm
+            ];
+
+            connections.forEach(([i, j]) => {
+              const p1 = getCoord(i);
+              const p2 = getCoord(j);
+              ctx.moveTo(p1.x, p1.y);
+              ctx.lineTo(p2.x, p2.y);
+            });
+            ctx.stroke();
+
+            // Draw Aim Point (Index Tip)
+            const indexTip = getCoord(8);
+            ctx.beginPath();
+            ctx.arc(indexTip.x, indexTip.y, 8, 0, 2 * Math.PI);
+            ctx.fillStyle = "#00ff00"; // Green Aim
+            ctx.fill();
+            ctx.strokeStyle = "white";
+            ctx.stroke();
+
+            // Draw Trigger Points (Thumb Tip & Middle MCP)
+            const thumbTip = getCoord(4);
+            const middleMCP = getCoord(9);
+
+            // Trigger Line
+            ctx.beginPath();
+            ctx.moveTo(thumbTip.x, thumbTip.y);
+            ctx.lineTo(middleMCP.x, middleMCP.y);
+            ctx.lineWidth = 3;
+            // Color based on trigger state (calculated below)
+            const dist = Math.hypot(
+              landmarks[4].x - landmarks[9].x,
+              landmarks[4].y - landmarks[9].y,
+            );
+            // Need to recalculate ratio locally for color, or just use constant color
+            // Let's use logic similar to main game
+            const wrist = landmarks[0];
+            const indexMCP = landmarks[5];
+            const scale = Math.hypot(
+              indexMCP.x - wrist.x,
+              indexMCP.y - wrist.y,
+            );
+            const ratio = dist / (scale || 1);
+            const isTrigger = ratio < TRIGGER_THRESHOLD;
+
+            ctx.strokeStyle = isTrigger ? "#ff0000" : "#ffff00";
+            ctx.stroke();
+
+            // Thumb Point
+            ctx.beginPath();
+            ctx.arc(thumbTip.x, thumbTip.y, 6, 0, 2 * Math.PI);
+            ctx.fillStyle = isTrigger ? "#ff0000" : "#ffff00";
+            ctx.fill();
+          }
+          ctx.restore();
+        }
+      }
+
       if (results.multiHandLandmarks && results.multiHandLandmarks.length > 0) {
         const landmarks = results.multiHandLandmarks[0];
 
@@ -820,6 +935,14 @@ export default function ShootingGame() {
       <canvas
         ref={canvasRef}
         className="absolute top-0 left-0 w-full h-full pointer-events-none"
+      />
+
+      {/* Debug Camera View */}
+      <canvas
+        ref={debugCanvasRef}
+        className="fixed bottom-24 left-4 w-[360px] h-[270px] rounded-lg border-2 border-cyan-500/50 z-50 bg-black/50 pointer-events-none"
+        width={480}
+        height={360}
       />
 
       {/* Loading Overlay */}
