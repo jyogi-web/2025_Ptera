@@ -73,7 +73,6 @@ body {
   }
 
   @media (prefers-reduced-motion: reduce) {
-
     .animate-float-slow,
     .animate-float-medium,
     .animate-float-fast,

@@ -1,6 +1,6 @@
 "use client";
 
-import { Animator, FrameCorners } from "@arwes/react";
+import { Animator } from "@arwes/react";
 import { useEffect, useState } from "react";
 import { useAuth } from "@/context/AuthContext";
 import { getFavoriteCards } from "@/lib/firestore";
