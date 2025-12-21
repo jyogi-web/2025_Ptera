@@ -31,7 +31,7 @@ export default function GameHub() {
           />
           <GameCard
             title="SHOOTING"
-            description="Training Simulation"
+            description=""
             href="/games/shooting"
             color="#ff0055"
           />
