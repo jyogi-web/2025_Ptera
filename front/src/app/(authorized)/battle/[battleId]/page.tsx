@@ -78,25 +78,27 @@ export default function BattlePage({ params }: BattlePageProps) {
   // バトル画面
   if (battleState) {
     return (
-      <div className="min-h-screen bg-gradient-to-b from-gray-900 via-gray-800 to-black pb-20 pt-4">
+      <div className="flex flex-col h-screen w-full bg-gradient-to-b from-gray-900 via-gray-800 to-black overflow-hidden relative">
         <div className="absolute top-2 right-2 z-50">
           <button
             type="button"
             onClick={() => {
               router.push("/circle");
             }}
-            className="text-xs text-gray-400 border border-gray-600 px-2 py-1 rounded hover:bg-gray-800"
+            className="text-xs text-gray-400 border border-gray-600 px-2 py-1 rounded hover:bg-gray-800 hover:text-white transition-colors"
           >
             Quit Fight
           </button>
         </div>
-        <BattleField
-          state={battleState}
-          onAttack={handleAttack}
-          onRetreat={handleRetreat}
-        />
+        <div className="flex-1 w-full relative">
+          <BattleField
+            state={battleState}
+            onAttack={handleAttack}
+            onRetreat={handleRetreat}
+          />
+        </div>
         {actionLoading && (
-          <div className="fixed bottom-4 right-4 bg-blue-600 text-white px-4 py-2 rounded-lg shadow-lg">
+          <div className="fixed bottom-4 right-4 bg-blue-600 text-white px-4 py-2 rounded-lg shadow-lg z-50">
             処理中...
           </div>
         )}
