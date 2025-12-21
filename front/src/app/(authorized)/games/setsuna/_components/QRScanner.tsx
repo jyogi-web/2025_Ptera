@@ -3,6 +3,8 @@
 import jsQR from "jsqr";
 import type React from "react";
 import { useEffect, useRef } from "react";
+import { useAuth } from "@/context/AuthContext";
+import { saveGameRecord } from "@/lib/firestore";
 import { styles } from "../_styles/QRScanner.styles";
 
 interface QRScannerProps {
@@ -22,6 +24,13 @@ const QRScanner: React.FC<QRScannerProps> = ({
   isRunning,
   targetQRData = "AR-GAME-MARKER-001",
 }) => {
+  const { user } = useAuth();
+  // Use a ref to access user inside the effect without triggering re-runs (which would restart the camera)
+  const userRef = useRef(user);
+  useEffect(() => {
+    userRef.current = user;
+  }, [user]);
+
   const videoRef = useRef<HTMLVideoElement>(null);
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const startTimeRef = useRef<number>(0);
@@ -88,7 +97,7 @@ const QRScanner: React.FC<QRScannerProps> = ({
         }
       });
 
-    function tick() {
+    async function tick() {
       if (!video || !canvas || !canvasContext) return;
 
       if (video.readyState === video.HAVE_ENOUGH_DATA) {
@@ -187,6 +196,23 @@ const QRScanner: React.FC<QRScannerProps> = ({
             if (lostFrameCountRef.current >= LOST_THRESHOLD) {
               const endTime = performance.now();
               const duration = endTime - startTimeRef.current;
+
+              if (userRef.current) {
+                try {
+                  // Wait for the save to complete so the leaderboard is updated before showing results.
+                  await saveGameRecord(
+                    userRef.current.id,
+                    userRef.current.circleId,
+                    "setsuna",
+                    duration,
+                    userRef.current.name,
+                    userRef.current.iconUrl,
+                  );
+                } catch (error) {
+                  console.error("Failed to save game record:", error);
+                }
+              }
+
               onQRLost(duration);
               qrDetectedRef.current = false;
               lostFrameCountRef.current = 0;
