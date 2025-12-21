@@ -11,7 +11,8 @@ const MP_HANDS_VERSION = "0.4.1646424915";
 const MAX_ENEMIES = 9;
 
 const AIM_ASSIST_RADIUS = 0.3; // Normalized screen space
-const AIM_SENSITIVITY = 1.5; // Reduced from 1.8
+const AIM_SENSITIVITY = 1.4; // Reduced from 1.8
+const TRIGGER_THRESHOLD = 0.75; // Relaxed from 0.65 for easier firing
 
 // --- Type Definitions ---
 interface Landmark {
@@ -81,6 +82,8 @@ export default function ShootingGame() {
 
     // Game UI State
     const [score, setScore] = useState(0);
+    const [timeLeft, setTimeLeft] = useState(60);
+    const [gameState, setGameState] = useState<"playing" | "finished">("playing");
     const [debugMsg, setDebugMsg] = useState("-");
     const [floatingTexts, setFloatingTexts] = useState<FloatingText[]>([]);
 
@@ -159,6 +162,35 @@ export default function ShootingGame() {
         }
     }, []);
 
+    // Timer Logic
+    useEffect(() => {
+        if (!isCameraReady || !isModelLoaded || gameState === "finished") return;
+
+        const timer = setInterval(() => {
+            setTimeLeft((prev) => {
+                if (prev <= 1) {
+                    clearInterval(timer);
+                    setGameState("finished");
+                    return 0;
+                }
+                return prev - 1;
+            });
+        }, 1000);
+
+        return () => clearInterval(timer);
+    }, [isCameraReady, isModelLoaded, gameState]);
+
+    const resetGame = () => {
+        setScore(0);
+        setTimeLeft(60);
+        setGameState("playing");
+        // Clear enemies
+        gameRef.current.enemies.forEach((e) => {
+            gameRef.current.scene?.remove(e.mesh);
+        });
+        gameRef.current.enemies = [];
+    };
+
     // Process AI Results
     const onHandsResults = (results: HandsResults) => {
         try {
@@ -198,7 +230,7 @@ export default function ShootingGame() {
                 );
 
                 const ratio = triggerDist / (handScale || 1);
-                const isTriggerActive = ratio < 0.65;
+                const isTriggerActive = ratio < TRIGGER_THRESHOLD;
 
                 gameRef.current.gesture.isPistol = true;
                 gameRef.current.gesture.isTriggerPulled = isTriggerActive;
@@ -383,6 +415,8 @@ export default function ShootingGame() {
 
     const updateGameLogic = useCallback(
         (delta: number) => {
+            if (gameState === "finished") return;
+
             const { camera, scene, enemies, gesture, reticle, reticleMaterial } = gameRef.current;
             if (!camera || !scene || !reticle || !reticleMaterial) return;
 
