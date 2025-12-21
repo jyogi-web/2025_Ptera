@@ -97,7 +97,7 @@ const QRScanner: React.FC<QRScannerProps> = ({
         }
       });
 
-    function tick() {
+    async function tick() {
       if (!video || !canvas || !canvasContext) return;
 
       if (video.readyState === video.HAVE_ENOUGH_DATA) {
@@ -198,16 +198,19 @@ const QRScanner: React.FC<QRScannerProps> = ({
               const duration = endTime - startTimeRef.current;
 
               if (userRef.current) {
-                // Determine circleId: use user.circleId if present, otherwise explicit undefined or check type
-                // saveGameRecord signature: userId, circleId, gameId, score
-                saveGameRecord(
-                  userRef.current.id,
-                  userRef.current.circleId,
-                  "setsuna",
-                  duration,
-                  userRef.current.name,
-                  userRef.current.iconUrl,
-                );
+                try {
+                  // Wait for the save to complete so the leaderboard is updated before showing results.
+                  await saveGameRecord(
+                    userRef.current.id,
+                    userRef.current.circleId,
+                    "setsuna",
+                    duration,
+                    userRef.current.name,
+                    userRef.current.iconUrl,
+                  );
+                } catch (error) {
+                  console.error("Failed to save game record:", error);
+                }
               }
 
               onQRLost(duration);
