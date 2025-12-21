@@ -6,14 +6,21 @@ REGION="asia-northeast1"
 SERVICE_NAME="ptera-backend"
 IMAGE_NAME="gcr.io/${PROJECT_ID}/${SERVICE_NAME}"
 
-# Read GEMINI_API_KEY from .env.local (Safe extraction)
+# Ensure we are in the script's directory to find .env.local
+cd "$(dirname "$0")"
+
+# Read environment variables from .env.local (Robust sourcing strategy)
 if [ ! -f .env.local ]; then
     echo "Error: .env.local not found. Please create it with GEMINI_API_KEY and FIREBASE_SERVICE_ACCOUNT_KEY."
     exit 1
 fi
 
-GEMINI_API_KEY=$(grep '^GEMINI_API_KEY=' .env.local | cut -d '=' -f2- | tr -d '"' | tr -d "'")
-FIREBASE_SERVICE_ACCOUNT_KEY=$(grep '^FIREBASE_SERVICE_ACCOUNT_KEY=' .env.local | cut -d '=' -f2- | tr -d '"' | tr -d "'")
+# Load variables by sourcing the file
+if [ -f .env.local ]; then
+    set -a
+    source .env.local
+    set +a
+fi
 
 if [ -z "$GEMINI_API_KEY" ]; then
     echo "Error: GEMINI_API_KEY is not set in .env.local"
@@ -25,6 +32,8 @@ if [ -z "$FIREBASE_SERVICE_ACCOUNT_KEY" ]; then
     exit 1
 fi
 
+# Escape logic removed - using env-vars-file approach for safety
+
 echo "Deploying to Project: ${PROJECT_ID}, Region: ${REGION}"
 
 # 1. Enable necessary services (idempotent)
@@ -35,9 +44,14 @@ gcloud services enable cloudbuild.googleapis.com run.googleapis.com --project ${
 echo "Building container image..."
 gcloud builds submit --tag ${IMAGE_NAME} --project ${PROJECT_ID} .
 
-# 3. Deploy to Cloud Run
-# Note: Passing the JSON key directly as an env var requires careful escaping.
-# Ideally, use Secret Manager. For simplicity here, we assume single-line string.
+# 3. Create temporary env vars file to avoid escaping issues with JSON
+cat <<EOF > env_vars.yaml
+GEMINI_API_KEY: "${GEMINI_API_KEY}"
+FIREBASE_SERVICE_ACCOUNT_KEY: '${FIREBASE_SERVICE_ACCOUNT_KEY}'
+GOOGLE_CLOUD_PROJECT: "${PROJECT_ID}"
+EOF
+
+# 4. Deploy to Cloud Run
 echo "Deploying to Cloud Run..."
 gcloud run deploy ${SERVICE_NAME} \
     --image ${IMAGE_NAME} \
@@ -45,8 +59,10 @@ gcloud run deploy ${SERVICE_NAME} \
     --region ${REGION} \
     --platform managed \
     --allow-unauthenticated \
-    --set-env-vars GEMINI_API_KEY="${GEMINI_API_KEY}" \
-    --set-env-vars FIREBASE_SERVICE_ACCOUNT_KEY="${FIREBASE_SERVICE_ACCOUNT_KEY}" \
-    --set-env-vars GOOGLE_CLOUD_PROJECT="${PROJECT_ID}"
+    --use-http2 \
+    --env-vars-file env_vars.yaml
+
+# Cleanup
+rm env_vars.yaml
 
 echo "Deployment complete!"
