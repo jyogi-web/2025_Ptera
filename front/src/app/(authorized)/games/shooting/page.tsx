@@ -39,6 +39,7 @@ interface HandsInstance {
     onResults: (callback: (results: HandsResults) => void) => void;
     initialize: () => Promise<void>;
     send: (input: HandsInput) => Promise<void>;
+    close: () => Promise<void>;
 }
 
 interface CustomWindow extends Window {
@@ -109,7 +110,12 @@ export default function ShootingGame() {
     });
 
     // --- 2. MediaPipe Integration ---
+    const isInit = useRef(false);
+
     const handleScriptLoad = async () => {
+        if (isInit.current) return;
+        isInit.current = true;
+
         setLoadingStatus("Loading AI Model...");
         try {
             const { Hands } = window as unknown as CustomWindow;
@@ -137,8 +143,17 @@ export default function ShootingGame() {
             console.error("MediaPipe Init Error:", e);
             const msg = e instanceof Error ? e.message : String(e);
             setErrorMsg(`AI Model Error: ${msg}`);
+            isInit.current = false; // Allow retry on error
         }
     };
+
+    // Manual init check if script is already loaded
+    useEffect(() => {
+        const { Hands } = window as unknown as CustomWindow;
+        if (Hands && !isInit.current) {
+            handleScriptLoad();
+        }
+    }, []);
 
     // Process AI Results
     const onHandsResults = (results: HandsResults) => {
@@ -485,7 +500,20 @@ export default function ShootingGame() {
     const stopGame = useCallback(() => {
         gameRef.current.scene?.clear();
         gameRef.current.enemies = [];
-        gameRef.current.renderer?.dispose();
+        if (gameRef.current.renderer) {
+            gameRef.current.renderer.dispose();
+            gameRef.current.renderer = null;
+        }
+        if (gameRef.current.handLandmarker) {
+            gameRef.current.handLandmarker.close();
+            gameRef.current.handLandmarker = null;
+        }
+        if (gameRef.current.audioCtx) {
+            gameRef.current.audioCtx.close();
+            gameRef.current.audioCtx = null;
+        }
+        setIsModelLoaded(false);
+        setIsCameraReady(false);
     }, []);
 
     const initGame = useCallback(() => {
@@ -592,9 +620,10 @@ export default function ShootingGame() {
 
     // Load Camera
     useEffect(() => {
+        let stream: MediaStream | null = null;
         async function setupCamera() {
             try {
-                const stream = await navigator.mediaDevices.getUserMedia({
+                stream = await navigator.mediaDevices.getUserMedia({
                     video: {
                         facingMode: "environment",
                         width: { ideal: 1280 },
@@ -614,6 +643,15 @@ export default function ShootingGame() {
             }
         }
         setupCamera();
+
+        return () => {
+            if (stream) {
+                stream.getTracks().forEach(track => track.stop());
+            }
+            if (videoRef.current) {
+                videoRef.current.srcObject = null;
+            }
+        };
     }, []);
 
     // --- Render ---
