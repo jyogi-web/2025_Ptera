@@ -482,6 +482,8 @@ export const saveGameRecord = async (
   circleId: string | undefined,
   gameId: string,
   score: number,
+  displayName: string,
+  photoURL: string,
 ): Promise<void> => {
   try {
     await addDoc(collection(db, "game_records"), {
@@ -489,10 +491,51 @@ export const saveGameRecord = async (
       circleId: circleId || null,
       gameId,
       score,
+      displayName,
+      photoURL: photoURL || "",
       createdAt: serverTimestamp(),
     });
     console.log("Game record saved successfully");
   } catch (error) {
     console.error("Error saving game record:", error);
+  }
+};
+
+export interface GameRecord {
+  id: string;
+  userId: string;
+  displayName: string;
+  photoURL: string;
+  score: number;
+  createdAt: Date;
+}
+
+export const getGameRanking = async (
+  gameId: string,
+  limitCount = 10,
+): Promise<GameRecord[]> => {
+  try {
+    const q = query(
+      collection(db, "game_records"),
+      where("gameId", "==", gameId),
+      orderBy("score", "asc"),
+      limit(limitCount),
+    );
+
+    const querySnapshot = await getDocs(q);
+    return querySnapshot.docs.map((doc) => {
+      const data = doc.data();
+      return {
+        id: doc.id,
+        userId: data.userId,
+        displayName: data.displayName || "Unknown",
+        photoURL: data.photoURL || "",
+        score: data.score,
+        createdAt: data.createdAt?.toDate() || new Date(),
+      };
+    });
+  } catch (error) {
+    console.error("Error fetching game ranking:", error);
+    return [];
   }
 };

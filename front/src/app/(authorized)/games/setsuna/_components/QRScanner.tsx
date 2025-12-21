@@ -205,6 +205,8 @@ const QRScanner: React.FC<QRScannerProps> = ({
                   userRef.current.circleId,
                   "setsuna",
                   duration,
+                  userRef.current.name,
+                  userRef.current.iconUrl,
                 );
               }
 
