@@ -8,7 +8,7 @@ import * as THREE from "three";
 
 // --- Configuration ---
 const MP_HANDS_VERSION = "0.4.1646424915";
-const MAX_ENEMIES = 4;
+const MAX_ENEMIES = 6;
 const AI_INTERVAL_MS = 33; // ~30 FPS for AI
 const AIM_ASSIST_RADIUS = 0.3; // Normalized screen space
 
@@ -51,7 +51,7 @@ interface CustomWindow extends Window {
 // --- Three.js & Game State Types ---
 type Enemy = {
     id: string;
-    mesh: THREE.Mesh;
+    mesh: THREE.Mesh; // Reverted to Mesh
     velocity: THREE.Vector3;
     active: boolean;
 };
@@ -279,23 +279,32 @@ export default function ShootingGame() {
         [],
     );
 
-    const spawnEnemy = useCallback(() => {
-        const boundsX = gameRef.current.bounds.x - 0.5; // Margin for radius
-        const boundsY = gameRef.current.bounds.y - 0.5;
-        const x = (Math.random() - 0.5) * (boundsX * 2);
-        const y = (Math.random() - 0.5) * (boundsY * 2);
+    const createEnemy = (): THREE.Mesh => {
+        // Random Color
+        const colors = [0x00ffff, 0xff00ff, 0x00ff00, 0xffaa00, 0xff3333];
+        const color = colors[Math.floor(Math.random() * colors.length)];
 
         const geometry = new THREE.CylinderGeometry(0.5, 0.5, 0.1, 16);
         geometry.rotateX(Math.PI / 2);
         const material = new THREE.MeshPhongMaterial({
-            color: 0xff00ff,
+            color: color,
             shininess: 100,
         });
         const mesh = new THREE.Mesh(geometry, material);
+        return mesh;
+    };
+
+    const spawnEnemy = useCallback(() => {
+        const mesh = createEnemy();
+
+        const boundsX = gameRef.current.bounds.x - 0.6; // Margin for size
+        const boundsY = gameRef.current.bounds.y - 0.6;
+        const x = (Math.random() - 0.5) * (boundsX * 2);
+        const y = (Math.random() - 0.5) * (boundsY * 2);
 
         mesh.position.set(x, y, 0);
 
-        const speed = 0.03 + Math.random() * 0.03;
+        const speed = 0.02 + Math.random() * 0.04;
         const angle = Math.random() * Math.PI * 2;
         const velocity = new THREE.Vector3(
             Math.cos(angle) * speed,
@@ -374,6 +383,8 @@ export default function ShootingGame() {
                 if (!enemy.active) return;
                 const moveStep = enemy.velocity.clone().multiplyScalar(timeScale);
                 enemy.mesh.position.add(moveStep);
+
+                // Simple rotation
                 enemy.mesh.rotation.z += 0.05 * timeScale;
 
                 const boundX = gameRef.current.bounds.x - 0.5; // Radius
