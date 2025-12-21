@@ -9,12 +9,14 @@ interface BattleFieldProps {
   state: BattleState;
   onAttack: () => void;
   onRetreat: (index: number) => void;
+  onFinish: () => void;
 }
 
 export default function BattleField({
   state,
   onAttack,
   onRetreat,
+  onFinish,
 }: BattleFieldProps) {
   // NOTE: Proto generated types use camelCase locally if generated with appropriate options,
   // but looking at valid file content, fields like `playerMe` are available.
@@ -373,7 +375,7 @@ export default function BattleField({
             <button
               type="button"
               className="mt-8 px-8 py-3 bg-white text-black font-bold text-lg rounded hover:scale-105 transition-transform"
-              onClick={() => window.location.reload()} // Simple reload or navigation
+              onClick={onFinish}
             >
               RETURN HOME
             </button>

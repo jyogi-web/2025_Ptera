@@ -94,26 +94,20 @@ service cloud.firestore {
       // TODO: 本番環境ではバトル参加者のみに制限する
       allow read: if isAuthenticated();
 
-      // バトルの作成・更新はバックエンドのみ (Server Actions経由)
-      // フロントエンドから直接書き込みはできない
+      // バトルの作成・更新・削除はバックエンドのみ
       allow write: if false;
     }
 
     // Battle Requests Collection (Matching)
     match /battle_requests/{requestId} {
-      // 認証済みユーザーなら読み書き可能
-      // 詳細な制御（自分のサークルIDが含まれるものだけ）はクエリレベルで行う
-      // 本番環境では request.resource.data.from_circle_id == user.circleId 等のチェックを追加推奨
+      // 認証済みユーザーなら読み取り可能
       allow read: if isAuthenticated();
-      // バックエンドがWriteする場合はAdmin SDKを使うためここでのAllowは不要だが、
-      // フロントエンドからWriteしないなら allow write: if false で良い。
-      // 実装を確認すると、Server Action (backend) が Write しているならルールは無関係 (Admin SDK bypasses rules).
-      // しかし、もしフロントエンドが直接書き込んでいるなら必要。
-      // 今回は `backend/pkg/battle/repository_request.go` で書き込んでいるため、バックエンドがAdmin SDKを使っていればルールは不要。
-      // エラーログを見ると `Uncaught Error in snapshot listener` なので、READ (onSnapshot) で落ちている。
-      // よって allow read が必要。
-      allow read: if isAuthenticated();
-      allow write: if false; // Backend only
+      
+      // 作成・更新はバックエンドのみ
+      allow create, update: if false;
+      
+      // フロントエンドから終了時に削除するため許可 (User correction)
+      allow delete: if isAuthenticated();
     }
 
     // Default rule: Deny everything else by default for safety

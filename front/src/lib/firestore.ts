@@ -391,3 +391,10 @@ export const getFavoriteCards = async (userId: string): Promise<Card[]> => {
 
   return cards;
 };
+
+export const deleteBattle = async (battleId: string): Promise<void> => {
+  const battleRef = doc(db, "battles", battleId);
+  await import("firebase/firestore").then(({ deleteDoc }) =>
+    deleteDoc(battleRef),
+  );
+};
