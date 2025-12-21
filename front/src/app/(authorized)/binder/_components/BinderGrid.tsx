@@ -1,11 +1,13 @@
 "use client";
 
+import { Download } from "lucide-react";
 import Image from "next/image";
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import toast from "react-hot-toast";
 import Modal from "@/components/ui/Modal";
 import { useAuth } from "@/context/AuthContext";
 import { addFavoriteCard, getFavoriteCards } from "@/lib/firestore";
+import { downloadElementAsImage as saveImage } from "@/lib/image";
 import type { Card as CardType } from "@/types/app";
 import { cyberToastStyle } from "../_styles/toast.styles";
 import { BinderCard } from "./BinderCard";
@@ -43,6 +45,22 @@ export function BinderGrid({
   // modal state
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedCard, setSelectedCard] = useState<CardType | null>(null);
+  const cardRef = useRef<HTMLDivElement>(null);
+
+  const handleSaveImage = useCallback(async () => {
+    if (cardRef.current && selectedCard) {
+      try {
+        await saveImage(cardRef.current, selectedCard.name || "card");
+        toast.success("画像を保存しました", {
+          style: cyberToastStyle,
+        });
+      } catch (error) {
+        toast.error("画像の保存に失敗しました", {
+          style: cyberToastStyle,
+        });
+      }
+    }
+  }, [selectedCard]);
 
   const renderExpiry = () => {
     if (!selectedCard || !selectedCard.expiryDate) return null;
@@ -143,66 +161,71 @@ export function BinderGrid({
       <Modal isOpen={isModalOpen} onClose={closeModal} title="カード詳細">
         {selectedCard ? (
           <div>
-            {selectedCard.imageUrl ? (
-              <div className="mb-4 relative w-full h-64 rounded-md overflow-hidden">
-                <Image
-                  src={selectedCard.imageUrl}
-                  alt={selectedCard.name}
-                  fill
-                  className="object-cover"
-                  sizes="(max-width: 640px) 100vw, 640px"
+            <div ref={cardRef} className="bg-slate-900 p-4 rounded-md">
+              {selectedCard.imageUrl ? (
+                <div className="mb-4 relative w-full h-64 rounded-md overflow-hidden">
+                  <Image
+                    src={selectedCard.imageUrl}
+                    alt={selectedCard.name}
+                    fill
+                    className="object-cover"
+                    sizes="(max-width: 640px) 100vw, 640px"
+                  />
+                </div>
+              ) : (
+                <div
+                  className="mb-4 w-full max-h-64 bg-slate-800 rounded-md"
+                  aria-hidden
                 />
-              </div>
-            ) : (
-              <div
-                className="mb-4 w-full max-h-64 bg-slate-800 rounded-md"
-                aria-hidden
-              />
-            )}
+              )}
 
-            <div className="mb-2 text-lg font-bold text-slate-100">
-              {selectedCard.name}
+              <div className="mb-2 text-lg font-bold text-slate-100">
+                {selectedCard.name}
+              </div>
+              <div className="mb-1 text-sm text-slate-300">
+                {typeof selectedCard.grade === "number"
+                  ? `${selectedCard.grade}年`
+                  : selectedCard.grade}
+              </div>
+              {selectedCard.position && (
+                <div className="mb-2 text-sm text-slate-300">
+                  役職: {selectedCard.position}
+                </div>
+              )}
+              {selectedCard.faculty && (
+                <div className="mb-2 text-sm text-slate-300">
+                  学部: {selectedCard.faculty}
+                </div>
+              )}
+              {selectedCard.department && (
+                <div className="mb-2 text-sm text-slate-300">
+                  学科: {selectedCard.department}
+                </div>
+              )}
+              {/* memo field removed — using `description` for comments */}
+              {selectedCard.description && (
+                <div className="mt-3 text-sm whitespace-pre-wrap text-slate-200">
+                  <div className="text-xs text-slate-400 mb-1">
+                    作成コメント
+                  </div>
+                  <div>{selectedCard.description}</div>
+                </div>
+              )}
+              {renderExpiry()}
+              {selectedCard.createdAt && (
+                <div className="mt-3 text-xs text-slate-400">
+                  作成: {new Date(selectedCard.createdAt).toLocaleString()}
+                </div>
+              )}
             </div>
-            <div className="mb-1 text-sm text-slate-300">
-              {typeof selectedCard.grade === "number"
-                ? `${selectedCard.grade}年`
-                : selectedCard.grade}
-            </div>
-            {selectedCard.position && (
-              <div className="mb-2 text-sm text-slate-300">
-                役職: {selectedCard.position}
-              </div>
-            )}
-            {selectedCard.faculty && (
-              <div className="mb-2 text-sm text-slate-300">
-                学部: {selectedCard.faculty}
-              </div>
-            )}
-            {selectedCard.department && (
-              <div className="mb-2 text-sm text-slate-300">
-                学科: {selectedCard.department}
-              </div>
-            )}
-            {/* memo field removed — using `description` for comments */}
-            {selectedCard.description && (
-              <div className="mt-3 text-sm whitespace-pre-wrap text-slate-200">
-                <div className="text-xs text-slate-400 mb-1">作成コメント</div>
-                <div>{selectedCard.description}</div>
-              </div>
-            )}
-            {renderExpiry()}
-            {selectedCard.createdAt && (
-              <div className="mt-3 text-xs text-slate-400">
-                作成: {new Date(selectedCard.createdAt).toLocaleString()}
-              </div>
-            )}
             <div className="mt-4 flex justify-end">
               <button
                 type="button"
-                onClick={closeModal}
-                className="px-3 py-1 rounded bg-white/5 hover:bg-white/10 text-slate-100"
+                onClick={handleSaveImage}
+                className="p-2 rounded-full text-slate-400 hover:text-white hover:bg-white/10 transition-colors"
+                title="画像を保存"
               >
-                閉じる
+                <Download className="w-5 h-5" />
               </button>
             </div>
           </div>
