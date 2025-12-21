@@ -9,11 +9,12 @@ import { toPng } from "html-to-image";
 export const downloadElementAsImage = async (
   element: HTMLElement,
   fileName: string,
+  backgroundColor: string = "transparent",
 ): Promise<void> => {
   try {
     const dataUrl = await toPng(element, {
       cacheBust: true,
-      backgroundColor: "transparent", // Use transparent background
+      backgroundColor,
     });
 
     const link = document.createElement("a");

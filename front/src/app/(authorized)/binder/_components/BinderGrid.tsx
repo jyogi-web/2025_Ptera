@@ -50,7 +50,11 @@ export function BinderGrid({
   const handleSaveImage = useCallback(async () => {
     if (cardRef.current && selectedCard) {
       try {
-        await saveImage(cardRef.current, selectedCard.name || "card");
+        await saveImage(
+          cardRef.current,
+          selectedCard.name || "card",
+          "#0f172a",
+        );
         toast.success("画像を保存しました", {
           style: cyberToastStyle,
         });
