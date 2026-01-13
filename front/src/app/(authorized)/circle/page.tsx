@@ -1,12 +1,9 @@
 "use client";
 
-import { Animator, FrameCorners } from "@arwes/react";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import toast from "react-hot-toast";
-
 import { useAuth } from "@/context/AuthContext";
-
 import { createCircle, getCircles, joinCircle } from "@/lib/firestore";
 import type { Circle } from "@/types/app";
 import Loading from "../loading";
@@ -80,212 +77,173 @@ export default function CirclePage() {
     return (
       <div style={styles.container}>
         <div style={styles.dashboardContent}>
-          <Animator active={true}>
-            <div className="w-full max-w-4xl relative">
-              {/* Main Frame */}
-              <FrameCorners
-                strokeWidth={2}
-                cornerLength={20}
-                style={{
-                  color: "#00dac1",
-                  backgroundColor: "rgba(3, 15, 25, 0.6)",
-                  backdropFilter: "blur(10px)",
-                }}
-              />
-
-              <div className="relative p-8 md:p-12 space-y-10">
-                {/* Header */}
-                <div className="text-center space-y-2">
-                  <p style={styles.panelTitle}>CURRENT AFFILIATION</p>
-                  <h1
-                    className="text-4xl md:text-5xl font-bold tracking-tight"
-                    style={styles.headerGradient}
-                  >
-                    {myCircle?.name || "UNIDENTIFIED CIRCLE"}
-                  </h1>
-                  <div className="flex justify-center items-center gap-2 mt-4">
-                    <span className="w-2 h-2 rounded-full bg-green-500 animate-pulse" />
-                    <span className="text-xs tracking-widest text-green-400">
-                      SYSTEM ONLINE
-                    </span>
-                  </div>
-                </div>
-
-                {/* Grid */}
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                  {/* Binder Button */}
-                  <button
-                    type="button"
-                    className="group relative overflow-hidden"
-                    onClick={() => router.push("/binder")}
-                    style={styles.cyberButton}
-                  >
-                    <div className="absolute inset-0 bg-cyan-500/10 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
-                    <FrameCorners
-                      cornerLength={10}
-                      strokeWidth={1}
-                      style={{ color: "#00dac1", zIndex: 0 }}
-                    />
-                    <div className="relative z-10 flex flex-col h-full">
-                      <div className="flex items-center gap-3 mb-3 text-cyan-400">
-                        <svg
-                          xmlns="http://www.w3.org/2000/svg"
-                          width="24"
-                          height="24"
-                          fill="none"
-                          viewBox="0 0 24 24"
-                          stroke="currentColor"
-                        >
-                          <title>Member List Icon</title>
-                          <path
-                            strokeLinecap="round"
-                            strokeLinejoin="round"
-                            strokeWidth={1.5}
-                            d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"
-                          />
-                        </svg>
-                        <span style={styles.panelTitle}>ACCESS DATABASE</span>
-                      </div>
-                      <h3
-                        className="text-xl font-bold mb-1"
-                        style={styles.neonText}
-                      >
-                        MEMBER LIST
-                      </h3>
-                      <p className="text-sm text-gray-400">
-                        View affiliation records and card data.
-                      </p>
-                    </div>
-                  </button>
-
-                  {/* Add Member Button */}
-                  <button
-                    type="button"
-                    className="group relative overflow-hidden"
-                    onClick={() => router.push("/camera")}
-                    style={styles.cyberButton}
-                  >
-                    <div className="absolute inset-0 bg-purple-500/10 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
-                    <FrameCorners
-                      cornerLength={10}
-                      strokeWidth={1}
-                      style={{ color: "#f700ff", zIndex: 0 }}
-                    />
-                    <div className="relative z-10 flex flex-col h-full">
-                      <div className="flex items-center gap-3 mb-3 text-purple-400">
-                        <svg
-                          xmlns="http://www.w3.org/2000/svg"
-                          width="24"
-                          height="24"
-                          fill="none"
-                          viewBox="0 0 24 24"
-                          stroke="currentColor"
-                        >
-                          <title>Add Member Icon</title>
-                          <path
-                            strokeLinecap="round"
-                            strokeLinejoin="round"
-                            strokeWidth={1.5}
-                            d="M12 4v16m8-8H4"
-                          />
-                        </svg>
-                        <span
-                          style={{ ...styles.panelTitle, color: "#d86bf5" }}
-                        >
-                          INITIALIZE SCAN
-                        </span>
-                      </div>
-                      <h3
-                        className="text-xl font-bold mb-1"
-                        style={styles.neonTextSecondary}
-                      >
-                        ADD MEMBER
-                      </h3>
-                      <p className="text-sm text-gray-400">
-                        Register new personnel via card scan.
-                      </p>
-                    </div>
-                  </button>
+          <div className="w-full max-w-4xl relative">
+            <div className="relative p-8 md:p-12 space-y-10">
+              {/* Header */}
+              <div className="text-center space-y-2">
+                <p style={styles.panelTitle}>CURRENT AFFILIATION</p>
+                <h1
+                  className="text-4xl md:text-5xl font-bold tracking-tight"
+                  style={styles.headerGradient}
+                >
+                  {myCircle?.name || "UNIDENTIFIED CIRCLE"}
+                </h1>
+                <div className="flex justify-center items-center gap-2 mt-4">
+                  <span className="w-2 h-2 rounded-full bg-green-500 animate-pulse" />
+                  <span className="text-xs tracking-widest text-green-400">
+                    SYSTEM ONLINE
+                  </span>
                 </div>
               </div>
-            </div>
 
-            {/* Matching Navigation Button */}
-            <div className="mt-6">
-              <button
-                type="button"
-                className="group relative overflow-hidden w-full"
-                onClick={() => router.push("/circle/matching")}
-                style={{
-                  ...styles.cyberButton,
-                  borderColor: "rgba(249, 115, 22, 0.3)", // Orange tint
-                  background: "rgba(249, 115, 22, 0.05)",
-                }}
-              >
-                <div className="absolute inset-0 bg-orange-500/10 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
-                <FrameCorners
-                  cornerLength={10}
-                  strokeWidth={1}
-                  style={{ color: "#f97316", zIndex: 0 }}
-                />
-                <div className="relative z-10 flex flex-row items-center justify-between w-full">
-                  <div className="flex items-center gap-4">
-                    <div className="p-3 bg-orange-900/20 rounded border border-orange-500/30 text-orange-400">
-                      <span className="text-2xl">⚔️</span>
-                    </div>
-                    <div>
-                      <div className="flex items-center gap-2 mb-1">
-                        <span
-                          style={{ ...styles.panelTitle, color: "#fdba74" }}
-                        >
-                          TACTICAL
-                        </span>
-                      </div>
-                      <h3
-                        className="text-xl font-bold"
-                        style={{
-                          ...styles.neonText,
-                          color: "#f97316",
-                          textShadow: "0 0 10px rgba(249, 115, 22, 0.5)",
-                        }}
+              {/* Grid */}
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                {/* Binder Button */}
+                <button
+                  type="button"
+                  className="group relative overflow-hidden"
+                  onClick={() => router.push("/binder")}
+                  style={styles.cyberButton}
+                >
+                  <div className="absolute inset-0 bg-cyan-500/10 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+                  <div className="relative z-10 flex flex-col h-full">
+                    <div className="flex items-center gap-3 mb-3 text-cyan-400">
+                      <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        width="24"
+                        height="24"
+                        fill="none"
+                        viewBox="0 0 24 24"
+                        stroke="currentColor"
                       >
-                        BATTLE BULLETIN
-                      </h3>
-                      <p className="text-sm text-gray-400">
-                        View requests and find opponents.
-                      </p>
+                        <title>Member List Icon</title>
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          strokeWidth={1.5}
+                          d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"
+                        />
+                      </svg>
+                      <span style={styles.panelTitle}>ACCESS DATABASE</span>
                     </div>
-                  </div>
-                  <div className="text-orange-500 opacity-50 group-hover:opacity-100 group-hover:translate-x-2 transition-all">
-                    <svg
-                      xmlns="http://www.w3.org/2000/svg"
-                      width="24"
-                      height="24"
-                      viewBox="0 0 24 24"
-                      fill="none"
-                      stroke="currentColor"
-                      strokeWidth="2"
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
+                    <h3
+                      className="text-xl font-bold mb-1"
+                      style={styles.neonText}
                     >
-                      <title>Arrow Right</title>
-                      <path d="M5 12h14"></path>
-                      <path d="m12 5 7 7-7 7"></path>
-                    </svg>
+                      MEMBER LIST
+                    </h3>
+                    <p className="text-sm text-gray-400">
+                      View affiliation records and card data.
+                    </p>
+                  </div>
+                </button>
+
+                {/* Add Member Button */}
+                <button
+                  type="button"
+                  className="group relative overflow-hidden"
+                  onClick={() => router.push("/camera")}
+                  style={styles.cyberButton}
+                >
+                  <div className="absolute inset-0 bg-purple-500/10 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+                  <div className="relative z-10 flex flex-col h-full">
+                    <div className="flex items-center gap-3 mb-3 text-purple-400">
+                      <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        width="24"
+                        height="24"
+                        fill="none"
+                        viewBox="0 0 24 24"
+                        stroke="currentColor"
+                      >
+                        <title>Add Member Icon</title>
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          strokeWidth={1.5}
+                          d="M12 4v16m8-8H4"
+                        />
+                      </svg>
+                      <span style={{ ...styles.panelTitle, color: "#d86bf5" }}>
+                        INITIALIZE SCAN
+                      </span>
+                    </div>
+                    <h3
+                      className="text-xl font-bold mb-1"
+                      style={styles.neonTextSecondary}
+                    >
+                      ADD MEMBER
+                    </h3>
+                    <p className="text-sm text-gray-400">
+                      Register new personnel via card scan.
+                    </p>
+                  </div>
+                </button>
+              </div>
+            </div>
+          </div>
+
+          {/* Matching Navigation Button */}
+          <div className="mt-6">
+            <button
+              type="button"
+              className="group relative overflow-hidden w-full"
+              onClick={() => router.push("/circle/matching")}
+              style={{
+                ...styles.cyberButton,
+                borderColor: "rgba(249, 115, 22, 0.3)", // Orange tint
+                background: "rgba(249, 115, 22, 0.05)",
+              }}
+            >
+              <div className="absolute inset-0 bg-orange-500/10 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+              <div className="relative z-10 flex flex-row items-center justify-between w-full">
+                <div className="flex items-center gap-4">
+                  <div className="p-3 bg-orange-900/20 rounded border border-orange-500/30 text-orange-400">
+                    <span className="text-2xl">⚔️</span>
+                  </div>
+                  <div>
+                    <div className="flex items-center gap-2 mb-1">
+                      <span style={{ ...styles.panelTitle, color: "#fdba74" }}>
+                        TACTICAL
+                      </span>
+                    </div>
+                    <h3
+                      className="text-xl font-bold"
+                      style={{
+                        ...styles.neonText,
+                        color: "#f97316",
+                        textShadow: "0 0 10px rgba(249, 115, 22, 0.5)",
+                      }}
+                    >
+                      BATTLE BULLETIN
+                    </h3>
+                    <p className="text-sm text-gray-400">
+                      View requests and find opponents.
+                    </p>
                   </div>
                 </div>
-              </button>
-            </div>
+                <div className="text-orange-500 opacity-50 group-hover:opacity-100 group-hover:translate-x-2 transition-all">
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    width="24"
+                    height="24"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="2"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                  >
+                    <title>Arrow Right</title>
+                    <path d="M5 12h14"></path>
+                    <path d="m12 5 7 7-7 7"></path>
+                  </svg>
+                </div>
+              </div>
+            </button>
+          </div>
 
-            <div className="mt-8 pt-8 border-t border-gray-700/50">
-              <p className="text-sm text-gray-500 text-center">
-                サークルID:{" "}
-                <span className="font-mono bg-gray-900 px-2 py-1 rounded select-all">
-                  {user.circleId}
-                </span>
-              </p>
-            </div>
-          </Animator>
+          <div className="mt-8 pt-8 border-t border-gray-700/50"></div>
         </div>
       </div>
     );
@@ -336,11 +294,6 @@ export default function CirclePage() {
 
             <form onSubmit={handleCreateCircle} className="space-y-6">
               <div style={styles.onboardingInputContainer}>
-                <FrameCorners
-                  cornerLength={10}
-                  strokeWidth={1}
-                  style={{ color: "#f700ff", zIndex: 0, opacity: 0.5 }}
-                />
                 <input
                   type="text"
                   value={newCircleName}

@@ -1,6 +1,5 @@
 "use client";
 
-import { Animator, FrameCorners } from "@arwes/react";
 import type { CSSProperties, ReactNode } from "react";
 import { useMemo, useState } from "react";
 import { styles } from "../_styles/Button.styles";
@@ -44,22 +43,10 @@ export const Button = ({
         ...style,
       }}
     >
-      <Animator active={true}>
-        <FrameCorners
-          strokeWidth={2}
-          cornerLength={10}
-          style={{
-            ...styles.frame,
-            color: color,
-          }}
-        />
-      </Animator>
-
       <span
         style={{
           ...styles.content,
           color: color,
-          textShadow: `0 0 5px ${color}`,
         }}
       >
         {children}

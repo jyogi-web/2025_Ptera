@@ -2,6 +2,7 @@ import {
   addDoc,
   arrayUnion,
   collection,
+  deleteDoc,
   doc,
   getDoc,
   getDocs,
@@ -13,6 +14,7 @@ import {
   serverTimestamp,
   setDoc,
   Timestamp,
+  updateDoc,
   where,
 } from "firebase/firestore";
 import { convertCard } from "@/helper/converter";
@@ -182,6 +184,39 @@ export const getCards = async (circleId?: string): Promise<Card[]> => {
       return null;
     })
     .filter((card): card is Card => card !== null);
+};
+
+export const getCard = async (cardId: string): Promise<Card | null> => {
+  const docRef = doc(db, CARDS_COLLECTION, cardId);
+  const docSnap = await getDoc(docRef);
+
+  if (docSnap.exists()) {
+    const data = docSnap.data();
+    if (isValidFirestoreCard(docSnap.id, data)) {
+      return convertCard(docSnap.id, data);
+    }
+  }
+  return null;
+};
+
+export const updateCard = async (
+  cardId: string,
+  data: Partial<FirestoreCard>,
+): Promise<void> => {
+  const docRef = doc(db, CARDS_COLLECTION, cardId);
+
+  // Consider validating data here if needed, similar to validateCardData
+  // allowing partial updates.
+
+  await updateDoc(docRef, {
+    ...data,
+    updatedAt: serverTimestamp(),
+  });
+};
+
+export const deleteCard = async (cardId: string): Promise<void> => {
+  const docRef = doc(db, CARDS_COLLECTION, cardId);
+  await deleteDoc(docRef);
 };
 
 // --- User & Circle Management ---
@@ -390,4 +425,162 @@ export const getFavoriteCards = async (userId: string): Promise<Card[]> => {
   }
 
   return cards;
+};
+
+export const deleteBattle = async (battleId: string): Promise<void> => {
+  console.log("Starting deleteBattle for:", battleId);
+  const battleRef = doc(db, "battles", battleId);
+  const battleDoc = await getDoc(battleRef);
+
+  if (battleDoc.exists()) {
+    console.log("Found battle doc. Deleting...");
+    await import("firebase/firestore").then(({ deleteDoc }) =>
+      deleteDoc(battleRef),
+    );
+  } else {
+    console.log("Battle doc not found (already deleted?)");
+  }
+
+  // Find and delete the associated Battle Request document
+  // Strategy 1: Check battle doc for requestId
+  let requestId = battleDoc.data()?.requestId;
+  console.log("Strategy 1 requestId:", requestId);
+
+  // Strategy 2: If not found, query battle_requests by battleId
+  if (!requestId) {
+    console.log("Querying battle_requests for battleId:", battleId);
+    const q = query(
+      collection(db, "battle_requests"),
+      where("battleId", "==", battleId),
+      limit(1),
+    );
+    const snapshot = await getDocs(q);
+    console.log("Query snapshot size:", snapshot.size);
+    if (!snapshot.empty) {
+      requestId = snapshot.docs[0].id;
+      console.log("Found requestId from query:", requestId);
+    }
+  }
+
+  if (requestId) {
+    console.log("Deleting request:", requestId);
+    const requestRef = doc(db, "battle_requests", requestId);
+    await import("firebase/firestore").then(({ deleteDoc }) =>
+      deleteDoc(requestRef),
+    );
+    console.log("Deleted request successfully");
+  } else {
+    console.warn(
+      "Could not find associated battle_request for battle:",
+      battleId,
+    );
+  }
+};
+
+export const saveGameRecord = async (
+  userId: string,
+  circleId: string | undefined,
+  gameId: string,
+  score: number,
+  displayName: string,
+  photoURL: string,
+): Promise<void> => {
+  try {
+    // Unique Document ID: gameId_userId
+    const docId = `${gameId}_${userId}`;
+    const recordRef = doc(db, "game_records", docId);
+
+    // Check existing record
+    const docSnap = await getDoc(recordRef);
+
+    if (docSnap.exists()) {
+      const currentBest = docSnap.data().score as number;
+      if (score < currentBest) {
+        // New record is faster (lower), update it
+        await setDoc(recordRef, {
+          userId,
+          circleId: circleId || null,
+          gameId,
+          score,
+          displayName,
+          photoURL: photoURL || "",
+          updatedAt: serverTimestamp(),
+          createdAt: docSnap.data().createdAt, // Preserve original creation time? Or just overwrite? Let's overwrite "createdAt" context to "recordSetAt". Actually, let's keep original createdAt if we want "first time played", but usually "date achieved" is better. Let's just set createdAt to now for simplicity of "when this record was achieved".
+          // actually, usually we want "updatedAt" for the new record time.
+          // Let's just overwrite the whole doc for simplicity.
+        });
+        console.log("New high score saved!");
+      } else {
+        console.log("Score not better than personal best. Skipping save.");
+      }
+    } else {
+      // No record exists, create new
+      await setDoc(recordRef, {
+        userId,
+        circleId: circleId || null,
+        gameId,
+        score,
+        displayName,
+        photoURL: photoURL || "",
+        createdAt: serverTimestamp(),
+      });
+      console.log("First game record saved successfully");
+    }
+  } catch (error) {
+    console.error("Error saving game record:", error);
+  }
+};
+
+export interface GameRecord {
+  id: string;
+  userId: string;
+  displayName: string;
+  photoURL: string;
+  score: number;
+  createdAt: Date;
+}
+
+export const getGameRanking = async (
+  gameId: string,
+  limitCount = 10,
+): Promise<GameRecord[]> => {
+  try {
+    // Fetch more records to account for potential duplicates (old data)
+    // We'll deduplicate in memory.
+    const q = query(
+      collection(db, "game_records"),
+      where("gameId", "==", gameId),
+      orderBy("score", "asc"),
+      limit(50),
+    );
+
+    const querySnapshot = await getDocs(q);
+    const records = querySnapshot.docs.map((doc) => {
+      const data = doc.data();
+      return {
+        id: doc.id,
+        userId: data.userId,
+        displayName: data.displayName || "Unknown",
+        photoURL: data.photoURL || "",
+        score: data.score,
+        createdAt: data.createdAt?.toDate() || new Date(),
+      };
+    });
+
+    // Deduplicate by userId, keeping the first (lowest score because of orderBy asc)
+    const uniqueRecords: GameRecord[] = [];
+    const seenUserIds = new Set<string>();
+
+    for (const record of records) {
+      if (!seenUserIds.has(record.userId)) {
+        seenUserIds.add(record.userId);
+        uniqueRecords.push(record);
+      }
+    }
+
+    return uniqueRecords.slice(0, limitCount);
+  } catch (error) {
+    console.error("Error fetching game ranking:", error);
+    return [];
+  }
 };

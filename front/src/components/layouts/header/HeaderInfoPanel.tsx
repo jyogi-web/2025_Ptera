@@ -1,7 +1,6 @@
 "use client";
 
 import { Animator } from "@arwes/react";
-import { Menu } from "lucide-react";
 import { memo } from "react";
 
 /**
@@ -15,12 +14,10 @@ type HeaderInfoPanelProps = {
   today: string;
   /** The user's grade label (e.g., "大学3年目"). */
   grade: string;
-  /** Optional handler for the menu button click. */
-  onMenuClick?: () => void;
 };
 
 export const HeaderInfoPanel = memo(
-  ({ active, today, grade, onMenuClick }: HeaderInfoPanelProps) => {
+  ({ active, today, grade }: HeaderInfoPanelProps) => {
     return (
       <Animator active={active}>
         {/* 右パネル: 日付・学年・メニュー */}
@@ -38,17 +35,7 @@ export const HeaderInfoPanel = memo(
               </div>
             </div>
 
-            {/* メニューボタン */}
-            <div className="relative z-10 border-l border-emerald-500/50 pl-3">
-              <button
-                type="button"
-                onClick={onMenuClick}
-                aria-label="Toggle menu"
-                className="p-1.5 hover:bg-emerald-500/20 rounded-md transition-colors text-emerald-300 hover:text-emerald-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-400 focus-visible:ring-offset-2 focus-visible:ring-offset-emerald-900"
-              >
-                <Menu size={24} />
-              </button>
-            </div>
+            {/* メニュー削除: ハンバーガーボタンは不要のため削除 */}
           </div>
         </div>
       </Animator>

@@ -265,3 +265,42 @@ export async function getCardsFromServer(circleId?: string) {
     throw error;
   }
 }
+
+/**
+ * サーバー側で単一のカードデータを取得
+ */
+export async function getCardFromServer(cardId: string) {
+  try {
+    const cardDoc = await adminDB.collection("cards").doc(cardId).get();
+
+    if (!cardDoc.exists) {
+      return null;
+    }
+
+    const result = validateCardData(cardDoc.id, cardDoc.data() || {});
+
+    if (result.valid && result.card) {
+      // Exclude expired cards matchin getCardsFromServer logic
+      const parsedExpiry = parseToDate(
+        result.card.expiryDate as Date | string | undefined,
+      );
+      if (!parsedExpiry) {
+        console.warn(
+          `Card ${cardId}: expiryDate is invalid or missing, including by default`,
+        );
+        return result.card;
+      }
+      if (!isExpired(parsedExpiry)) {
+        return result.card;
+      }
+      // expired -> return null
+      return null;
+    }
+
+    console.warn(`Card ${cardId} validation failed:`, result.error);
+    return null;
+  } catch (error) {
+    console.error(`Failed to fetch card ${cardId} from server:`, error);
+    return null;
+  }
+}
