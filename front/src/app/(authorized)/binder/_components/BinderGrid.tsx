@@ -2,8 +2,8 @@
 
 import { Download } from "lucide-react";
 import Image from "next/image";
-import { useCallback, useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
+import { useCallback, useEffect, useRef, useState } from "react";
 import toast from "react-hot-toast";
 import Modal from "@/components/ui/Modal";
 import { useAuth } from "@/context/AuthContext";
@@ -60,7 +60,7 @@ export function BinderGrid({
         toast.success("画像を保存しました", {
           style: cyberToastStyle,
         });
-      } catch (error) {
+      } catch {
         toast.error("画像の保存に失敗しました", {
           style: cyberToastStyle,
         });
